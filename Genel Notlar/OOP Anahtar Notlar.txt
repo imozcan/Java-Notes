@@ -1,0 +1,261 @@
+/*----------------------------------------------------------------------------------------------------------------------
+   					 OOP- Nesne Yönelimli programlamaya ilişkin anahtar notlar.
+ 
+OOP sınıflar kullanarak program yazma tekniğidir, diye tek bir cümle ile anlatılabilir. Bu teknik insanın doğayı algılama 
+biçimini smüle etme biçiminde ortaya çıkmıştır. Yüksek seviyeli dillerde karşımıza çıkar. Burada daha anlaşılır, daha az 
+şey varmış algısı yaratılmış olur. Bu benzer işi yapan metodlara aynı ismi vermek gibi düşünülebilir. 
+Bu metod overloading-resolution başlığında detaylandırılmıştır.  OOP’de fonksiyonlarla değil sınıflarla konuşulur.
+----------------------------------------------------------------------------------------------------------------------*/
+ 
+
+/*----------------------------------------------------------------------------------------------------------------------
+Değişkenlerin ömürleri(Storage Duration): 
+	* Runtime zamanına ilişkin bir parametredir fakat compile time a ilişkin olan scope(Faliyet Alanı) ile ilişkilidir.
+	* Bir değişkeninin ömrü bellekte yaratılması ile yok edilmesi arasında geçen zamandır. 
+ 
+Java da Çalışma zamanında “Stack” ve “Heap” denilen iki ayrı bellek alanı yaratılır. (Tüm Uygulamalar için Ayrı)
+	* Stack ve heap RAM de organize edilir.
+	* Bu alanların uzunlukları özel belirlenir ama belirlenmezse sistem default değerler ile çalıştırır.
+	* Stack alanında yaratma ve yok etme işlemleri (makine koduyla hızlı) gerçekleştirilir  
+Değişken Yaratma ve yok etme anlamında burada stack veri yapısı (stack data structure) biçiminde gerçekleştirilir
+----------------------------------------------------------------------------------------------------------------------*/
+
+
+/*----------------------------------------------------------------------------------------------------------------------
+Veri yapısı (Data  Structure): 
+Verileri belli bir algoritmaya göre tutan, istenildiği zaman yine belirli bir algoritmayla verilere erişebilen yapılara denir.
+
+Stack Data Structure: 
+	* Stack veri yapısına eleman eklemete “push”, eleman silme işlemine “pop” denir.
+	* Stack veri yapısı LIFO (Last In First Out) yani kuyruk sistemine göre çalışır.
+	* LIFO’da eleman ekleme sona yapılır. Eleman elde etme ve silme sondan yapılır. 
+
+Örnekler;
+1. Tabakların üst üste toplanması gibi. 1. Tabaktan sonra toplayacağınız her tabak sona koyulmuş olur. 
+	Bir tabak almak(erişmek) istediğinizde en son koyduğunuz tabağı alırsınız.
+
+2. Ortadaki pişti destesi de bu şekildedir her oyuncu ortaya sırayla kayıt koyar ve her zaman son koyulan kayıt üzerinden
+   oyun şekillenir. Siz kâğıt atarken de destenin en sonuna(En üste) koyarsınız.
+
+***Burada sondan kasıt destenin en altı değil yere atılan ilk kağıda en uzak kayıt şeklinde düşünerek türkçe den kaynaklanan 
+	anlam karmaşasından kurtulabiliriz.***
+
+3. Yine Bilgisayarda kullandığımız metin editörlerinde Undo-Redo işlemi de yine LIFO yanı Stack veri yapısındadır.
+
+
+Bu senaryolar için farklı veri yapıları ile de yapılabilir. Dizi ile de bu veriler tutulabilir ama bu bize gereksiz iş yükü 
+ve kalite anlamında dez avantaj getirecektir. Bu yüzden kullanılacak veri yapıları da, kurgulanmış senaryoya göre seçilmelidir.
+----------------------------------------------------------------------------------------------------------------------*/
+
+
+
+/*----------------------------------------------------------------------------------------------------------------------
+Yerel Değişkenler Stack alanında yaratılır, akışta değişken bildirim noktasına geldiğinde değişken yaratılır. 
+Bildirildiği bloğun sonuna gelindiğinde yok edilir.    
+
+Zaten yerel değişilkenlerin Scope bakımından bildirildikleri bloğun sonuna gelindiğinde erişilememesinin nedeni budur.
+Parametre değişkenleri de Stack'te metot çağrıldığında yaratılır, metot çağrısı bittiğinde yok edilir.
+
+Sınıf içerisindeki bildirimlere sınıfın elemanları (members) denir. 
+Sınıfın elemanı bir alt programsa bu metot tur. 
+Sınıfın elemanı bir değişken ise veri elemanı (member field ya da field) denir. 
+Sınıfın başka elemanları da olabilir.( İleride işlenecek)
+
+Sınıf içerisinde tüm metotların dışında herhangi bir yerde bildirilen değişklenlere sınıfın veri elemanları denir. 
+* Sınıf veri elemanları da metotlarda olduğu gibi erişim belirleyiciye(Public-private..) sahiptir. 
+* Static veya non-static olabilir.
+
+----------------------------------------------------------------------------------------------------------------------*/
+package csd;
+
+	class Sample {
+	    public int x;
+	    private static double y;
+		
+		public static void foo(int a)
+		{
+			//...
+		}
+		
+		protected int z;
+	}
+
+/*----------------------------------------------------------------------------------------------------------------------
+Sınıf içerisinde aynı isimde birden fazla veri elemanı bildirimi geçersizdir.
+----------------------------------------------------------------------------------------------------------------------*/
+package csd;
+
+	class Sample {
+		public int x; //error
+    	private static double y;
+    	public static double x; //error
+	}
+
+
+/*----------------------------------------------------------------------------------------------------------------------
+Bu şekilde de bildirim yapılabilir.
+----------------------------------------------------------------------------------------------------------------------*/
+package csd;
+
+	class Sample {
+	    public int a, b;
+	    protected static double x, y;
+		//...
+	}
+
+
+/*----------------------------------------------------------------------------------------------------------------------
+Sınıf bildirimi bir tür bildirimidir. Programcının bildirdiği türlere "user defined type" da denir
+----------------------------------------------------------------------------------------------------------------------*/
+
+package csd;
+
+     class Device {
+	//... Device türünden bir Device sınıfı yaratıldı.
+}
+
+     class Student {
+	//...
+}
+
+
+/*----------------------------------------------------------------------------------------------------------------------
+Sınıf bildirimi bir tür bildirimi olduğuna göre, sınıf ismi de bir tür ismi olduğuna göre sınıf türünden 
+değişkenler de bildirilebilir.
+----------------------------------------------------------------------------------------------------------------------*/
+
+
+package csd;
+
+	class App {
+		public static void main(String [] args)	
+		{
+	        Device d;
+	        Student s;
+	        Alien a;
+			
+			//...
+		}
+	}
+
+
+	class Device {
+		//...
+	}
+
+	class Student {
+		//...
+	}
+
+	class Alien {
+		//...
+	}
+
+
+/*----------------------------------------------------------------------------------------------------------------------
+ 							Javada 2 tip tür vardır, value type ve reference type
+
+T bir değişken ise bu değişkenin içerisinde değer tutuluyorsa (10 gibi) bu value type’dir. Java'da temel türler 
+değer türleridir. Value type ta adres tutulamaz.Eğer değişkenin içerisinde adres tutuluyorsa bu reference type olur.
+
+Programcı tarafından bildirilen türler user defined types’tır ve referans türleridir.
+Sınıf türünden bir değişken user defined type’tı ve bu bir referans türüydü, bu yüzden, bu sınıf türündeki değişkene,
+referans değişken ya da sadece referans ta denir.
+
+Java da referans sözcüğü adres olarak ta kullanılır, değişken türünü olarak ta  referans vardır. Anlam karmaşası olmaması 
+için dikkat edilmelidir.
+ 
+----------------------------------------------------------------------------------------------------------------------*/
+
+package csd;
+
+	class App {
+		public static void main(String [] args)	
+		{
+			Device d;   //  ***Burada d class türünden bir referanstır(Değişken)****
+			//...
+		}
+	}
+
+
+	class Device {
+		//...
+	}
+ 
+/*----------------------------------------------------------------------------------------------------------------------
+    ***Java da Nesneleri isimleri yoktur.  Yani a nesnesi, ağaç nesnesi, araba nesnesi diye isimlendirme YOKTUR***
+
+ 	* Sınıf türünden bellekte ayrılan alana o sınıf türünden nesne denir.
+	* Nesneler HEAP’te yaratılır. Java'da Stack'te nesne yaratılamaz.
+	* Java'da nesnenin kendisi değil adresi, aynı türden bir referansta tutulabilir.
+
+   
+new Operatörü; New Operatörü; Özel amaçlı, Tek operandlı, Önek(prefix) durumundadır.
+
+Bir nesneyi yaratmak için new operatörü kullanılır. new operatörünün genel biçimi şu şekildedir:
+		new <sınıf ismi>([argümanlar]);
+
+
+New operatörü HEAP’te yaratılmış olan nesnenin adresini (referansını) üretir. Bu durumda  bu operatörün ürettiği değer 
+yani adres aynı türden bir referansa atanabilir
+
+
+Bir nesne ilgili sınıf türünden bir örnektir. Buna "instance" da denir.Örnekte, nesne yönelimli programlama anlamında 
+d, s ve a birer nesne DEĞİLDİR. Bunlar ilgili sınıflar türünden referanslardır. *ile belirtilen new operatörüne ilişkin 
+ifade ile birlikte artık "d referansı yaratılan nesneyi gösteriyor duruma gelir. Benzer şekilde s ve a referansları da
+ ** ve *** ile birlikte yaratılmış olan nesneleri gösteriyor duruma gelir.
+
+Referans ve nesne kavramları birbirinden farklıdır. Referans değişken bir nesneyi gösterebilir, nesnenin kendisi değildir
+
+Burada postişte bir binanın adresini tutmak şeklinde düşünebiliriz. BİNA nesne, POSTİT sınıf türünden bir referanstır, 
+biz elimizdeki postiş kağıdına bina diyemeyiz.
+----------------------------------------------------------------------------------------------------------------------*/
+
+package csd;
+						
+	class App {
+		public static void main(String [] args)	
+		{
+	        Device d; 		 //d bir referans (değişken)
+	        Student s;		 //s bir referans (değişken)
+	        Alien a;		//a bir referans (değişken)
+		
+	        d = new Device(); 	 //*
+	        s = new Student(); 	 //**
+	        a = new Alien();  	 //***
+			
+			//...
+		}
+	}
+
+	class Device {
+		//...
+	}
+
+
+	class Student {
+		//...
+	}
+
+	class Alien {
+		//...
+	}
+
+/*----------------------------------------------------------------------------------------------------------------------
+Doğal bir dilde kurulan bir cümle içerisinde özel isimler dışında kalan her kavram soyuttur. Örneğin "Bir araba alacağım" 
+cümlesinde araba soyut bir kavramı temsil eder.Kişi araba aldığında örneğin "ben  Mercedes marka, 2021 model,  34 AS 34 
+plakalı  Siyah araba aldım" dediğinde artık bu araba somutlaşmıştır. İşte burada soyut olan araba  nesne yönelimli
+programlama da bir sınıf, somutlaşmış olan araba ise bir nesnedir  
+----------------------------------------------------------------------------------------------------------------------*/
+
+
+
+/*----------------------------------------------------------------------------------------------------------------------
+    
+----------------------------------------------------------------------------------------------------------------------*/
+/*----------------------------------------------------------------------------------------------------------------------
+    
+----------------------------------------------------------------------------------------------------------------------*/
+/*----------------------------------------------------------------------------------------------------------------------
+    
+----------------------------------------------------------------------------------------------------------------------*/

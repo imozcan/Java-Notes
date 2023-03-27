@@ -1,0 +1,159 @@
+/*----------------------------------------------------------------------------------------------------------------------
+						    String sınıfının bazı metodları
+
+s, s1, s2 String türünden(referansından) bir nesne olmak üzere;
+0 —> index numarası olmak üzere 
+c char türünden bir değişken olmak üzere;  —>  char c = 'ç';
+String str = "çok";
+
+----------------------------------------------------------------------------------------------------------------------*/
+/*----------------------------------------------------------------------------------------------------------------------
+s.toUpperCase(); 	
+	Yazının tüm karakterlerini büyütülmüş olduğu yeni bir String referansına geri döner.
+
+
+s.toLowerCase();	
+	Yazının tüm karakterlerini küçülmüş olduğu yeni bir String referansına geri döner.
+
+
+s.length();   		
+	Yazının toplam karakter sayısı elde edilir. Lenggth bilgisi sıfır olan String'lere boş string (empty string) denir
+
+
+s.charAt(0); 		
+	Yazının istediğimiz index numaralı elemanı elde edilir. Sınır dışı değer exeption oluşturur.
+
+----------------------------------------------------------------------------------------------------------------------*/
+
+/*----------------------------------------------------------------------------------------------------------------------
+ s1.equals(s2);		
+	Yazıların eşitlik karşılaştırması yapılır ve  metod CASE-SENSITIVE dir. Boolean değere geri döner.
+
+s1.equalsIgnoreCase(s2);
+	Yazıların eşitlik karşılaştırması yapılır ve  metod CASE-INsensitive dir. Boolean değere geri döner.   
+----------------------------------------------------------------------------------------------------------------------*/
+
+
+/*----------------------------------------------------------------------------------------------------------------------
+ 				***İndex of metodları aradığı yoksa -1 değerine geri döner***
+s.indexOf(c);	
+	Yazıların içerisinde karakter arar o karakter varsa index numarasına yoksa -1 değerine geri döner.
+
+s.indexOf(str);		
+	Yazının içerisinde yazı arar, o yazı varsa aranan yazının ilk karakterinin bulunduğu ilk index numarasına geri döner.
+
+s.indexOf(str, 37);	
+	Yazının içerisinde  belli bir index numarasından başlayarak yazı arar……(Yukarıdakiler ile Aynı)
+
+s.lastIndexOf(str);			
+	Sondan başlayarak  yazı arar, o yazı varsa aranan yazının ilk karakterinin bulunduğu ilk index numarasına geri döner. 
+----------------------------------------------------------------------------------------------------------------------*/
+
+
+/*----------------------------------------------------------------------------------------------------------------------  
+s.isEmpty();				
+	String boş mu ona bakar. Boolean değere geri döner.
+
+s.trim();					
+	Baştaki ve sondaki boşlukların atılmış olduğu yeni bir String referansına geri döner.
+
+s1.concat(s2);			
+	Yazı birleştirmesi (concatenation) yapılabilir   fullName = firstName.concat(" ").concat(lastName.toUpperCase()); 
+----------------------------------------------------------------------------------------------------------------------*/
+
+
+
+/*----------------------------------------------------------------------------------------------------------------------
+s.substring(2);	
+	s string referansındaki yazının 2. Index numarasından başlayarak yeni bir stringe geri dönen metod s ankara 
+	ise “kara” ya geri döner 
+
+s.substring(2, 5);	
+	s string referansındaki yazının 2. Numarasından başlayarak 5. Index numarasına kadar olan karakterleri olan yeni 
+	bir string referansına geri döner (beş dahil değil) “kar” a geri döner  [2, 5)
+
+s.substring(s.length());
+	Substringe başlangıç olarak yazının uzunluğu verilirse boş stringe geri döner, - veya + sınır dışı exception 
+	ankara stringinde length 6 dır.  s.substring(6); verirsek   boş stringer geri döner.
+
+s.substring(3, 3);
+	Substringe first ve last index numaralarını aynı verisekte boş string e geri döner 
+----------------------------------------------------------------------------------------------------------------------*/
+
+/*----------------------------------------------------------------------------------------------------------------------
+s.startsWith("https://");		
+	boolean değere geri döner. s stringinin başlangıcında(index no = 0) “https://“  var mı yok mu ona bakar url bir string 
+	olmak üzere url = url.startsWith("https://") ?  url : "https://" + url;
+
+s.endsWith(".com");	
+	boolean değere geri döner. s stringinin sonunda “.com”	olup olmadığına bakar. 
+----------------------------------------------------------------------------------------------------------------------*/
+
+/*----------------------------------------------------------------------------------------------------------------------
+Character isXXX metotları:
+	char ch = s.charAt(i);	s bir string ve stringin length’i kadar dönen döngü içerisinde charAt(i) ile stringin her karakteri 
+	tek tek char olarak alınır ve bu aşağıdaki metodlara ch  parametresi olarak verilir.
+
+
+Character.isWhitespace(ch)		
+	Boolean değere geri döner. Char parametresi alır.  Ch de o turda BOŞLUK/whiteSpace karakteri varsa true döner 
+Character.isDigit(ch)			
+	Boolean değere geri döner Char parametresi alır.   Ch de o turda RAKAM varsa true döner 
+Character.isLetter(ch)		
+	Boolean değere geri döner  Char parametresi alır.   Ch de o turda HARF karakteri varsa true döner
+Character.isLowerCase(ch) 		
+	Boolean değere geri döner  Char parametresi alır.   Ch de o turda KÜÇÜK HARF karakteri varsa true döner
+----------------------------------------------------------------------------------------------------------------------*/
+
+
+
+
+
+/*----------------------------------------------------------------------------------------------------------------------
+Character toXXX metotları;
+
+	Character.toUpperCase(ch); 	 	Char parametresi alır. Ch de bulunan karakterin o turda büyük karakterine geri döner
+	Character.toLowerCase(ch);		Char parametresi alır. Ch de bulunan karakterin o turda KÜÇÜK KARAKTERİNE geri döner
+
+
+
+ JAVA 11 ile eklenen strip metodları
+
+s.strip();							Başta ve sondaki boşlukları atılmış yeni stringe geri döner.
+s.stripLeading();					Başındaki boşlukları atılmış yeni stringe geri döner.
+s.stripTrailing();					Sonundaki boşlukları atılmış yeni stringe geri döner.
+   
+
+
+s.isBlank()	
+ 	s stringi strip edildikten(baş ve sondaki boşlukları atıldıktan) sonra boş mu dolu mu ona bakar boolean değere geri döner.
+s.repeat(count)		
+	s stringini count kadar tekrar eden yeni stringe geri döner
+   
+----------------------------------------------------------------------------------------------------------------------*/
+
+
+ 												
+
+	
+
+
+
+
+
+
+
+
+
+
+
+
+/*----------------------------------------------------------------------------------------------------------------------
+    
+----------------------------------------------------------------------------------------------------------------------*/
+/*----------------------------------------------------------------------------------------------------------------------
+    
+----------------------------------------------------------------------------------------------------------------------*/
+/*----------------------------------------------------------------------------------------------------------------------
+    
+----------------------------------------------------------------------------------------------------------------------*/

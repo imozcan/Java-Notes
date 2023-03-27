@@ -1,0 +1,227 @@
+Metod overload- Resolution
+
+/*----------------------------------------------------------------------------------------------------------------------
+Aynı isimle oluşturulmuş birden fazla metodun belli kurallar çerçevesinde aynı sınıf içerisinde bulunabilmesidir.
+Bu metodların, statik, void olup almamaları bu metodları overload yapmaz, yani aynı isimli iki metodun biri statik, 
+diğeri değilse bu metodlar birbirinden farklıdır diyemeyiz ve bu durumda bu metodları aynı sınıf içerisinde yazamayız.
+
+Bir sınıf içerisinde birden fazla aynı ısimli metod varsa ve bu metodların parametre ve parametre değişkenleri ve 
+değişken sayıları birbirinden farklıysa bunlar aynı sınıf içerisinde yazılabilir ve buna metod overloading denir. 
+----------------------------------------------------------------------------------------------------------------------*/
+
+		Public static void foo(double a, int b) 
+		Public static void foo(int a, double b) 
+		Public static void foo(int a) 
+		Public static void foo(double a) 
+		Public static void foo()
+
+/*----------------------------------------------------------------------------------------------------------------------
+ Bu metodlar aynı sınıf içerisinde yer alabilir, çünkü parametre değişkenleri farklıdır, yani bu metodlar birbirinden 
+farklıdır ama paremetrelerinin olmaması, aynı sayıdai aynı türde parametrelerinin olması gibi durumlarda bu metodlar
+Metod-overloading olmaz. Bu metodlar birbirinden ayrılamaz ve bu da aynı sınıf içerisinde yazılamayacaklarını söyler.
+Yani yazılırsa ERROR oluşur.   
+----------------------------------------------------------------------------------------------------------------------*/
+
+
+		Public static void foo(int a, int a)  
+		Public static void foo(int b, int c)  
+
+		Public static void foo(double a)  
+		Public static void foo(double b) 
+/*----------------------------------------------------------------------------------------------------------------------
+Peki bu metodlar metod-overloading kurallarına uyuyorsa ve biz metod çağrısı yaparken hangisini nasıl çağıracağımızı 
+nasıl bileceğiz ve nasıl çağıracağız.Buna da Metod overloading Resolation denir.
+
+Burada da 2 aşamalı bir süreç mevcut öncelikle Best match (Tam uyum) olan bir metod var mı diye bakılır. Eğer çağrıda
+-Best Match- mevcut ise zaten o metod çağrılmış demektir. 
+
+Best Mach:
+Metod ismi, Çağılan parametre sayısı ve çağrılan parametreler eğere çağrılan argüman sayısı ve türü ile aynı ise olur.
+ 
+Best mach Örnek;   
+Sample foo 2 argüman  çağrılıyor ve, bu argümanlardan ilki-İnt  ikincisi-Double. 
+Aşağıdaki metodlarımıza bakarsak burada en alttaki metodun iki parametresi var ve onunda  2 parametresi var.
+ilki-İnt  ikincisi-Double. Bu best match olur. Yani Metod-Overloading-Resolution da best mach ile en alttaki metod çağrılır.
+----------------------------------------------------------------------------------------------------------------------*/
+
+class App {
+	public static void main(String [] args)	
+	{
+		int a = 10;
+		double b = 20.3;
+		
+    	Sample.foo(a, b);
+	}
+}
+
+
+class Sample {
+ 	Public static void foo(double a, int b) 
+ 	Public static void foo(int a) 
+	Public static void foo(double a) 
+ 	Public static void foo()
+ 	Public static void foo(int a, double b) 
+}
+
+/*----------------------------------------------------------------------------------------------------------------------
+Peki  Best mach yoksa hangi metodun çağrılacağını nasıl bileceğiz?
+Tam uyum yoksa üç aşamalı bir işlemden geçilip en kaliteli çağrıya karşılık en  uygum metoda ulaşırız. 
+Çağrılan metod odur diyeceğiz.
+
+1.  Aday metodlar (candidate methods)                   
+	 		Aynı isimdeki tüm metodlar Aday metodlardır
+2.  Uygun metodlar (applicable methods)
+			Parametre sayısı ile argüman sayısı aynı olan VE argüman ile prmetreleri otomatik (implicit) tür dönüşümünün
+			geçerli olduğu metodlardır. 
+3. En uygun metot (the most applicable method)
+	 		Uygun metodlar içerisinde hangisi en kaliteli ya da az kalitesiz ise o metod çağrılan metottur. 
+----------------------------------------------------------------------------------------------------------------------*/
+
+
+
+
+
+/*----------------------------------------------------------------------------------------------------------------------
+Dönüşümün kalitesi aşağıdaki kurallara göre belirlenir:
+	T1 argümanın türü, T2 ve T3 yarıştırılan uygun metotların T1 türden argümana karşılık gelen parametrelerin türleri olsun:
+
+	1.	T1 -> T2, T1 -> T3 otomatik dönüşümlerinde T2 veya T3'den biri T1 ile aynı ise aynı olan dönüşüm daha kalitelidir.
+	Örneğin:
+	int -> int *
+	int -> double
+
+	***Şimdi Burada İnt ten inte bir dönüşüm ve intten double a bir impilicit dönüşüm var. 
+		Ama bariz olarak int int dönüşümü daha kalitelidir diyebiliriz***
+
+	
+	2.	T1 -> T2, T1 -> T3 otomatik dönüşümlerinde T2'den T3' otomatik tür dönüşümü var, T3'den T2'ye yoksa T2 daha kalitelidir.
+	Örneğin:
+	int -> long *
+	int -> float
+
+	***Burada int -> long ve int -> float dönüşümleri var iki dönüşüm de gerçekleşebilir, peki hangisi daha kaliteli o zaman 
+		ek olarak long -> float ve float -> long dönüşümlerine de bakacağız hangisi impilicit dönüşebiliyorsa o kalitelidir 
+		longdan floata var ama floattan longa yok o yüzden kazalanımız longdur deriz.***
+
+	örneğin:
+	char -> int *
+	char -> double
+
+	***char -> int  ve char -> double var
+		iki dönüşümde var o zaman int -> double ve double -> int e bakıyoruz. 
+		İnt double a dönüşür ama double inte dönüşmez yani int  daha kalitelir***
+
+----------------------------------------------------------------------------------------------------------------------*/
+
+
+
+/*----------------------------------------------------------------------------------------------------------------------
+1 - Argümanın türü 
+2- parametrenin türü
+3- farklı metodun  parametre türü olsun
+
+Kısaca imiplicit olarak  1 den 2 ye 1 den 3 e dönüşümlere bakıyoruz eşitlik (otomatik dönüşüm) varsa
+ kalite kararı için 2 den 3 e ve 3 ten 2 ye bakıyoruz
+
+
+Burada aday metotlar bulunamazsa VEYA aday metotlar var ancak uygun metotlar bulunamazsa VEYA uygun metotlar var ancak 
+en uygun metot bulunamazsa ERROR oluşur.
+----------------------------------------------------------------------------------------------------------------------*/
+ 
+
+
+/*----------------------------------------------------------------------------------------------------------------------
+1.Aday metotlar: 1, 2, 3, 4, 5, 6 	
+			(Aynı isimli metodlar)
+2.Uygun metotlar: 5, 6	
+			(iki parametreli ve otomatik tür dönüşümü olan metodlar). float -> double VE char -> int VE char -> char
+3.En uygun metotlar: 6			
+			(1-2  ve 1-3 durum beraberlikse 2-3 ve 3-2 dönüşümlerine bakılır)
+
+Örnek:
+----------------------------------------------------------------------------------------------------------------------*/ 
+
+package csd;
+
+class App {
+	public static void main(String [] args)	
+	{
+		float a = 10;
+		char b = 20;
+		
+        Sample.foo(a, b);					 //6
+	}
+}
+
+class Sample {
+		public static void foo() 					//1
+		public static void foo(int a)				//2
+		public static void foo(int a, int b) 		//3
+		public static void foo(int a, long b) 		//4
+		public static void foo(double b, int a)		//5
+		public static void bar(int a)				//7
+		public static void foo(double b, char a)	//6
+}
+
+/*----------------------------------------------------------------------------------------------------------------------
+1.Aday metotlar: 1, 2, 3, 4, 5, 6 	(Aynı isimli metodlar)
+2.Uygun metotlar: 3, 4, 5		(iki parametreli ve otomatik tür dönüşümü olan metodlar)
+3.En uygun metotlar: 3			(1-2  ve 1-3 durum beraberlikse 2-3 ve 3-2 dönüşümlerine bakılır) Burada 
+
+
+3 ve 4 için;
+ilk parametrelerde durum aynı 	---> İnt  ->  int ve int  -> int  
+ikinci parametrelerde 			---> short -> int ve short -> long 	(otomatik dünüşümleri de geçerli)  
+o zaman 						---> İnt -> long ve long -> int     
+int’ten long’a var ama long’dan int’e yok ikinci parametresi int olan kazandı  yani kazanan ***3***
+
+
+3 ve 5 için;
+ilk parametrelerde durum ***3***  İnt  ->  int ve int  -> double  
+ikinci parametrelerde short -> int ve short -> int otomatik dünüşümleri de geçerli  beraberlik      
+ o zaman  kazanan  ***3***
+
+-----------------------------------------------------------------------------------------------------------------------*/
+package csd;
+
+class App {
+	public static void main(String [] args)	
+	{
+		int a = 10;
+		short b = 20;
+		
+    	Sample.foo(a, b);
+	}
+}
+
+class Sample {
+		public static void foo() //1
+		public static void foo(int a) //2	
+		public static void foo(int a, int b) //3
+		public static void foo(int a, long b) //4
+		public static void foo(double b, int a) //5
+		public static void foo(double b, char a) //6
+		public static void bar(int a) //7
+
+}
+
+/*----------------------------------------------------------------------------------------------------------------------
+Hata mesajları;	uygun metod/lar yok ise veya en uygun metod bulunamaz ise aşağıdaki hata mesajlarını alırız.
+
+İs not epplicable	———>  Uygun metod yok
+Engubity			———> En uygun metod yok
+----------------------------------------------------------------------------------------------------------------------*/
+
+
+
+
+
+/*----------------------------------------------------------------------------------------------------------------------
+    
+----------------------------------------------------------------------------------------------------------------------*/
+/*----------------------------------------------------------------------------------------------------------------------
+    
+----------------------------------------------------------------------------------------------------------------------*/
+/*----------------------------------------------------------------------------------------------------------------------
+    
+----------------------------------------------------------------------------------------------------------------------*/

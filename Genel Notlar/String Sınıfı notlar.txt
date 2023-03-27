@@ -1,0 +1,220 @@
+
+
+/*----------------------------------------------------------------------------------------------------------------------
+										String sınıfı notlar
+Aynı türden iki referansın == ve != operatörleri ile karşılaştırılmasında referansların gösterdiği nesnenin içerisindeki 
+yazılar değil nesnelerin referans(adres) ları karşılaştırılır ve aynı nesneyi gösterip göstermedikleri anlaşılabilir.
+
+
+Örnek: 
+Aşağıda sonuç farklı nesneler çıkacaktır. İkisininde değeri 10 olmasına karşın farklı nesnelerdeki onlardır ve nesnenin 
+içeriği değil de adresleri karşılaştırıldığı için farklı çıkar
+----------------------------------------------------------------------------------------------------------------------*/
+package csd;
+
+class App {
+	public static void main(String [] args)	
+	{	
+		Sample s, k;
+		
+		s = new Sample(10);
+		k = new Sample(10);
+		
+		System.out.println(s == k ? "Aynı nesne" : "Farklı nesneler");
+		System.out.println(s != k ? "Farklı nesneler" : "Aynı nesne");
+	}
+}
+
+
+/*----------------------------------------------------------------------------------------------------------------------
+	Derleyici özdeş string sabitleri (string literal) için aynı nesnenin referansını verecek bir kod üretir. Yani
+	bir string sabiti ile özdeş kaç tane sabit olursa hepsi için aynı nesnenin referansı verilir. Yeniden nesne 
+	yaratılmaz. Aşağıdaki örnekte yine referans karşılaştırması yapılmıştır. Ancak s1 ve s2'ye atanan adresler 
+	ayı olduğundan ikisi de aynı nesneyi gösterir durumdadır.
+	
+	Anahtar Notlar: Derleyicinin özdeş string sabitleri için aynı adresi verecek kodu üretmesi, String sınıfının
+	immutable olmasındandır. String immutable olmasaydı aynı adres verildiğinde herhangi bir referans üzerinden
+	değişiklik yapıldığında diğer referans da değişiklik yapılmış yazıyı görürdü. Bu durumda bu tasarım programcının
+	hatalı kodlar (bug) yazma olasılığını artırırdı 
+-----------------------------------------------------------------------------------------------------------------------*/
+package csd;
+
+class App {
+	public static void main(String [] args)	
+	{			
+		String s1 = "ankara";
+		String s2 = "ankara";
+		
+		System.out.println(s1 == s2 ? "Aynı nesne" : "Farklı nesneler");
+	}
+}
+
+
+/*----------------------------------------------------------------------------------------------------------------------
+Yazıların eşitlik karşılaştırması == ve != operatörleri ile yapılamaz. Çünkü bu operatörler referans karşılaştırması yapar
+ 
+İçerisinde hiçbir karakter olmayan yani length bilgisi sıfır olan String'lere boş string (empty string) denir
+-----------------------------------------------------------------------------------------------------------------------*/
+package csd;
+
+class App {
+	public static void main(String [] args)	
+	{			
+		String s = ""; //empty string
+		
+		System.out.printf("Length:%d%n", s.length());
+	}
+}
+
+
+/*----------------------------------------------------------------------------------------------------------------------
+Bunlar kötü yöntemler;
+-----------------------------------------------------------------------------------------------------------------------*/
+System.out.println(s.length() == 0 ? "Boş string" : "Boş string değil");
+System.out.println("".equals(s) ? "Boş string" : "Boş string değil");
+
+/*----------------------------------------------------------------------------------------------------------------------
+İYİ YÖNTEM:
+-----------------------------------------------------------------------------------------------------------------------*/
+System.out.println(s.isEmpty() ? "Boş string" : "Boş string değil");
+
+
+
+
+/*----------------------------------------------------------------------------------------------------------------------
++ operatörünün iki operandı da String türündense bu durumda bu opertör operandlara ilişkin yazıların birleştirilmesi
+ile elde edilen yeni bir String referansı üretir  
+-----------------------------------------------------------------------------------------------------------------------*/
+package csd;
+
+class App {
+	public static void main(String [] args)	
+	{			
+		String firstName = "Oğuz";
+		String lastName = "Karan";
+		String fullName;
+		
+		fullName = firstName + " " + lastName.toUpperCase();
+		
+		System.out.println(fullName);
+	}
+}
+
+
+
+/*----------------------------------------------------------------------------------------------------------------------
+	+ operatörünün operandlarından biri String türündense diğer operandın String karşılığı elde edilerek 
+	birleştirme yapılır. Bu durumda derleyici bir kod üretir. Dönüşümün yani yazı karşılığının elde edilmesinin
+	detayları ileride ele alınacaktır
+-----------------------------------------------------------------------------------------------------------------------*/
+package csd;
+
+class App {
+	public static void main(String [] args)	
+	{	
+		java.util.Scanner kb = new java.util.Scanner(System.in);
+		System.out.print("Sınavdan aldığınız notları giriniz: (arasınav final)");
+		int midTermGrade = kb.nextInt();
+		int finalGrade = kb.nextInt();	
+		double grade = 0.4 * midTermGrade + 0.6 * finalGrade;
+		String message = "Geçme notunuz:" + grade + (grade >= 50 ? " Geçti" : " Kaldı");
+		
+		System.out.println(message);
+	}
+}
+
+ /*----------------------------------------------------------------------------------------------------------------------
+   	Aşağıdaki örnekte println metodu birleştirilmiş yazıyı argüman olarak alır ve ekrana basar. Şüphesiz
+	birleştirme işlemini println yapmaz. Çünkü anımsanacağı gibi metot çağrılmadan önce argüma ilşişkin ifade
+	hesaplanır, elde edilen değer ile metot çağrılır   
+----------------------------------------------------------------------------------------------------------------------*/
+
+package csd;
+
+class App {
+	public static void main(String [] args)	
+	{	
+		java.util.Scanner kb = new java.util.Scanner(System.in);
+		System.out.print("Sınavdan aldığınız notları giriniz: (arasınav final)");
+		int midTermGrade = kb.nextInt();
+		int finalGrade = kb.nextInt();	
+		double grade = 0.4 * midTermGrade + 0.6 * finalGrade;
+		
+		System.out.println("Geçme notunuz:" + grade + (grade >= 50 ? " Geçti" : " Kaldı"));
+	}
+}
+
+
+/*----------------------------------------------------------------------------------------------------------------------
+	String sınıfının replace metotları
+-----------------------------------------------------------------------------------------------------------------------*/
+package csd;
+
+class App {
+	public static void main(String [] args)	
+	{	
+		String s1 = "ankara";
+		String s2 = "Bugün hava çok güzel. Bu güzel havada Java dersi yapılır mı? Evet";
+		
+		System.out.println(s1.replace('a', 'b'));
+		System.out.println(s2.replace("güzel", "kötü"));
+	}
+}
+
+
+/*----------------------------------------------------------------------------------------------------------------------
+	Soru: Aşağıdaki repeat metodunu Java 11 ile eklenen repeat metodunu kullanmadan ve döngü kullanmadan
+	yazınız
+-----------------------------------------------------------------------------------------------------------------------*/
+package csd;
+
+class App {
+	public static void main(String [] args)	
+	{	
+		RepeatTest.run();
+	}
+}
+
+class RepeatTest {
+	public static void run()
+	{
+		java.util.Scanner kb = new java.util.Scanner(System.in);
+		
+		for (;;) {
+			System.out.print("Bir sayı giriniz:");
+			int count = Integer.parseInt(kb.nextLine());
+			
+			if (count <= 0)
+				break;
+			
+			System.out.println(StringUtil.repeat('a', count));
+		}
+	}
+}
+
+class StringUtil {
+	public static String repeat(char ch, int count)
+	{
+		return String.format("%0" + count + "d", 0).replace('0', ch);
+	}
+}
+/*----------------------------------------------------------------------------------------------------------------------
+    ("%0" + count + "d", 0)	count 5 olursa,	 ("%05d",0) gibi algılanır
+----------------------------------------------------------------------------------------------------------------------*/
+
+
+
+
+
+
+
+
+/*----------------------------------------------------------------------------------------------------------------------
+    
+----------------------------------------------------------------------------------------------------------------------*/
+/*----------------------------------------------------------------------------------------------------------------------
+    
+----------------------------------------------------------------------------------------------------------------------*/
+/*----------------------------------------------------------------------------------------------------------------------
+    
+----------------------------------------------------------------------------------------------------------------------*/
