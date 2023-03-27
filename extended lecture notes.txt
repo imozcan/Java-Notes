@@ -7,9 +7,14 @@
 			
 			                                Eğitmen: Oğuz KARAN
  
-
+-----------------------------------------------------------------------------------------------------------------------*/
+/*----------------------------------------------------------------------------------------------------------------------
     Ders Notunun üzerine tarafımca açıklamalar yapılmıştır. Not içerisinde yer alan kod parçalarının renklenmesi için
-                         dosyayı java dosyası olarak görüntüleyiniz.
+    dosyayı java dosyası olarak görüntüleyiniz.
+
+
+	Mordor kelimesini önemli başlıkların altına ekledim. Bu kelime bir nevi highlight görevi görmektedir. (ctrl + f )
+	Gondor kelimesi notta kaldığım yeri gösteriyor.
 -----------------------------------------------------------------------------------------------------------------------*/
 /*----------------------------------------------------------------------------------------------------------------------
 	26.11.2022
@@ -254,7 +259,7 @@ package csd;class App{public static void main(String[]args){System.out.println("
 
 /*----------------------------------------------------------------------------------------------------------------------
 	Anahtar sözcükler ve değişken atomlar arasında en az bir boşluk (whitespace) karakteri olmalıdır. Aşağıdaki örnekte
-	bu durumdan dolayı sentaks hatası olduğundan kod derlenemez
+	bu durumdan dolayı sentaks hatası olduğundan kod derlenemez.
 -----------------------------------------------------------------------------------------------------------------------*/
 packagecsd;class App{public static void main(String[]args){System.out.println("Hello, World");}}
 
@@ -313,7 +318,7 @@ class App {
 
 /*----------------------------------------------------------------------------------------------------------------------
 	Bildirim (declaration): Bir ismin derleyiciye tanıtılmasıdır. Derleyici bildirim ile o ismin ne anlama geldiğinianlara
-	ve derleme işlemini ona göre göre yapar 
+	ve derleme işlemini ona göre göre yapar.
 -----------------------------------------------------------------------------------------------------------------------*/
 /*----------------------------------------------------------------------------------------------------------------------
 	Bir Java programı genel olarak paketlerden, paketler sınıflardan, sınıflar da metotlardan oluşur. 
@@ -1232,6 +1237,7 @@ class NumberUtil {
 		 result = temp * 2;
 	Yani aslında geri dönüş değeri geçici değişkene yapılan bir atama işlemidir. Geçici değişkenin türü geri dönüş değerinin
 	türü ile aynıdır
+
 -----------------------------------------------------------------------------------------------------------------------*/
 package csd;
 
@@ -1267,6 +1273,8 @@ class NumberUtil {
 		 result = temp;
 	Yani aslında geri dönüş değeri geçici değişkene yapılan bir atama işlemidir. Geçici değişkenin türü geri dönüş değerinin
 	türü ile aynıdır
+
+	Mordor
 -----------------------------------------------------------------------------------------------------------------------*/
 package csd;
 
@@ -1583,6 +1591,7 @@ class NumberUtil {
 	 Metodun paramaetre değişkenlerine değer metot çağrılırken verilir. Metot çağrılırken bir parametreye verilen 
 	 ifadeye "argüman" denir. Bir metodun kaç tane parametresi varsa o kadar sayıda sayıda argüman ile çağrılmalıdır.
 	 Argümanlardan parametrelere aktarım da bir atama işlemidir
+	 Mordor
 -----------------------------------------------------------------------------------------------------------------------*/
 package csd;
 
@@ -1631,6 +1640,8 @@ class NumberUtil {
 	Metot çağrısında bir argümana ilişkin ifade önce hesaplanır, elde edilen değer ile metot çağrılır. Birden fazla
 	parametresi olan bir metot çağrısında tüm argümanlara ilişkin ifadeler hesaplanır, elde edilen değerler ile 
 	metot çağrılır
+
+	Mordor
 -----------------------------------------------------------------------------------------------------------------------*/
 package csd;
 
@@ -1798,7 +1809,7 @@ class NumberUtil {
 	vardır.
 	
 	Anahtar Notlar: printf gibi değişken sayıda argüman alabilen metotlara "vararg methods" denir. Burada bu tarz metotların
-	nasıl yazılabileceği ele alınmayacaktır
+	nasıl yazılabileceği ele alınmayacaktır		Mordor
 -----------------------------------------------------------------------------------------------------------------------*/
 
 /*----------------------------------------------------------------------------------------------------------------------
@@ -2142,7 +2153,7 @@ class FindGradeApp {
 }
 
 /*----------------------------------------------------------------------------------------------------------------------
-	Bölme işlemi tamsayılar ile yapıldığınmda sonuç her zaman tamsayı çıkar. İşlem sonucunda eldeedilen değerin noktadan
+	Bölme işlemi tamsayılar ile yapıldığınmda sonuç her zaman tamsayı çıkar. İşlem sonucunda elde edilen değerin noktadan
 	sonraki kısmı yuvarlanmadan atılır. 
 	
 	Tamsayılar ile bölme işleminde paydanın sıfır olması durumunda exception oluşur
@@ -2205,7 +2216,7 @@ class App {
 	
 	Bu durumda bir Java programcısı çözmesi gereken bir problem için JavaSE'de problemin çözümüne ilişkin metotlar
 	varsa onları kullanmalıdır. Yoksa yazmayı düşünmeye başlamalıdır. Ancak bu durum programcının standart olarak kullandığı
-	metotların nasıl yazıldığını gözardı etmesi anlamına gelmez. Programcı programlama yalamı boyunca hepsini olmasa da
+	metotların nasıl yazıldığını gözardı etmesi anlamına gelmez. Programcı programlama yaşamı boyunca hepsini olmasa da
 	hazır olarak kullandıklarının nasıl yazılacağını da öğrenmelidir. 
 	
 	Anahtar Notlar: Bazı durumlarda programcı JavaSE'de bulunmayan bir metot, kendisini kanıtlamış ve Java uygulamalarında da 
@@ -2214,7 +2225,7 @@ class App {
 -----------------------------------------------------------------------------------------------------------------------*/
 
 /*----------------------------------------------------------------------------------------------------------------------
-	Math sınıfının abs metotları
+	Math sınıfının abs metotları -Mutlak değer
 -----------------------------------------------------------------------------------------------------------------------*/
 package csd;
 
@@ -2230,7 +2241,7 @@ class App {
 }
 
 /*----------------------------------------------------------------------------------------------------------------------
-	Math sınıfının sqrt metodu
+	Math sınıfının sqrt metodu -karekök
 -----------------------------------------------------------------------------------------------------------------------*/
 package csd;
 
@@ -2246,7 +2257,7 @@ class App {
 }
 
 /*----------------------------------------------------------------------------------------------------------------------
-	Math sınıfının pow metodu
+	Math sınıfının pow metodu -üstel
 -----------------------------------------------------------------------------------------------------------------------*/
 package csd;
 
@@ -2357,6 +2368,7 @@ class App {
 /*----------------------------------------------------------------------------------------------------------------------
 	Math sınıfının trigonometrik işlem yapan metotlar radyan ölçü birimi ile çalışır. Radyan ve derece arasındaki
 	dönüşümler için toRadians ve toDegrees metotları kullanılabilir
+	Mordor
 -----------------------------------------------------------------------------------------------------------------------*/
 package csd;
 
@@ -2493,14 +2505,15 @@ class App {
 	{		
 		java.util.Scanner kb = new java.util.Scanner(System.in);
 		System.out.print("Bir sayı giriniz:");
-		double a = kb.nextDouble();
+		double a = kb.nextDouble();			//12.5
 		
-		System.out.printf("round(%f) = %d%n", a, Math.round(a));
-		System.out.printf("ceil(%f) = %f%n", a, Math.ceil(a));
-		System.out.printf("floor(%f) = %f%n", a, Math.floor(a));
+		System.out.printf("round(%f) = %d%n", a, Math.round(a)); 	//13
+		System.out.printf("ceil(%f) = %f%n", a, Math.ceil(a));	 	//13.000000
+		System.out.printf("floor(%f) = %f%n", a, Math.floor(a));	//12.000000
 	}
 }
 
+Gondor
 /*----------------------------------------------------------------------------------------------------------------------
 	Sabitler (literals, constants):
 	Program içerisinde doğrudan yazılan sayılara denir. Sabitlerin de türleri vardır. Derleyici sabitlerin türlerini
