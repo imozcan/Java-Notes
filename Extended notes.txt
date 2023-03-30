@@ -9176,5 +9176,521 @@ class App {
 	 long 	-> float, double
 	 float 	-> double
 	 char 	-> int, long, float, double
+
+	 Mordor
 -----------------------------------------------------------------------------------------------------------------------*/
 
+
+/*----------------------------------------------------------------------------------------------------------------------
+	22.01.2023
+-----------------------------------------------------------------------------------------------------------------------*/
+
+/*----------------------------------------------------------------------------------------------------------------------
+	 İşlem Öncesi Otomatik Tür Dönüşümü:
+	 İki operandlı bir operqtör için derleyici önce operandların türüne bakar. Operandlar farklı türdensa ve işlem 
+	 geçerliyse, ortak bir türe dönüştürerek işlem yapılır. Hatta bazı durumlarda iki tür aynı olsa bile ikisini de 
+	 farklı bir türe dönüştürür. Yani derleyici buna yönelik kodlar üretir. Bu dönüştürmeye "işlem önce öncesi otomatik
+	 tür dönüşümü" denir. 
+	 
+	 Bu dönüşümler, yukarıda anlatılan "implicit conversion" kurallarına göre gerçekleşir 
+-----------------------------------------------------------------------------------------------------------------------*/
+
+/*----------------------------------------------------------------------------------------------------------------------
+	 Aşağıdaki örnekteki toplama işleminde int türüne ilişkin değer yani a'nın değeri long türüne dönüştürülerekl işlem
+	 yapılır ve sonuç long türünden çıkar 
+-----------------------------------------------------------------------------------------------------------------------*/
+package csd;
+
+class App {
+	public static void main(String [] args)
+	{
+		int a;
+		long b;
+		long c;
+		
+		a = 10; 
+		b = 20;
+		
+		c = a + b;
+		
+		System.out.printf("c = %d%n", c);
+	}
+}
+
+/*----------------------------------------------------------------------------------------------------------------------
+	 Her iki operand da byte, short veya char türlerindense ikisi birden int türüne dönüştürülür ve sonuç int türden 
+	 çıkar. Buna "integral/integer promotion" denir 
+
+	 Mordor
+-----------------------------------------------------------------------------------------------------------------------*/
+package csd;
+
+class App {
+	public static void main(String [] args)
+	{
+		short a = 10;
+		short b = 20;
+		short c;
+		
+		c = a + b; //error
+		
+		System.out.printf("c = %d%n", c);
+	}
+}
+
+/*----------------------------------------------------------------------------------------------------------------------
+	 Her iki operand da byte, short veya char türlerindense iki birden int türüne dönüştürülür ve sonuç int türden 
+	 çıkar. Buna "integral/integer promotion" denir 
+-----------------------------------------------------------------------------------------------------------------------*/
+package csd;
+
+class App {
+	public static void main(String [] args)
+	{
+		short a = 10;
+		short b = 20;
+		int c;
+		
+		c = a + b;
+		
+		System.out.printf("c = %d%n", c);
+	}
+}
+
+/*----------------------------------------------------------------------------------------------------------------------
+	 Her iki operand da byte, short veya char türlerindense iki birden int türüne dönüştürülür ve sonuç int türden 
+	 çıkar. Buna "integral/integer promotion" denir 
+-----------------------------------------------------------------------------------------------------------------------*/
+package csd;
+
+class App {
+	public static void main(String [] args)
+	{
+		short a = 10;
+		byte b = 20;
+		int c;
+		
+		c = a + b;
+		
+		System.out.printf("c = %d%n", c);
+	}
+}
+
+
+/*----------------------------------------------------------------------------------------------------------------------
+	 Bölme işleminde her iki operand da tamsayı türlerine ilişkinse sonuç tamsayı türünden çıkar. Bölme işlemi yapılır, 
+	 elde edilen değerin noktadan sonraki kısmı atılır 
+-----------------------------------------------------------------------------------------------------------------------*/
+package csd;
+
+class App {
+	public static void main(String [] args)
+	{
+		int a = 10;
+		int b = 3;
+		double c;
+		
+		c = a / b;
+		
+		System.out.printf("c = %f%n", c);
+	}
+}
+
+/*----------------------------------------------------------------------------------------------------------------------
+	 Bir gerçek sayı türü ile bir tamsayı türü işleme sokulduğunda dönüşüm gerçek sayı türüne doğrudur. Yani tamsayı türüne 
+	 ilişkin değer gerçek sayı türüne dönüştürülür. Sonuç o gerçek sayı türünden elde edilir 
+-----------------------------------------------------------------------------------------------------------------------*/
+package csd;
+
+class App {
+	public static void main(String [] args)
+	{
+		float a = 3.4F;
+		long b = 100;
+		float c;
+		
+		c = a + b;
+		
+		System.out.printf("c = %f%n", c);
+	}
+}
+
+/*----------------------------------------------------------------------------------------------------------------------
+	 Küçük tamsayı türü ile büyük tamsayı türü işleme sokulduğunda dönüşüm büyük tamsayı türüne doğrudur. Sonuç büyük
+	 tamsayı türünden çıkar. 
+	 Dikkat: Integral promotion bu kuralın dışındadır 
+-----------------------------------------------------------------------------------------------------------------------*/
+package csd;
+
+class App {
+	public static void main(String [] args)
+	{
+		int a = 3;
+		long b = 100;
+		long c;
+		
+		c = a + b;
+		
+		System.out.printf("c = %d%n", c);
+	}
+}
+
+
+/*----------------------------------------------------------------------------------------------------------------------
+	 boolean türü hiçbir tür ile işleme sokulamaz 
+-----------------------------------------------------------------------------------------------------------------------*/
+package csd;
+
+class App {
+	public static void main(String [] args)
+	{
+		boolean a = false;
+		int b = 10;
+		int c;
+		
+		c = a + b; //error
+	}
+}
+
+/*----------------------------------------------------------------------------------------------------------------------
+	 char türü herhangi bir tür ile işleme sokulabilir. Bu durumda char türüne ilişkin değer diğer türe dönüştürülür
+	 Dikkat: Yine integral promotion bu durumun dışındadır 
+-----------------------------------------------------------------------------------------------------------------------*/
+package csd;
+
+class App {
+	public static void main(String [] args)
+	{
+		int a = 32;
+		char c = 'D';
+		int result;
+		
+		result = a + c;
+		
+		System.out.printf("result = %d%n", result);
+	}
+}
+
+/*----------------------------------------------------------------------------------------------------------------------
+	 İşlem öncesinde otomatik tür dönüşümü geçici değişken yaratılarak yapılır. Yani derleyici geçici değişken yaratan
+	 kodu üretir. Örnekte *** ile belirtilen işlem için derleyici aşağıdakine benzer bir kod üretir: 
+	 
+	 	long temp = a;
+	 	
+	 	c = temp + b;
+
+		MORDOR
+-----------------------------------------------------------------------------------------------------------------------*/
+package csd;
+
+class App {
+	public static void main(String [] args)
+	{
+		int a = 32;
+		long b = 30;
+		long c;
+		
+		c = a + b; //***
+		
+		System.out.printf("c = %d%n", c);
+	}
+}
+
+/*----------------------------------------------------------------------------------------------------------------------
+	 İşlem öncesinde otomatik tür dönüşümü geçici değişken yaratılarak yapılır. Yani derleyici geçici değişken yaratan
+	 kodu üretir. Örnekte *** ile belirtilen işlem için derleyici aşağıdakine benzer bir kod üretir: 
+	 
+	 	int temp1 = a;
+	 	int temp2 = b;
+	 	
+	 	
+	 	c = temp1 + temp2;
+-----------------------------------------------------------------------------------------------------------------------*/
+package csd;
+
+class App {
+	public static void main(String [] args)
+	{
+		short a = 32;
+		short b = 30;
+		int c;
+		
+		c = a + b; //***
+		
+		System.out.printf("c = %d%n", c);
+	}
+}
+
+/*----------------------------------------------------------------------------------------------------------------------
+	 İşlem öncesinde otomatik tür dönüşümü geçici değişken yaratılarak yapılır. Yani derleyici geçici değişken yaratan
+	 kodu üretir. Örnekte *** ile belirtilen işlem için derleyici aşağıdakine benzer bir kod üretir: 
+	 
+	 	int temp1 = a;
+	 	int temp2 = b;
+	 	
+	 	
+	 	c = temp1 + temp2;
+-----------------------------------------------------------------------------------------------------------------------*/
+package csd;
+
+class App {
+	public static void main(String [] args)
+	{
+		short a = 32;
+		byte b = 30;
+		int c;
+		
+		c = a + b; //***
+		
+		System.out.printf("c = %d%n", c);
+	}
+}
+
+/*----------------------------------------------------------------------------------------------------------------------
+	 Tür dönüştürme (type cast) operatörü:
+	 Tür dönüştürme operatörü özel amaçlı, tek operandlı (unary) ve önek (prefix) durumunda bir operatördür. Tür dönüştürme
+	 operatörünün kullanımının genel biçimi şu şekildedir:
+	 
+	  (<hedef tür>)<ifade>
+	 
+	 Bu operatör operandına ilişkin ifadenin hedef türe dönüştürüldükten sonra elde edilen değeri üretir. Tür dönüştürme
+	 operatörü ile yapılan dönüşüme "explicit conversion" ya da "cast" denir. Implicit olarak geçersiz dönüşümler 
+	 genel olarak tür dönüştürme operatörü ile yapılabilir. Şüphesiz bu durumdabilgi kaybı olaşabilir. Bu bilgi kayıplarının 
+	 da nasıl olacağı bellidir ve bu konu içerisinde ele alınacaktır. 
+	 
+	 implicit olarak geçerli olan dönüşümler için de tür dönüştürme operatörü kullanılabilir. Gerekli olabileceği durumlar
+	 vardır
+	 
+	 Anahtar Notlar: Tür dönüştürme operatörünün sentaks olarak zorunlu olması durumu genel olarak "işlem doğrudan 
+	 yapılsaydı problem olabilirdi. Bu sebeple derleyici bunu doğrudan yapmamızı istemiyor. Biz yapmak istersek tür 
+	 dönüştürme operatörünü kullanarak derleyiciye durumun farkındayım bana izin ver" anlamına gelir
+-----------------------------------------------------------------------------------------------------------------------*/
+/*----------------------------------------------------------------------------------------------------------------------
+	 Aşağıdaki örnekte tür dönüştürme oparatörü ile işlemin double olarak yapılması sağlanmıştır. İşlem öncesi
+	 otomatik tür dönüşümüne dikkat ediniz
+-----------------------------------------------------------------------------------------------------------------------*/
+package csd;
+
+class App {
+	public static void main(String [] args)
+	{
+		int a = 10;
+		int b = 3;
+		double c;
+		
+		c = (double)a / b;
+		
+		System.out.printf("c = %f%n", c);
+	}
+}
+//Burada type cast sayesinde otomatik tür dönüşümü öncesi a'yı double'ye çektik bu sayede double/double oldu ve sonuç 3.3333
+//biz type cast yapmasak int/int in sonucu atanırken double olacaktı ve  sonuç 3.0 çıkacaktı 
+
+/*----------------------------------------------------------------------------------------------------------------------
+	 Tür dönüştürme operatörü
+-----------------------------------------------------------------------------------------------------------------------*/
+package csd;
+
+class App {
+	public static void main(String [] args)
+	{
+		long a = 10;
+		int b;
+		
+		b = (int)a;
+		
+		System.out.printf("b = %d%n", b);
+	}
+}
+
+
+/*----------------------------------------------------------------------------------------------------------------------
+	 implicit olarak geçerli olan dönüşümler için de tür dönüşütürme operatörü kullanılabilir. Aşağıdaki örnek özelinde
+	 bunun bir anlamı yoktur
+-----------------------------------------------------------------------------------------------------------------------*/
+package csd;
+
+class App {
+	public static void main(String [] args)
+	{
+		int a = 10;
+		long b;
+		
+		b = (long)a;
+		
+		System.out.printf("b = %d%n", b);
+	}
+}
+
+/*----------------------------------------------------------------------------------------------------------------------
+	 Büyük tamsayı türünden küçük tamsayı türüne yapılan explicit dönüşümde kaynak türe ilişkin değer hedef türün 
+	 sınırları içerisindeyse bilgi kaybı oluşmaz. Aslında bu dönüşüm yüksek anlamlı byte değerleri atılarak yapılır.
+	 Dolayısıyla sınırlar içerisindeki değerler için yüksek anlamlı byte değerleri sıfır olduğundan problem oluşmaz.
+	 Ancak sayı hedef türün sınırları dışındaysa bilgi kaybı oluşur
+	 
+	 Aşağıdaki örneği çeşitli değerler ilem çalıştırarak sonucu gözlemleyiniz
+
+	 MORDOR
+-----------------------------------------------------------------------------------------------------------------------*/
+package csd;
+
+class App {
+	public static void main(String [] args)
+	{
+		java.util.Scanner kb = new java.util.Scanner(System.in);
+		
+		System.out.print("Bir sayı giriniz:");
+		long a = kb.nextLong();
+		int b;
+		
+		b = (int)a;
+		
+		System.out.printf("a = %d%n", a);
+		System.out.printf("a = %016X%n", a);
+		System.out.printf("b = %d%n", b);
+		System.out.printf("b = %08X%n", b);
+	}
+}
+
+/*----------------------------------------------------------------------------------------------------------------------
+	 short türünden char türüne yapılan explicit dönüşümde sayının bit kalıbı değişmez. Sayının yorumlanışı değişir
+
+	 MORGOT
+-----------------------------------------------------------------------------------------------------------------------*/
+package csd;
+
+class App {
+	public static void main(String [] args)
+	{
+		java.util.Scanner kb = new java.util.Scanner(System.in);
+		
+		System.out.print("Bir sayı giriniz:");
+		short a = kb.nextShort();
+		char c;
+		
+		c = (char)a;
+		
+		System.out.printf("a = %d%n", a);
+		System.out.printf("a = %04X%n", a);
+		System.out.printf("(int)c = %04X%n", (int)c);
+		System.out.printf("c = %c%n", c);
+	}
+}
+
+
+/*----------------------------------------------------------------------------------------------------------------------
+	 char türünden short türüne yapılan explicit dönüşümde sayının bit kalıbı değişmez. Sayının yorumlanışı değişir
+
+	 MORGOT
+-----------------------------------------------------------------------------------------------------------------------*/
+package csd;
+
+class App {
+	public static void main(String [] args)
+	{
+		char a = '\uFFAC';
+		short b;
+		
+		b = (short)a;
+		
+		System.out.printf("(int)a = %X%n", (int)a);
+		System.out.printf("(int)a = %d%n", (int)a);
+		System.out.printf("a = %c%n", a);
+		System.out.printf("b = %X%n", b);
+		System.out.printf("b = %d%n", b);
+	}
+}
+
+/*----------------------------------------------------------------------------------------------------------------------
+	 boolean türünden herhangi bir türe explicit dönüşüm geçersizdir
+-----------------------------------------------------------------------------------------------------------------------*/
+package csd;
+
+class App {
+	public static void main(String [] args)
+	{
+		boolean a = true;
+		int b;
+		
+		b = (int)a; //error
+	}
+}
+
+/*----------------------------------------------------------------------------------------------------------------------
+	 herhangi bir türden boolean türüne explicit dönüşüm geçersizdir
+-----------------------------------------------------------------------------------------------------------------------*/
+package csd;
+
+class App {
+	public static void main(String [] args)
+	{
+		int a = 10;
+		boolean b;
+		
+		b = (boolean)a; //error
+	}
+}
+
+/*----------------------------------------------------------------------------------------------------------------------
+	 byte türünden char türüne explicit dönüşüm iki aşamada gerçekleşir. Birinci aşamada değer int türüne yükseltilir. 
+	 İkinci aşamada yüksek anlamlı 2 byte atılarak char türüne dönüştürülür (widening and narraowing conversion).
+
+	 MORDOR
+-----------------------------------------------------------------------------------------------------------------------*/
+package csd;
+
+class App {
+	public static void main(String [] args)
+	{
+		byte a = 99;
+		char c;
+		
+		c = (char)a;
+		
+		System.out.printf("a = %X%n", a);
+		System.out.printf("(int)a = %08X%n", (int)a);
+		System.out.printf("(int)c = %04X%n", (int)c);
+		System.out.printf("c = %c%n", c);
+	}
+}
+
+/*----------------------------------------------------------------------------------------------------------------------
+	 byte türünden char türüne explicit dönüşüm iki aşamada gerçekleşir. Birinci aşamada değer int türüne yükseltilir. 
+	 İkinci aşamada yüksek anlamlı 2 byte atılarak char türüne dönüştürülür (widening and narrowing conversion).
+-----------------------------------------------------------------------------------------------------------------------*/
+package csd;
+
+class App {
+	public static void main(String [] args)
+	{
+		byte a = -99;
+		char c;
+		
+		c = (char)a;
+		
+		System.out.printf("a = %X%n", a);
+		System.out.printf("(int)a = %08X%n", (int)a);
+		System.out.printf("(int)c = %04X%n", (int)c);
+		System.out.printf("c = %c%n", c);
+	}
+}
+
+/*----------------------------------------------------------------------------------------------------------------------
+	 double türünden float türüne yapılan explicit dönüşümde bilgi kaybı olabilir. Bu durumda IEEE 754 standardına göre 
+	 yuvarlama hatası oluşabilir ve değer float türü ile temsil edilebilecek en yakın değer olarak elde edilir. Ayrıca 
+	 sayı float türü sınırları dışındaysa da aynı şekilde yapılır 
+-----------------------------------------------------------------------------------------------------------------------*/
+package csd;
+
+class App {
+	public static void main(String [] args)
+	{
+		double a = 3.77;
+		float b;
+		
+		b = (float)a;
+		
+		System.out.printf("a = %.20f%n", a);
+		System.out.printf("b = %.20f%n", b);
+	}
+}
