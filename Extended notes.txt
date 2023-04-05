@@ -10595,3 +10595,1004 @@ class App {
 		System.out.printf("result = %d%n", max);	
 	}
 }
+
+/*----------------------------------------------------------------------------------------------------------------------
+	05.02.2023
+-----------------------------------------------------------------------------------------------------------------------*/
+
+/*----------------------------------------------------------------------------------------------------------------------
+	Method Overloading: Bir sınıf içerisinde aynı isimde birden fazla metot yazılması durumuna "method overloading"
+	denir. Bu kavram aynı isimde fakat farklı sınıflarda olan metotlar için geçerli değildir
+-----------------------------------------------------------------------------------------------------------------------*/
+
+/*----------------------------------------------------------------------------------------------------------------------
+	Aşağıdaki durum "method overloading" değildir. Çünkü aynı isimdeki metotlar farklı sınıflardadır
+-----------------------------------------------------------------------------------------------------------------------*/
+package csd;
+
+class App {
+	public static void main(String [] args)	
+	{	
+		Sample.foo();
+		Mample.foo();
+	}
+}
+
+class Sample {
+	public static void foo()
+	{
+		System.out.println("Sample.foo");
+	}
+}
+
+class Mample {
+	public static void foo()
+	{
+		System.out.println("Mample.foo");
+	}
+}
+
+/*----------------------------------------------------------------------------------------------------------------------
+	Anahtar Notlar: Bir sınıf içerisinde AYNI metottan birden fazla olamaz. Bu durumda bir metodun "overload" edilebilmesi
+	için kendisiyle aynı isimde olan diğer metotlardan FARKLI olması gerekir. Aşağıdaki maddelerde metodun AYNI ya da 
+	FARKLı olmasına ilişkin detaylar anltılmaktadır
+-----------------------------------------------------------------------------------------------------------------------*/
+
+/*----------------------------------------------------------------------------------------------------------------------
+	Bir metodun erişim belirleyicisinin "overload" işlemine etkisi yoktur. Yani erişim belirleyicilerin farklı 
+	olması metodu farklı yapmaz
+-----------------------------------------------------------------------------------------------------------------------*/
+package csd;
+
+class Sample {
+	public static void foo() //error
+	{
+		//...
+	}
+	
+	private static void foo() //error
+	{
+		//...
+	}
+}
+
+/*----------------------------------------------------------------------------------------------------------------------
+	Bir metodun static olup olmamasının da overload'a etkisi yoktur
+-----------------------------------------------------------------------------------------------------------------------*/
+package csd;
+
+
+class Sample {
+	public static void foo() //error
+	{
+		//...
+	}
+	
+	public void foo() //error
+	{
+		//...
+	}
+}
+
+
+/*----------------------------------------------------------------------------------------------------------------------
+	Bir metodun geri dönüşm değeri bilgisinin de overload işlemine etkisi yoktur
+-----------------------------------------------------------------------------------------------------------------------*/
+package csd;
+
+
+class Sample {
+	public static void foo() //error
+	{
+		//...
+	}
+	
+	public static int foo() //error
+	{
+		//...
+		return 10;
+	}
+}
+
+
+/*----------------------------------------------------------------------------------------------------------------------
+	Bir metodun parametre değişken isimlerinin de overload'a etksii yoktur
+-----------------------------------------------------------------------------------------------------------------------*/
+package csd;
+
+class App {
+	public static void main(String [] args)	
+	{	
+		Sample.foo();
+		Mample.foo();
+	}
+}
+
+class Sample {
+	public static void foo(int a) //error
+	{
+		//...
+	}
+	
+	public static void foo(int b) //error
+	{
+		//...
+	}
+}
+
+/*----------------------------------------------------------------------------------------------------------------------
+	Bir metodun "overload" edilebilmesi için metodun parametre tür bilgisi ve parameterelerinin diziliminin farklı
+	olması gerekir. Buna genel olarak "parametrik yapı" diyebiliriz
+-----------------------------------------------------------------------------------------------------------------------*/
+package csd;
+
+
+class Sample {
+	public static void foo() 
+	{
+		//...
+	}
+	
+	public static void foo(int a)
+	{
+		//...
+	}
+	
+	public static void foo(int a, double b)
+	{
+		//...
+	}
+	
+	public static void foo(double b, int a)
+	{
+		//...
+	}
+}
+/*----------------------------------------------------------------------------------------------------------------------
+	Bir sınıf içerisinde metodun ismi ve parametrik yapısının ikisine birden metodun "imzası (signature)" diyelim.
+	
+	Kural: Bir sınıf içerisinde aynı imzaya sahip birden fazla metot bildirimi geçersizdir
+-----------------------------------------------------------------------------------------------------------------------*/
+package csd;
+
+class Sample {
+	public static void foo() //imza: foo
+	{
+		//...
+	}
+	
+	public static void foo(int a) //imza: foo, int
+	{
+		//...
+	}
+	
+	public static void foo(int a, double b) //imza: foo, int, double
+	{
+		//...
+	}
+	
+	public static void foo(double b, int a) //imza: foo, double, int
+	{
+		//...
+	}
+	
+	public static void bar(int a) //imza: bar, int
+	{
+		//...
+	}
+}
+
+
+/*----------------------------------------------------------------------------------------------------------------------
+	Bir metot çağrısında derlyicinin hangi metodun çağrılacağına karak vermesi sürecine "method overload resolution"
+	ya da kısaca "overload resolution" denir
+-----------------------------------------------------------------------------------------------------------------------*/
+
+/*----------------------------------------------------------------------------------------------------------------------
+	Metot çağrısında argümalar ile karşılık geldikleri parametrelerin türlerinin aynı olduğu o isimde bir metot
+	sınıf içerisinde varsa o çağrılır (best match)
+-----------------------------------------------------------------------------------------------------------------------*/
+package csd;
+
+class App {
+	public static void main(String [] args)	
+	{
+		int a = 10;
+		double b = 20.3;
+		
+		Sample.foo(a, b);
+	}
+}
+
+class Sample {
+	public static void foo() //imza: foo
+	{
+		System.out.println("foo");
+	}
+	
+	public static void foo(int a) //imza: foo, int
+	{
+		System.out.println("foo, int");
+	}
+	
+	public static void foo(int a, double b) //imza: foo, int, double
+	{
+		System.out.println("foo, int, double");
+	}
+	
+	public static void foo(double b, int a) //imza: foo, double, int
+	{
+		System.out.println("foo, double, int");
+	}
+	
+	public static void bar(int a) //imza: bar, int
+	{
+		System.out.println("bar, int");
+	}
+}
+
+/*----------------------------------------------------------------------------------------------------------------------
+	Tam uyum (best match) yoksa overload resolution işlemi aşağıdaki gibi yapılır:
+
+		1. Aday metotlar (candidate methods) belirlenir: Çağrılan metot ile aynı isimde olan tüm metotlardır
+		
+		2. Uygun metotlar (applicable methods) belirlenir: Aday metotlar içerisindeki, parametre sayısı çağrıdaki
+		argüman sayısı ile aynı olan VE argümanlardan parametrelere otomatik (implicit) tür dönüşümünün geçerli
+		olduğu metotlardır 
+		
+		3. En uygun metot (the most applicable method) belirlenir: Uygun metotlar içerisinde daha kaliteli olan ya da 
+		daha kalitesiz olmayan dönüşümü sunan metotlardır. Ya da başka bir deyişle "en uygun metot öyle bir metottur ki
+		argümanlardan parametrelere yapılan dönüşümler kalite olarak yarışa sokulduğunda daha iyi ya da daha kötü olmayan
+		dönüşümü sunar".
+	
+	Dönüşümün kalitesi aşağıdaki kurallara göre belirlenir:
+	T1 argümanın türü, T2 ve T3 yarıştırılan uygun metotların T1 türden argümana karşılık gelen parametrelerin türleri
+	olsun:
+	1.T1 -> T2, T1 -> T3 otomatik dönüşümlerinde T2 veya T3'den biri T1 ile aynı ise aynı olan dönüşüm daha kalitelidir.
+	Örneğin:
+	int -> int *
+	int -> double
+	
+	2.T1 -> T2, T1 -> T3 otomatik dönüşümlerinde T2'den T3' otomatik tür dönüşümü var, T3'den T2'ye yoksa T2 daha kaltelidir
+	Örneğin:
+	int -> long *
+	int -> float
+	ya da örneğin:
+	
+	char -> int *
+	char -> double
+	
+	Burada aday metotlar bulunamazsa VEYA aday metotlar var ancak uygun metotlar bulunamazsa VEYA uygun nmetotlar var ancak
+	en uygun metot bulunamazsa error oluşur
+	
+	Anahtar Notlar: Bu anlatım "overload resolution" kavramının basitleştirilmiş bir anlatımıdır
+-----------------------------------------------------------------------------------------------------------------------*/
+
+/*----------------------------------------------------------------------------------------------------------------------
+	1.Aday metotlar: 1, 2, 3, 4, 5, 6
+	2.Uygun metotlar: 3, 4, 5
+	3.En uygun metotlar: 3
+-----------------------------------------------------------------------------------------------------------------------*/
+package csd;
+
+class App {
+	public static void main(String [] args)	
+	{
+		int a = 10;
+		short b = 20;
+		
+		Sample.foo(a, b);
+	}
+}
+
+class Sample {
+	public static void foo() //1
+	{
+		System.out.println("foo");
+	}
+	
+	public static void foo(int a) //2
+	{
+		System.out.println("foo, int");
+	}
+	
+	public static void foo(int a, int b) //3
+	{
+		System.out.println("foo, int, int");
+	}
+	
+	public static void foo(int a, long b) //4
+	{
+		System.out.println("foo, int, long");
+	}
+	
+	public static void foo(double b, int a) //5
+	{
+		System.out.println("foo, double, int");
+	}
+	
+	public static void foo(double b, char a) //6
+	{
+		System.out.println("foo, double, char");
+	}
+	
+	public static void bar(int a) //7
+	{
+		System.out.println("bar, int");
+	}
+}
+
+/*----------------------------------------------------------------------------------------------------------------------
+	1.Aday metotlar: 1, 2, 3, 4, 5
+	2.Uygun metotlar: 3, 4
+	3.En uygun metotlar: Yok
+-----------------------------------------------------------------------------------------------------------------------*/
+package csd;
+
+class App {
+	public static void main(String [] args)	
+	{
+		int a = 10;
+		short b = 20;
+		
+		Sample.foo(a, b); //error: ambiguity
+	}
+}
+
+class Sample {
+	public static void foo() //1
+	{
+		System.out.println("foo");
+	}
+	
+	public static void foo(int a) //2
+	{
+		System.out.println("foo, int");
+	}
+	
+	
+	public static void foo(int a, long b) //3
+	{
+		System.out.println("foo, int, long");
+	}
+	
+	public static void foo(double b, int a) //4
+	{
+		System.out.println("foo, double, int");
+	}
+	
+	public static void foo(double b, char a) //5
+	{
+		System.out.println("foo, double, char");
+	}
+	
+	public static void bar(int a) //6
+	{
+		System.out.println("bar, int");
+	}
+}
+
+/*----------------------------------------------------------------------------------------------------------------------
+	1.Aday metotlar: 1, 2, 3
+	2.Uygun metotlar: Yok
+-----------------------------------------------------------------------------------------------------------------------*/
+package csd;
+
+class App {
+	public static void main(String [] args)	
+	{
+		int a = 10;
+		short b = 20;
+		
+		Sample.foo(a, b); //error
+	}
+}
+
+class Sample {
+	public static void foo() //1
+	{
+		System.out.println("foo");
+	}
+	
+	public static void foo(int a) //2
+	{
+		System.out.println("foo, int");
+	}
+
+	
+	public static void foo(double b, char a) //3
+	{
+		System.out.println("foo, double, char");
+	}
+	
+	public static void bar(int a) //4
+	{
+		System.out.println("bar, int");
+	}
+}
+
+/*----------------------------------------------------------------------------------------------------------------------
+	1.Aday metotlar: Yok
+-----------------------------------------------------------------------------------------------------------------------*/
+package csd;
+
+class App {
+	public static void main(String [] args)	
+	{
+		int a = 10;
+		short b = 20;
+		
+		Sample.fo(a, b); //error
+	}
+}
+
+class Sample {
+	public static void foo() //1
+	{
+		System.out.println("foo");
+	}
+	
+	public static void foo(int a) //2
+	{
+		System.out.println("foo, int");
+	}
+
+	
+	public static void foo(double b, char a) //3
+	{
+		System.out.println("foo, double, char");
+	}
+	
+	public static void bar(int a) //4
+	{
+		System.out.println("bar, int");
+	}
+}
+
+
+/*----------------------------------------------------------------------------------------------------------------------
+	1.Aday metotlar: 1, 2, 3, 4, 5, 6
+	2.Uygun metotlar: 3, 4, 5, 6
+	3.En uygun metotlar: yok
+-----------------------------------------------------------------------------------------------------------------------*/
+package csd;
+
+class App {
+	public static void main(String [] args)	
+	{
+		short a = 10;
+		char b = 20;
+		
+		Sample.foo(a, b); //error: ambiguity
+	}
+}
+
+class Sample {
+	public static void foo() //1
+	{
+		System.out.println("foo");
+	}
+	
+	public static void foo(int a) //2
+	{
+		System.out.println("foo, int");
+	}
+	
+	public static void foo(int a, int b) //3
+	{
+		System.out.println("foo, int, int");
+	}
+	
+	public static void foo(int a, long b) //4
+	{
+		System.out.println("foo, int, long");
+	}
+	
+	public static void foo(double b, int a) //5
+	{
+		System.out.println("foo, double, int");
+	}
+	
+	public static void foo(double b, char a) //6
+	{
+		System.out.println("foo, double, char");
+	}
+	
+	public static void bar(int a) //7
+	{
+		System.out.println("bar, int");
+	}
+}
+
+/*----------------------------------------------------------------------------------------------------------------------
+	Aşağıdaki örnekte tam uyum vadır
+-----------------------------------------------------------------------------------------------------------------------*/
+package csd;
+
+class App {
+	public static void main(String [] args)	
+	{
+		short a = 10;
+		char b = 20;
+		
+		Sample.foo((double)a, b); //6
+	}
+}
+
+class Sample {
+	public static void foo() //1
+	{
+		System.out.println("foo");
+	}
+	
+	public static void foo(int a) //2
+	{
+		System.out.println("foo, int");
+	}
+
+	public static void foo(int a, int b) //3
+	{
+		System.out.println("foo, int, int");
+	}
+	
+	public static void foo(int a, long b) //4
+	{
+		System.out.println("foo, int, long");
+	}
+	
+	public static void foo(double b, int a) //5
+	{
+		System.out.println("foo, double, int");
+	}
+	
+	public static void foo(double b, char a) //6
+	{
+		System.out.println("foo, double, char");
+	}
+	
+	public static void bar(int a) //7
+	{
+		System.out.println("bar, int");
+	}
+}
+
+/*----------------------------------------------------------------------------------------------------------------------
+	1.Aday metotlar: 1, 2, 3, 4, 5, 6
+	2.Uygun metotlar: 5, 6
+	3.En uygun metotlar: 6
+-----------------------------------------------------------------------------------------------------------------------*/
+package csd;
+
+class App {
+	public static void main(String [] args)	
+	{
+		float a = 10;
+		char b = 20;
+		
+		Sample.foo(a, b); //6
+	}
+}
+
+class Sample {
+	public static void foo() //1
+	{
+		System.out.println("foo");
+	}
+	
+	public static void foo(int a) //2
+	{
+		System.out.println("foo, int");
+	}
+
+	public static void foo(int a, int b) //3
+	{
+		System.out.println("foo, int, int");
+	}
+	
+	public static void foo(int a, long b) //4
+	{
+		System.out.println("foo, int, long");
+	}
+	
+	public static void foo(double b, int a) //5
+	{
+		System.out.println("foo, double, int");
+	}
+	
+	public static void foo(double b, char a) //6
+	{
+		System.out.println("foo, double, char");
+	}
+	
+	public static void bar(int a) //7
+	{
+		System.out.println("bar, int");
+	}
+}
+
+/*----------------------------------------------------------------------------------------------------------------------
+	1.Aday metotlar: 1, 2, 3, 4
+	2.Uygun metotlar: 1, 2, 3, 4
+	3.En uygun metotlar: 1
+	
+	Aşağıdaki örnekte Math sınıfının abs metodu simüle edilmiştir
+-----------------------------------------------------------------------------------------------------------------------*/
+package csd;
+
+class App {
+	public static void main(String [] args)	
+	{
+		short a = -10;
+		
+		MyMath.abs(a);
+	}
+}
+
+class MyMath {
+	public static int abs(int a) //1
+	{
+		System.out.println("abs, int");
+		
+		return a > 0 ? a : -a;
+	}
+	
+	public static double abs(double a)  //2
+	{
+		System.out.println("abs, double");
+		
+		return a > 0 ? a : -a;
+	}
+	
+	public static long abs(long a)  //3
+	{
+		System.out.println("abs, long");
+		
+		return a > 0 ? a : -a;
+	}
+	
+	public static float abs(float a)  //4
+	{
+		System.out.println("abs, float");
+		
+		return a > 0 ? a : -a;
+	}
+}
+
+/*----------------------------------------------------------------------------------------------------------------------
+	1.Aday metotlar: 1, 2, 3, 4
+	2.Uygun metotlar: yok
+	
+	Aşağıdaki örnekte Math sınıfının abs metodu simüle edilmiştir
+-----------------------------------------------------------------------------------------------------------------------*/
+package csd;
+
+class App {
+	public static void main(String [] args)	
+	{
+		boolean a = true;
+		
+		MyMath.abs(a);
+	}
+}
+
+class MyMath {
+	public static int abs(int a) //1
+	{
+		System.out.println("abs, int");
+		
+		return a > 0 ? a : -a;
+	}
+	
+	public static double abs(double a)  //2
+	{
+		System.out.println("abs, double");
+		
+		return a > 0 ? a : -a;
+	}
+	
+	public static long abs(long a)  //3
+	{
+		System.out.println("abs, long");
+		
+		return a > 0 ? a : -a;
+	}
+	
+	public static float abs(float a)  //4
+	{
+		System.out.println("abs, float");
+		
+		return a > 0 ? a : -a;
+	}
+}
+
+
+/*----------------------------------------------------------------------------------------------------------------------
+	18.02.2023
+-----------------------------------------------------------------------------------------------------------------------*/
+
+/*----------------------------------------------------------------------------------------------------------------------
+	Nesne Yönelimli Programlama Tekniği (NYPT): Bu tekniği tek bir cümle ile anlatmak pek mümkün değildir. Ancak bu 
+	tekniği bilen birisine "sınıflar kullanarak program yazma tekniğidir" şeklinde bir cümle kurulabilir. Aslında
+	NYPT anahtar kavramların birleşiminde oluşur. Bu anahtar kavramlar birbirlerinden tamamen ayrık değildir.
+	Bu kavramlar içiçe geçmiş daireler gibi düşünülmelidir. Tüm bu anahtar kavramların temelinde kodun daha iyi
+	algılanabilir olması ve daha iyi yönetilmesi vardır. Örneğin benzer işi yapan metotlara aynı ismi vermek iyi bir
+	tekniktir. Çünkü bu durumda bu metotları kullanan kişiler "çok şey var" algısından uzaklaşıp "az şey var" gibi bir
+	algı oluştururlar. Bu da hatırlamayı kolaylaştırır. 
+	
+	NYPT insanın doğayı algılayış biçimini model almıştır. İnsanlar herşeyi nesne biçiminde ele alıp onu kullanırlar. 
+	Örneğin, elimizdeki telefonlar farklı bile olsa konuşurken bizim için hepsi telefondur. Gerekirse onların başka özellikleri
+	ayrıca söylenebilir.
+	
+	NYPT'de artık ağırlıklı olarak fonksiyonlarla (Java'da metot) değil, sınıflarla konuşulur. Böylece yine "çok şey var"
+	algısından uzaklaştırılıp "az şey var" algısı oluşturulur. Bu anlamda aslında kullanan programcı açısından detaylar
+	metotların detayları gizlemesinden daha falzla gizlenebilir. Böylelikle kullanım kolaylaşır. Burada anlatılar kurs içerisinde
+	detaylandırılacaktır  
+-----------------------------------------------------------------------------------------------------------------------*/
+
+/*----------------------------------------------------------------------------------------------------------------------
+	Değişkenlerin Ömürleri (Storage Duration):
+	Bir değişkenin bellekte kalma süresine denir. Yani bir değişkenin ömrü o değişkenin bellekte yaratılmasıyla 
+	yok edilmesi arasında geçen zaman aralığıdır. Anımsanacağı gibi faaliyet alanı (scope) derleme zamanına ilişkindir.
+	Ömür ise çalışma zamanına ilişkindir.
+-----------------------------------------------------------------------------------------------------------------------*/
+
+/*----------------------------------------------------------------------------------------------------------------------
+	Bir Java programı için çalışma zamanında "stack" ve "heap" denilen iki ayrı bellak alanı yaratılır. Her uygulama 
+	için bu alanlar ayrı olarak yaratılırlar. Aşağı seviyede beşka alanlar da bulunur. Stack ve heap RAM'de organize
+	edilirler. Stack ve heap'in yeri (yani adresten başladığı) ve uzunluğu sistemden sisteme değişebilmektedir. İstenirse
+	program çalıştırılırken bu alanların uzunlukları belirlenebilir. Belirlenmezse default değerler kullanılır. İşte bu
+	default değerler sistemden sisteme değişebilmektedir.
+	
+	Stack alanında yaratma ve yok etme işlemi birer makine komutuyla çok hızlı bir biçimde gerçekleşir. Stack alamında değişken
+	yaratılması ve yok edilmesi "stack veri yapısı (stack data structure)" biçiminde gerçekleşir.
+-----------------------------------------------------------------------------------------------------------------------*/
+/*----------------------------------------------------------------------------------------------------------------------
+	Veri Yapısı (Data Structure): Verileri belli bir algoritmaya göre tutan ve verilere istenildiği zaman erişilebilen
+	yapılara denir. 
+	
+	Stack veri yapısına eleman ekleme işlemine "push", eleman silme işlemine de "pop" denir. 
+	
+	Anahtar Notlar: Stack veri yapısı "LIFO (Last In First Out)" kuyruk sistemine göre çalışan veri yapısıdır. LIFO'da
+	ekleme sona yapılır. Eleman elde etme (ve silme) sondan yapılır. Yani son eklenen eleman elde edilir. Örneğin, 
+	pişti oyununda ortada biriken kağıtlar için bu veri yapısı kullanılabilir. Ya da örneğin editör programın 
+	"undo-redo" işlemleri de stack veri yapısı ile gerçekleştirilebilir 
+-----------------------------------------------------------------------------------------------------------------------*/
+
+
+/*----------------------------------------------------------------------------------------------------------------------
+	 Yerel değişkenler stack alanında yaratılırlar. Yerel bir değişken, akış bakımında bildirim noktasına gelindiğinde
+	 yaratılır, bildirildiği bloğun sonuna gelindiğinde yok edilir. Zaten yerel değiilkenlere faaliyet alnı bakımından
+	 bildirildikleri bloğun sonuna gelindiğinde erişilememesinin nedeni budur. Parametre değişkenleri de stack'te 
+	 metot çağrıldığında yaratılır, metot çağrısı bittiğinde yok edilir.
+	 
+	 Anahtar Notlar: Her ne kadar faaliyet alanı ve ömür farklı zamanlara ilişkin kavramlar olsa da aralarında mantıksal bir
+	 bağ söz konusudurç. Yani aralarında dolaylı da olsa bir ilişki bulunur
+-----------------------------------------------------------------------------------------------------------------------*/
+
+/*----------------------------------------------------------------------------------------------------------------------
+	 Sınıf içerisindeki bildirimlere sınıfın elemanları (members) denir. Sınıfın elemanı bir alt programsa buna 
+	 metot denir. Sınıfın elemanı bir değişken ise veri elemanı (member field/variable ya da yalnızca field) denir.
+	 Sınıfın başka elemanları da olabilir. Bunlar konular içerisinde ele alınacaktır 
+-----------------------------------------------------------------------------------------------------------------------*/
+
+/*----------------------------------------------------------------------------------------------------------------------
+	 Sınıf içerisinde tüm metotların dışında herhangi bir yerde bildirilen değişklenlere sınfın veri elemanları denir.
+	 Sınıf veri elemanları da metotlarda olduğu gibi erişim belirleyiciye sahiptir. Veri elemanları da static veya
+	 non-static olabilirler. Sınıfın veri elemanları için de ilgili konuya gelene kadar public erişim belirleyiciisini
+	 kullanacağız
+-----------------------------------------------------------------------------------------------------------------------*/
+package csd;
+
+
+class Sample {
+	public int x;
+	private static double y;
+	
+	public static void foo(int a)
+	{
+		//...
+	}
+	
+	//...
+	
+	protected int z;
+	
+	//...
+}
+
+
+/*----------------------------------------------------------------------------------------------------------------------
+	 Sınıf içerisinde aynı isimde birden fazla veri elemanı bildirimi geçersizdir
+-----------------------------------------------------------------------------------------------------------------------*/
+package csd;
+
+
+class Sample {
+	public int x; //error
+	private static double y;
+	public static double x; //error
+	
+	public static void foo(int a)
+	{
+		//...
+	}
+	
+	//...
+	
+	protected int z;
+	
+	//...
+}
+
+/*----------------------------------------------------------------------------------------------------------------------
+	 Birden fazla veri elemanı aynı türdense, static veya non-static olma durumları aynı ise ve aymı erişim 
+	 belirliyeciye sahipse virgül ile ayrılarak da bildirim yapılabilir
+-----------------------------------------------------------------------------------------------------------------------*/
+package csd;
+
+
+class Sample {
+	public int a, b;
+	protected static double x, y;
+	
+	//...
+}
+
+/*----------------------------------------------------------------------------------------------------------------------
+	 Sınıf bildirimi aslında bir tür bildirimidir. Bu şekilde progrmcının bildirdiği türlere "user defined type" da 
+	 denir
+-----------------------------------------------------------------------------------------------------------------------*/
+package csd;
+
+
+class Device {
+	//...
+}
+
+
+class Student {
+	//...
+}
+
+class Alien {
+	//...
+}
+
+/*----------------------------------------------------------------------------------------------------------------------
+	 Sınıf bildirimi bir tür bildirimi olduğuna göre, sınıf ismi de bir tür ismi olduğuna göre sınıf türünden
+	 değişkenler bildirilebilir
+-----------------------------------------------------------------------------------------------------------------------*/
+package csd;
+
+class App {
+	public static void main(String [] args)	
+	{
+		Device d;
+		Student s;
+		Alien a;
+		
+		//...
+	}
+}
+
+
+class Device {
+	//...
+}
+
+
+class Student {
+	//...
+}
+
+class Alien {
+	//...
+}
+
+/*----------------------------------------------------------------------------------------------------------------------
+	 Java'da türler kategori olarak iki gruba ayrılır: değer türleri (value types), referans türleri (reference types)
+	  
+	 T bir tür olmak üzere T türden bir değişken içerisinde tutulan değer bir adres ise bu durumda T bir referans
+	 türüdür. Adres değilse T bir değer türüdür. Java'da temel türler değer türleridir. Yani temel türden bir değişken
+	 içerisinde adres tutulmaz. Programcı tarafından bildirilen türler (user defined types) (sınıflar, enum sınıflar,
+	 interface'ler, record'lar vb.) referans türleridir
+-----------------------------------------------------------------------------------------------------------------------*/
+
+/*----------------------------------------------------------------------------------------------------------------------
+	 Sınıf türünden bir değişkene (aslında referans türünden bir değşkene) "referans değişken" ya da kısaca "referans"
+	 denir
+	 
+	 Anahtar Notlar: Java'da "referans" sözcüğü "adres" anlamında da kullanılır. Örneğin "bir nesnenin adresi" yerine
+	 "bir nesnenin referansı" da denebilir. Ancak buradaki referans bir değişkeni değil adresi temsil eder. 
+	 "Referans değişken ya da kısace referans", içerisinde adres (referans) tutan bir değişkendir 
+-----------------------------------------------------------------------------------------------------------------------*/
+package csd;
+
+class App {
+	public static void main(String [] args)	
+	{
+		Device d; //d bir referans (değişken)
+		Student s; //s bir referans (değişken)
+		Alien a; //a bir referans (değişken)
+	
+		
+		//...
+	}
+}
+
+
+class Device {
+	//...
+}
+
+
+class Student {
+	//...
+}
+
+class Alien {
+	//...
+}
+
+/*----------------------------------------------------------------------------------------------------------------------
+	- Sınıf türünden bellekte ayrılan bir alana o sınıf türünden nesne (object) denir
+	
+	- Nesneler heap'de yaratılırlar. Java'da stack'te nesne yaratılamaz
+	
+	- Java'da nesnenin kendisi değil adresi, aynı türden bir referansta tutulabilir
+	
+	- Bir nesneyi yaratmak için new operatörü kullanılır. new operatörünün genel biçimi şu şekildedir:
+		new <sınıf ismi>([argümanlar]);
+		
+	new operatörü özel amaçlı, tek operandlı ve önek durumda bir operatördür. new operatörü nesne yaratılması 
+	aşamaları tamamlandıktan sonra heap'te yaratılmış olan nesnenin adresini (referansını) üretir. Bu durumda 
+	bu operatörün ürettiği değer yani adres aynı türden bir referansa atanabilir
+	
+	- Bir nesne ilgili sınıf türünden bir örnektir. Buna "instance" da denir
+	 
+	- Aşağıdaki örnekte, nesne yönelimli programlama anlamında d, s ve a birer nesne DEĞİLDİR. Bunlar ilgili sınıflar 
+	türünden referanslardır. * ile belirtilen new operatörüne ilişkin ifade ile birlikte artık "d referansı
+	yaratılan nesneyi gösteriyor duruma gelir. Benzer şekilde s ve a referansları da ** ve *** ile birlikte yaratılmış olan
+	nesneleri gösteriyor duruma gelir.
+	
+	- Referans ve nesne kavramları birbirinden farklıdır. Referans değişken bir nesneyi gösterebilir, nesnenin kendisi
+	değildir
+-----------------------------------------------------------------------------------------------------------------------*/
+package csd;
+
+class App {
+	public static void main(String [] args)	
+	{
+		Device d; //d bir referans (değişken)
+		Student s; //s bir referans (değişken)
+		Alien a; //a bir referans (değişken)
+	
+		d = new Device(); //*
+		s = new Student(); //**
+		a = new Alien(); //***
+		
+		//...
+	}
+}
+
+
+class Device {
+	//...
+}
+
+
+class Student {
+	//...
+}
+
+class Alien {
+	//...
+}
+
+
+/*----------------------------------------------------------------------------------------------------------------------
+	Anahtar Notlar: Doğal bir dilde kurulan bir cümle içerisinde özel isimler dışında kalan her kavram soyuttur. Örneğin
+	"Bir araba alacağım" cümlesinde araba soyut bir kavramı temsil eder. Kişi araba aldığında örneğin "ben  ... marka,
+	.. model, ... plakalı ... araba aldım" dediğinde artık bu araba somutlaşmıştır. İşte burada soyut olan araba 
+	nesne yönelimli programlamada bir sınıf, somutlaşmış olan araba ise bir nesnedir
+-----------------------------------------------------------------------------------------------------------------------*/
