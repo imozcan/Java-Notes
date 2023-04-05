@@ -9694,3 +9694,904 @@ class App {
 		System.out.printf("b = %.20f%n", b);
 	}
 }
+
+
+/*----------------------------------------------------------------------------------------------------------------------
+	04.02.2023
+-----------------------------------------------------------------------------------------------------------------------*/
+
+/*----------------------------------------------------------------------------------------------------------------------
+	Gerçek sayı türünden tamsayı türüne (veya char türüne) yapılan explicit dönüşüm şu şekilde gerçekleşir:
+	- Sayının noktadan sonraki kısmı atılır:
+		- Elde edilen sayı hedef türün sınırları içerisinde kalıyorsa hedef türe atanır
+		- Elde edilen sayı hedef türün sınırları içerisinde kalmıyorsa
+			- Hedef tür byte, short, int ve char türlerinden biriyse
+				- Elde edilen değer int türü sınırları içerisinde kalıyorsa int türüne dönüştürülür. Buradan elde edilen
+				değer tamsayılar arasındaki tür dönüşümü kurallarına göre hedef türe atanır.
+				- Elde edilen değer int türü sınırları içerisinde kalmıyorsa değerin pozitif ya da negatif olması 
+				durumuna göre int türünün en büyük ya da en küçük değeri alınır ve hedef türe dönüştürülür
+			- Hedef tür long türüyse
+				- Elde edilen değer long türü sınırları içerisinde kalıyorsa doğrudan atanır
+				Elde edilen değer long türü sınırları içerisinde kalmıyorsa sayının pozitif ya da negatif olması
+				durumuna göre long türünün en büyük ya da en küçük değeri alınır ve atanır
+-----------------------------------------------------------------------------------------------------------------------*/
+
+package csd;
+
+class App {
+	public static void main(String [] args)
+	{
+		double a = 3.77;
+		int b;
+		
+		b = (int)a;
+		
+		System.out.printf("a = %.20f%n", a);
+		System.out.printf("b = %d%n", b);
+	}
+}
+
+package csd;
+
+class App {
+	public static void main(String [] args)
+	{
+		double a = 3.77;
+		byte b;
+		
+		b = (byte)a;
+		
+		System.out.printf("a = %.20f%n", a);
+		System.out.printf("b = %d%n", b);
+	}
+}
+
+package csd;
+
+class App {
+	public static void main(String [] args)
+	{
+		double a = -200.77;
+		byte b;
+		
+		b = (byte)a;
+		
+		System.out.printf("a = %.20f%n", a);
+		System.out.printf("-200 = %08X%n", -200);
+		System.out.printf("b = %02X%n", b);
+		System.out.printf("b = %d%n", b);
+	}
+}
+
+package csd;
+
+class App {
+	public static void main(String [] args)
+	{
+		double a = -200.77;
+		short b;
+		
+		b = (short)a;
+		
+		System.out.printf("a = %.20f%n", a);
+		System.out.printf("-200 = %08X%n", -200);
+		System.out.printf("b = %04X%n", b);
+		System.out.printf("b = %d%n", b);
+	}
+}
+
+package csd;
+
+class App {
+	public static void main(String [] args)
+	{
+		double a = 5_000_000_000.77;
+		int b;
+		
+		b = (int)a;
+		
+		System.out.printf("a = %.20f%n", a);
+		System.out.printf("5_000_000_000 = %08X%n", (int)5_000_000_000L);
+		System.out.printf("b = %08X%n", b);
+		System.out.printf("b = %d%n", b);
+	}
+}
+
+package csd;
+
+class App {
+	public static void main(String [] args)
+	{
+		double a = -5_000_000_000.77;
+		int b;
+		
+		b = (int)a;
+		
+		System.out.printf("a = %.20f%n", a);
+		System.out.printf("-5_000_000_000 = %08X%n", (int)-5_000_000_000L);
+		System.out.printf("b = %08X%n", b);
+		System.out.printf("b = %d%n", b);
+	}
+}
+
+
+package csd;
+
+class App {
+	public static void main(String [] args)
+	{
+		double a = 5_000_000_000.77;
+		byte b;
+		
+		b = (byte)a;
+		
+		System.out.printf("a = %.20f%n", a);
+		System.out.printf("-5_000_000_000 = %08X%n", (int)-5_000_000_000L);
+		System.out.printf("b = %X%n", b);
+		System.out.printf("b = %d%n", b);
+	}
+}
+
+package csd;
+
+class App {
+	public static void main(String [] args)
+	{
+		double a = 5_000_000_000.77;
+		short b;
+		
+		b = (short)a;
+		
+		System.out.printf("a = %.20f%n", a);
+		System.out.printf("5_000_000_000 = %08X%n", (int)5_000_000_000L);
+		System.out.printf("b = %X%n", b);
+		System.out.printf("b = %d%n", b);
+	}
+}
+
+/*----------------------------------------------------------------------------------------------------------------------
+	Sınıf Çalışması: Klavyeden sıfır girilene kadar alınan int türden sayıların ortalamasını bulan programı yazınız.
+	Açıklamalar: Toplamın biriktirildiği değişken ve giriilen değerler int türden olacaktır
+
+	Aşağıdaki örnekte tür dönüştürme operatörü kullanılmazsa bilgi kaybı oluşabilir
+-----------------------------------------------------------------------------------------------------------------------*/
+package csd;
+
+class App {
+	public static void main(String [] args)
+	{
+		FindAverageApp.run();
+	}
+}
+
+class FindAverageApp {
+	public static void run()
+	{
+		java.util.Scanner kb = new java.util.Scanner(System.in);
+		
+		System.out.println("Sayıları girmeye başlayınız:");
+		int sum = 0, count = 0;
+		int val;
+		
+		
+		while ((val = Integer.parseInt(kb.nextLine())) != 0) {
+			sum += val;
+			++count;
+		}
+		
+		double average = (double)sum / count;
+		
+		System.out.printf("Ortalama:%f%n", average);
+	}
+}
+
+/*----------------------------------------------------------------------------------------------------------------------
+	Aşağıdaki örnekte double türden sabit kullanıldığından işlem double olarak yapılır
+-----------------------------------------------------------------------------------------------------------------------*/
+package csd;
+
+class App {
+	public static void main(String [] args)
+	{
+		FindTotalApp.run();
+	}
+}
+
+class FindTotalApp {
+	public static void run()
+	{
+		java.util.Scanner kb = new java.util.Scanner(System.in);
+		
+		int sum = 0;
+		
+		for (int i = 0; i < 3; ++i) {
+			System.out.print("Bir sayı giriniz:");
+			int a = Integer.parseInt(kb.nextLine());
+			
+			sum += a;
+		}
+		
+		double average = sum / 3.;
+		
+		System.out.printf("Ortalama:%f%n", average);
+	}
+}
+
+/*----------------------------------------------------------------------------------------------------------------------
+	Aşağıdaki örnekte double türden sabit kullanıldığından işlem double olarak yapılır
+-----------------------------------------------------------------------------------------------------------------------*/
+package csd;
+
+class App {
+	public static void main(String [] args)
+	{
+		FindTotalApp.run();
+	}
+}
+
+class FindTotalApp {
+	public static void run()
+	{
+		java.util.Scanner kb = new java.util.Scanner(System.in);
+		
+		int sum = 0;
+		
+		for (int i = 0; i < 3; ++i) {
+			System.out.print("Bir sayı giriniz:");
+			int a = Integer.parseInt(kb.nextLine());
+			
+			sum += a;
+		}
+		
+		double average = sum / 3D;
+		
+		System.out.printf("Ortalama:%f%n", average);
+	}
+}
+
+/*----------------------------------------------------------------------------------------------------------------------
+	İşlemli atama operatörlerinin genel biçimi:
+		T1 a;
+		T2 b;
+		
+		a op= b => a = (T1)(a op b)
+-----------------------------------------------------------------------------------------------------------------------*/
+package csd;
+
+class App {
+	public static void main(String [] args)
+	{
+		int a = 10;
+		int b = 20;
+		
+		a += Math.sqrt(b); //a = (int)(a + Math.sqrt(a));
+		
+		//..
+	}
+}
+
+/*----------------------------------------------------------------------------------------------------------------------
+	Bir sayının basamak sayısının log10 ile bulunması
+-----------------------------------------------------------------------------------------------------------------------*/
+package csd;
+
+class App {
+	public static void main(String [] args)
+	{
+		java.util.Scanner kb = new java.util.Scanner(System.in);
+		System.out.print("Bir sayı giriniz:");
+		int a = kb.nextInt();
+		
+		int count = 1;
+		
+		if (a != 0)
+			count = (int)Math.log10(Math.abs(a)) + 1;
+		
+		System.out.printf("%d sayısının basamak sayısı:%d%n", a, count);
+	}
+}
+
+
+/*----------------------------------------------------------------------------------------------------------------------
+	Sınıf Çalışması: Parametresi ile aldığı int türden bir sayının Armstrong sayısı olup olmadığını test eden isArmstrong
+	isimli metodu NumberUtil sınıfı içerisinde yazınız ve aşağıdaki kod ile test ediniz.
+	
+	Açıklamalar:
+		- Bir sayının her basamağının basamak sayıncı kuvvetleri toplandığında sayının kendisine eşitse bu sayıya 
+		Armstrong sayısı denir. Örneğin:
+			153 -> 1  * 1 * 1 + 5 * 5 * 5 + 3 * 3 * 3 = 153
+			
+		- Kuvvet alma işlemi için yazılmış pow metodunu kullanınız
+		
+		- Sayı negatif ise Armstrong sayıaı kabul etmeyiniz
+-----------------------------------------------------------------------------------------------------------------------*/
+package csd;
+
+class App {
+	public static void main(String [] args)	
+	{	
+		IsArmstrongTest.run();
+	}
+}
+
+class IsArmstrongTest {
+	public static void run()
+	{
+		for (int a = -10; a <= 99999; ++a)
+			if (NumberUtil.isArmstrong(a))
+				System.out.println(a);
+	}
+}
+
+class NumberUtil {
+	public static boolean isArmstrong(int a)
+	{
+		return a >= 0 && calculateDigitsPowSum(a) == a;
+	}
+	
+	public static int calculateDigitsPowSum(int a)
+	{
+		int n = countDigits(a);
+		int total = 0;
+		
+		while (a != 0) {
+			total += Math.pow(a % 10, n);
+			a /= 10;
+		}
+		
+		return total;
+	}
+	
+	public static int countDigits(int a)
+	{
+		if (a == 0)
+			return 1;
+		
+		return (int)Math.log10(Math.abs(a)) + 1;
+	}	
+}
+
+/*----------------------------------------------------------------------------------------------------------------------
+	Koşul operatörü (conditional operator, ternary operator): Koşul operatörü özel amaçlı, üç operandlı (ternary)
+	ve araek (infix) durumda bir operatördür. Operatöerün genel biçimi:
+	
+		<operand1> ? <operand2> : <operand3>
+	operand1'e ilişkin ifadenin boolean türden olması gerekir. Bu operatör, operand1'e ilişkin ifadenin değeri
+	true ise ikinci operandına ilişkin ifadenin değerini, false ise üçüncü operandına ilişkin ifadenin değerini
+	üretir. Aşağıdaki koşul operatörüne ilişkin ifadenin if deyimi karşılığı:
+	
+		if (a < b)
+			max = b;
+		else
+			max = a;
+-----------------------------------------------------------------------------------------------------------------------*/
+package csd;
+
+class App {
+	public static void main(String [] args)	
+	{	
+		java.util.Scanner kb = new java.util.Scanner(System.in);
+		
+		System.out.print("İki sayı giriniz:");
+		int a = kb.nextInt();
+		int b = kb.nextInt();
+		
+		int max;
+		
+		max = a > b ? a : b;
+		
+		System.out.printf("max(%d, %d) = %d%n", a, b, max);	
+	}
+}
+
+
+/*----------------------------------------------------------------------------------------------------------------------
+	Aşağıdaki örnekte b - 200 ifadesi koşul operatörünün üçüncü operandıdır
+-----------------------------------------------------------------------------------------------------------------------*/
+package csd;
+
+class App {
+	public static void main(String [] args)	
+	{	
+		java.util.Scanner kb = new java.util.Scanner(System.in);
+		
+		System.out.print("İki sayı giriniz:");
+		int a = kb.nextInt();
+		int b = kb.nextInt();
+		
+		int result;
+		
+		result = a > b ? a : b - 200;
+		
+		System.out.printf("result = %d%n", result);	
+	}
+}
+
+
+/*----------------------------------------------------------------------------------------------------------------------
+	Aşağıdaki örnekte koşul operatörünün ürettiği değerden 200 değeri çıkartılacaktır. Parantez ile bu sağlanmıştır
+-----------------------------------------------------------------------------------------------------------------------*/
+package csd;
+
+class App {
+	public static void main(String [] args)	
+	{	
+		java.util.Scanner kb = new java.util.Scanner(System.in);
+		
+		System.out.print("İki sayı giriniz:");
+		int a = kb.nextInt();
+		int b = kb.nextInt();
+		
+		int result;
+		
+		result = (a > b ? a : b) - 200;
+		
+		System.out.printf("result = %d%n", result);	
+	}
+}
+
+
+/*----------------------------------------------------------------------------------------------------------------------
+	Aşağıdaki örnekte koşul operatörünün birinci operandı = ile ? arasıdır
+-----------------------------------------------------------------------------------------------------------------------*/
+package csd;
+
+class App {
+	public static void main(String [] args)	
+	{	
+		java.util.Scanner kb = new java.util.Scanner(System.in);
+		
+		System.out.print("İki sayı giriniz:");
+		int a = kb.nextInt();
+		int b = kb.nextInt();
+		
+		int result;
+		
+		result = a > 0 && a > b ? a : b;
+		
+		System.out.printf("result = %d%n", result);	
+	}
+}
+
+/*----------------------------------------------------------------------------------------------------------------------
+	Aşağıdaki örnekte koşul operatörünün birinci operandı = ile ? arasıdır
+-----------------------------------------------------------------------------------------------------------------------*/
+package csd;
+
+class App {
+	public static void main(String [] args)	
+	{	
+		java.util.Scanner kb = new java.util.Scanner(System.in);
+		
+		System.out.print("İki sayı giriniz:");
+		int a = kb.nextInt();
+		int b = kb.nextInt();
+		
+		int result;
+		
+		result = a + a > b ? a : b;
+		
+		System.out.printf("result = %d%n", result);	
+	}
+}
+
+
+/*----------------------------------------------------------------------------------------------------------------------
+	Aşağıdaki örneği inceleyiniz
+-----------------------------------------------------------------------------------------------------------------------*/
+package csd;
+
+class App {
+	public static void main(String [] args)	
+	{	
+		java.util.Scanner kb = new java.util.Scanner(System.in);
+		
+		System.out.print("İki sayı giriniz:");
+		int a = kb.nextInt();
+		int b = kb.nextInt();
+		
+		int result;
+		
+		result = a + (a > b ? a : b);
+		
+		System.out.printf("result = %d%n", result);	
+	}
+}
+
+/*----------------------------------------------------------------------------------------------------------------------
+	Koşul operatörünün ürettiği değerin bir değişkene atanması durumunda kullanılması if deyimine göre daha 
+	okunabilirdir 
+-----------------------------------------------------------------------------------------------------------------------*/
+package csd;
+
+class App {
+	public static void main(String [] args)	
+	{	
+		java.util.Scanner kb = new java.util.Scanner(System.in);
+		
+		System.out.print("İki sayı giriniz:");
+		int a = kb.nextInt();
+		int b = kb.nextInt();
+		
+		int result;
+		
+		result = a > b ? a : b;
+		
+		System.out.printf("result = %d%n", result);	
+	}
+}
+
+/*----------------------------------------------------------------------------------------------------------------------
+	Koşul operatörünün ürettiği değerin bir değişkene atanması durumunda kullanılması if deyimine göre daha 
+	okunabilirdir 
+-----------------------------------------------------------------------------------------------------------------------*/
+package csd;
+
+class App {
+	public static void main(String [] args)	
+	{	
+		java.util.Scanner kb = new java.util.Scanner(System.in);
+		
+		System.out.print("İki sayı giriniz:");
+		int a = kb.nextInt();
+		int b = kb.nextInt();
+		
+		int result;
+		
+		result = a > b ? a : b;
+		
+		System.out.printf("result = %d%n", result);	
+	}
+}
+
+/*----------------------------------------------------------------------------------------------------------------------
+	Koşul operatörünün ürettiği değerin metot çağrısında argüman olarak metoda verilmesi okunabililiği artırır
+-----------------------------------------------------------------------------------------------------------------------*/
+package csd;
+
+class App {
+	public static void main(String [] args)	
+	{	
+		java.util.Scanner kb = new java.util.Scanner(System.in);
+		
+		System.out.print("İki sayı giriniz:");
+		int a = kb.nextInt();
+		int b = kb.nextInt();
+		
+		System.out.printf("result = %d%n", a > b ? a : b);	
+	}
+}
+
+/*----------------------------------------------------------------------------------------------------------------------
+	Koşul operatörünün ürettiği değerin return deyiminde kullanımı okunabilirliği artırır
+-----------------------------------------------------------------------------------------------------------------------*/
+package csd;
+
+class App {
+	public static void main(String [] args)	
+	{	
+		java.util.Scanner kb = new java.util.Scanner(System.in);
+		
+		System.out.print("İki sayı giriniz:");
+		int a = kb.nextInt();
+		int b = kb.nextInt();
+		
+		System.out.printf("result = %d%n", Util.max(a, b));	
+	}
+}
+
+class Util {
+	public static int max(int a, int b)
+	{
+		return a > b ? a : b;
+	}
+}
+
+/*----------------------------------------------------------------------------------------------------------------------
+	Sınıf Çalışması: Parametresi ile aldığı int türden bir sayının Armstrong sayısı olup olmadığını test eden isArmstrong
+	isimli metodu NumberUtil sınıfı içerisinde yazınız ve aşağıdaki kod ile test ediniz.
+	
+	Açıklamalar:
+		- Bir sayının her basamağının basamak sayıncı kuvvetleri toplandığında sayının kendisine eşitse bu sayıya 
+		Armstrong sayısı denir. Örneğin:
+			153 -> 1  * 1 * 1 + 5 * 5 * 5 + 3 * 3 * 3 = 153
+			
+		- Kuvvet alma işlemi için yazılmış pow metodunu kullanınız
+		
+		- Sayı negatif ise Armstrong sayıaı kabul etmeyiniz
+-----------------------------------------------------------------------------------------------------------------------*/
+package csd;
+
+class App {
+	public static void main(String [] args)	
+	{	
+		IsArmstrongTest.run();
+	}
+}
+
+class IsArmstrongTest {
+	public static void run()
+	{
+		for (int a = -10; a <= 99999; ++a)
+			if (NumberUtil.isArmstrong(a))
+				System.out.println(a);
+	}
+}
+
+class NumberUtil {
+	public static boolean isArmstrong(int a)
+	{
+		return a >= 0 && calculateDigitsPowSum(a) == a;
+	}
+	
+	public static int calculateDigitsPowSum(int a)
+	{
+		int n = countDigits(a);
+		int total = 0;
+		
+		while (a != 0) {
+			total += Math.pow(a % 10, n);
+			a /= 10;
+		}
+		
+		return total;
+	}
+	
+	public static int countDigits(int a)
+	{	
+		return a == 0 ? 1 : (int)Math.log10(Math.abs(a)) + 1;
+	}	
+}
+
+
+
+/*----------------------------------------------------------------------------------------------------------------------
+	Sınıf Çalışması: Parametresi ile aldığı int türden gün ay ve yıl bilgisine ilişkin tarihin haftanın hangi gününe 
+	geldiği bilgisini aşağıdaki açıklamalara göre dmndüren getDayOfWeek isimli metodu yazınız ve test ediniz
+	Açıklamalar:
+		- Metot geçersiz bir tarih durumunda -1 değerine geri dönecektir
+		- Haftanın günü 01.01.1900 ile verilen tarih arasındaki (bverilen tarih dahil) gün sayısının 7 ilem bölümünden
+		elde edilen kalan ile belirlenebilir. Buna göre sıfır "pazar, 1 "pazartesi", 2 "salı" ... 6 "cumartesi" günlerine
+		kaşılık gelir
+		
+		- 01.01.1900 öncesindeki tarihler geçersiz sayılacaktır
+	  	 
+	(İleride daha iyisi yazılacaktır)
+-----------------------------------------------------------------------------------------------------------------------*/
+package csd;
+
+class App {
+	public static void main(String [] args)	
+	{	
+		GetDayOfYearTest.run();
+	}
+}
+
+class GetDayOfYearTest {
+	public static void run()
+	{
+		java.util.Scanner kb = new java.util.Scanner(System.in);
+		
+		for (;;) {
+			System.out.print("Gün ay ve yıl bilgilerini giriniz:");
+			int day = kb.nextInt();
+			int month = kb.nextInt();
+			int year = kb.nextInt();
+			
+			if (day == 0)
+				break;
+			
+			DateUtil.printDateTR(day, month, year);
+		}
+	}
+}
+
+class DateUtil {
+	public static void printDateTR(int day, int month, int year)
+	{
+		int dayOfWeek = getDayOfWeek(day, month, year);
+		
+		if (dayOfWeek == -1) {
+			System.out.println("Geçeriz tarih!...");
+			return;
+		}
+		
+		switch (dayOfWeek) {
+		case 0 -> System.out.printf("%02d/%02d/%04d Pazar%n", day, month, year);
+		case 1 -> System.out.printf("%02d/%02d/%04d Pazartesi%n", day, month, year);
+		case 2 -> System.out.printf("%02d/%02d/%04d Salı%n", day, month, year);
+		case 3 -> System.out.printf("%02d/%02d/%04d Çarşamba%n", day, month, year);
+		case 4 -> System.out.printf("%02d/%02d/%04d Perşembe%n", day, month, year);
+		case 5 -> System.out.printf("%02d/%02d/%04d Cuma%n", day, month, year);
+		case 6 -> System.out.printf("%02d/%02d/%04d Cumartesi%n", day, month, year);
+		}
+	}
+	
+	public static int getDayOfWeek(int day, int month, int year)
+	{
+		int totalDays;
+		
+		if (year < 1900 || (totalDays = getDayOfYear(day, month, year)) == -1)
+			return -1;
+		
+		return (totalDays + getTotalDays(year)) % 7;
+		
+	}
+	
+	public static int getTotalDays(int year)
+	{
+		int totalDays = 0;
+		
+		for (int y = 1900; y < year; ++y)
+			totalDays += isLeapYear(y) ? 366 : 365;
+		
+		return totalDays;
+	}
+	
+	public static int getDayOfYear(int day, int month, int year)
+	{
+		if (!isValidDate(day, month, year))
+			return -1;
+		
+		int totalDays = day;
+		
+		switch (month - 1) {
+		case 11:
+			totalDays += 30;
+		case 10:
+			totalDays += 31;
+		case 9:
+			totalDays += 30;
+		case 8:
+			totalDays += 31;
+		case 7:
+			totalDays += 31;
+		case 6:
+			totalDays += 30;
+		case 5:
+			totalDays += 31;
+		case 4:
+			totalDays += 30;
+		case 3:
+			totalDays += 31;
+		case 2:
+			totalDays += isLeapYear(year) ? 29 : 28;
+		case 1:
+			totalDays += 31;
+		}
+		
+		return totalDays;
+		
+	}
+	
+	public static boolean isValidDate(int day, int month, int year)
+	{
+		return 1 <= day && day <= 31 && 1 <= month && month <= 12 && day <= getDays(month, year);
+	}
+	
+	public static int getDays(int month, int year)
+	{
+		return switch (month) {
+				case 4, 6, 9, 11 -> 30;
+				case 2 -> {if (isLeapYear(year)) yield 29; yield 28;}
+				default -> 31;
+		};
+	}
+	
+	public static boolean isLeapYear(int year)
+	{
+		return year % 4 == 0 && year % 100 != 0 || year % 400 == 0;
+	}
+}
+
+/*----------------------------------------------------------------------------------------------------------------------
+	Koşul operatörünün ikinci ve üçüncü operandları void bir ifade olamaz 
+-----------------------------------------------------------------------------------------------------------------------*/
+package csd;
+
+class App {
+	public static void main(String [] args)	
+	{	
+		java.util.Scanner kb = new java.util.Scanner(System.in);
+		
+		System.out.print("İki sayı giriniz:");
+		int a = kb.nextInt();
+		int b = kb.nextInt();
+		
+		a < b ? Sample.foo() : Sample.bar(); //error
+	}
+}
+
+
+class Sample {
+	public static void foo()
+	{
+		System.out.println("foo");
+	}
+	
+	public static void bar()
+	{
+		System.out.println("bar");
+	}
+}
+
+/*----------------------------------------------------------------------------------------------------------------------
+	Yukarıdaki örnek aşağıdaki gibi if deyimi ile yapılabilir 
+-----------------------------------------------------------------------------------------------------------------------*/
+package csd;
+
+class App {
+	public static void main(String [] args)	
+	{	
+		java.util.Scanner kb = new java.util.Scanner(System.in);
+		
+		System.out.print("İki sayı giriniz:");
+		int a = kb.nextInt();
+		int b = kb.nextInt();
+		
+		if (a < b)
+			Sample.foo();
+		else
+			Sample.bar();
+	}
+}
+
+
+class Sample {
+	public static void foo()
+	{
+		System.out.println("foo");
+	}
+	
+	public static void bar()
+	{
+		System.out.println("bar");
+	}
+}
+
+/*----------------------------------------------------------------------------------------------------------------------
+	Koşul operatörünün operatörünün bir kullanımı. Örnekte parantez kullanmaya gerek yoktur
+-----------------------------------------------------------------------------------------------------------------------*/
+package csd;
+
+class App {
+	public static void main(String [] args)	
+	{	
+		java.util.Scanner kb = new java.util.Scanner(System.in);
+		
+		System.out.print("İki sayı giriniz:");
+		int a = kb.nextInt();
+		int b = kb.nextInt();
+		int c = kb.nextInt();
+		
+		int result;
+		
+		result = a > b ? a > c ? a : c : b > c ? b : c;
+		
+		System.out.printf("result = %d%n", result);	
+	}
+}
+
+/*----------------------------------------------------------------------------------------------------------------------
+	Yukarıdaki örnekte koşul operatörünün opernadlarını parantez içerisine okunabilirliği artırır
+-----------------------------------------------------------------------------------------------------------------------*/
+package csd;
+
+class App {
+	public static void main(String [] args)	
+	{	
+		java.util.Scanner kb = new java.util.Scanner(System.in);
+		
+		System.out.print("İki sayı giriniz:");
+		int a = kb.nextInt();
+		int b = kb.nextInt();
+		int c = kb.nextInt();
+		int d = kb.nextInt();
+		
+		int max;
+		
+		max = (a > b) ? (a > c ? a : c) : (b > c ? b : c);
+		
+		System.out.printf("result = %d%n", max);	
+	}
+}
