@@ -11596,3 +11596,361 @@ class Alien {
 	.. model, ... plakalı ... araba aldım" dediğinde artık bu araba somutlaşmıştır. İşte burada soyut olan araba 
 	nesne yönelimli programlamada bir sınıf, somutlaşmış olan araba ise bir nesnedir
 -----------------------------------------------------------------------------------------------------------------------*/
+
+
+/*----------------------------------------------------------------------------------------------------------------------
+	19.02.2023
+-----------------------------------------------------------------------------------------------------------------------*/
+/*----------------------------------------------------------------------------------------------------------------------
+	Sınıfın non-static veri elemanları her nesne için ayrıca yaratılırlar, nesnenin içerisinde bulunurlar. Sınıfın 
+	non-static veri elmanlarına sınıf dışından (yani başka bir sınıfın içinden) referans ve nokta operatörü ile 
+	erişilir. Nokta operatörü özel amaçlı iki operandlı ve araek durumunda bir operatördür. Nokta operatörünün
+	birinci operandı bir referans, ikinci operandı non-static bir veri elemanı ise bu durumda nokta operatörü 
+	o veri elemanına ilişkin değişkeni üretir. Aslında referans ve nokta operatörü ile veri elemanı ismi kullanımı
+	o referansın gösterdiği nesnenin ilgili veri elemanına erişmek anlamına gelir. Her new işlemi yeni bir nesne
+	yaratmak demektir
+-----------------------------------------------------------------------------------------------------------------------*/
+package csd;
+
+class App {
+	public static void main(String [] args)	
+	{
+		Sample s, k;
+		
+		s = new Sample();
+		k = new Sample();
+		
+		s.x = 10;
+		s.y = true;
+		k.x = 20;
+		k.y = false;
+		
+		System.out.printf("s.x = %d%n", s.x);
+		System.out.printf("s.y = %b%n", s.y);
+		System.out.printf("k.x = %d%n", k.x);
+		System.out.printf("k.y = %b%n", k.y);		
+	}
+}
+
+
+class Sample {
+	public int x;
+	public boolean y;
+	//...
+}
+
+/*----------------------------------------------------------------------------------------------------------------------
+	Aşağıdaki örnekte s yerel değişkenine değer atanmadan kullanıldığı için error oluşur
+-----------------------------------------------------------------------------------------------------------------------*/
+package csd;
+
+class App {
+	public static void main(String [] args)	
+	{
+		Sample s;
+		
+		s.x = 10; //error
+		//...
+	}
+}
+
+
+class Sample {
+	public int x;
+	public boolean y;
+	//...
+}
+
+/*----------------------------------------------------------------------------------------------------------------------
+	Farklı türden referanslar birbirlerine explicit olarak bile atanamazlar
+-----------------------------------------------------------------------------------------------------------------------*/
+package csd;
+
+class App {
+	public static void main(String [] args)	
+	{
+		Sample s;
+		Mample m;
+		
+		s = new Sample();
+		m = (Mample)s; //error
+	}
+}
+
+
+class Sample {
+	public int x;
+	public boolean y;
+	//...
+}
+
+class Mample {
+	public int x;
+	public boolean y;
+	//...
+}
+
+
+/*----------------------------------------------------------------------------------------------------------------------
+	non-static veri elemanlarına nesnenin yaratılması aşamasında default değerler atanır. Defeault değer türe özgü
+	mantıksal sıfır değeridir. Örneğin int türü için sıfırken, boolean türü için false değerindedir
+-----------------------------------------------------------------------------------------------------------------------*/
+package csd;
+
+class App {
+	public static void main(String [] args)	
+	{
+		Sample s, k;
+		
+		s = new Sample();
+		k = new Sample();
+	
+		System.out.printf("s.x = %d%n", s.x);
+		System.out.printf("s.y = %b%n", s.y);
+		System.out.printf("k.x = %d%n", k.x);
+		System.out.printf("k.y = %b%n", k.y);		
+	}
+}
+
+
+class Sample {
+	public int x;
+	public boolean y;
+	//...
+}
+
+/*----------------------------------------------------------------------------------------------------------------------
+	Bir nesnenin uzunluğu yani bellekte kapladığı alan "en az non-static veri elemanlarının toplam uzunluğu kadardır".
+	Bu durumda aynı türden nesneler için aynı uzunlukta yer ayrılır. Farklı türden nesneler için farklı veri elemanları
+	olabileceğinden aynı uzunlukta yer ayrılması gerekmez
+	
+	Türü ne olursa olsun referansların (referans değişkenlerin) uzunlukları aynıdır. Bu da adreselenebilecek sayıları
+	tutabilecek uzunluktur. Örneğin 64 bit sistemlerde referanslar 64 bit (8 byte) uzunluğundadır. Benzer şekilde 32 bit
+	sistemlerde tüm referanslar 32 bit (4 byte) uzunluğundadır
+
+	Morgot
+-----------------------------------------------------------------------------------------------------------------------*/
+
+/*----------------------------------------------------------------------------------------------------------------------
+	Aynı türden iki referansın birbirine atanması durumunda iki referans da artık aynı nesneyi gösterir duruma gelir.
+	Bu durumda hangi referans ile nesneye erişildiğinin bir önemi yoktur. Aşağıdaki örnekte ** ile belirtilen ifadede
+	s referansı, gösterdiği nesneden kopartılmış ve k'nın içerisindeki adres atandığından artık k ve s aynı nesneyi
+	gösterir duruma gelmiştir
+-----------------------------------------------------------------------------------------------------------------------*/
+package csd;
+
+class App {
+	public static void main(String [] args)	
+	{
+		Sample s, k;
+		
+		s = new Sample();
+		k = new Sample();
+		
+		s.x = 10;
+		s.y = true;
+		k.x = 30;
+	
+		System.out.printf("s.x = %d%n", s.x);
+		System.out.printf("s.y = %b%n", s.y);
+		System.out.printf("k.x = %d%n", k.x);
+		System.out.printf("k.y = %b%n", k.y);
+		System.out.println("----------------------------");
+		
+		s = k; //**
+		
+		System.out.printf("s.x = %d%n", s.x);
+		System.out.printf("s.y = %b%n", s.y);
+		System.out.printf("k.x = %d%n", k.x);
+		System.out.printf("k.y = %b%n", k.y);
+		System.out.println("----------------------------");
+		
+		++s.x;
+		
+		System.out.printf("s.x = %d%n", s.x);
+		System.out.printf("s.y = %b%n", s.y);
+		System.out.printf("k.x = %d%n", k.x);
+		System.out.printf("k.y = %b%n", k.y);
+		System.out.println("----------------------------");
+		
+	}
+}
+
+
+class Sample {
+	public int x;
+	public boolean y;
+	//...
+}
+
+/*----------------------------------------------------------------------------------------------------------------------
+	Aşağıdaki örnekte değer türü kullanıldığından a'nın değeri artırılmış olmaz
+-----------------------------------------------------------------------------------------------------------------------*/
+package csd;
+
+class App {
+	public static void main(String [] args)	
+	{
+		int a = 10;
+		int b;
+		
+		b = a;
+		
+		System.out.printf("a= %d%n", a);
+		System.out.printf("b= %d%n", b);
+		
+		++b;
+		System.out.printf("a= %d%n", a);
+		System.out.printf("b= %d%n", b);		
+	}
+}
+
+
+/*----------------------------------------------------------------------------------------------------------------------
+	Aşağıdaki örneği inceleyiniz
+-----------------------------------------------------------------------------------------------------------------------*/
+package csd;
+
+class App {
+	public static void main(String [] args)	
+	{
+		Sample s, k;
+		
+		s = new Sample();
+		k = new Sample();
+		
+		s.x = 10;
+		s.y = true;
+		k.x = 30;
+	
+		System.out.printf("s.x = %d%n", s.x);
+		System.out.printf("s.y = %b%n", s.y);
+		System.out.printf("k.x = %d%n", k.x);
+		System.out.printf("k.y = %b%n", k.y);
+		System.out.println("----------------------------");
+		
+		s = k; //**
+		
+		System.out.printf("s.x = %d%n", s.x);
+		System.out.printf("s.y = %b%n", s.y);
+		System.out.printf("k.x = %d%n", k.x);
+		System.out.printf("k.y = %b%n", k.y);
+		System.out.println("----------------------------");
+		
+		++s.x;
+		
+		System.out.printf("s.x = %d%n", s.x);
+		System.out.printf("s.y = %b%n", s.y);
+		System.out.printf("k.x = %d%n", k.x);
+		System.out.printf("k.y = %b%n", k.y);
+		System.out.println("----------------------------");
+		
+		k = new Sample();
+		
+		--k.x;
+		
+		System.out.printf("s.x = %d%n", s.x);
+		System.out.printf("s.y = %b%n", s.y);
+		System.out.printf("k.x = %d%n", k.x);
+		System.out.printf("k.y = %b%n", k.y);
+		System.out.println("----------------------------");
+	}
+}
+
+
+class Sample {
+	public int x;
+	public boolean y;
+	//...
+}
+
+
+
+
+/*----------------------------------------------------------------------------------------------------------------------
+	Aşağıdaki örnekte main içerisindeki yerel değişken olan a'nın değeri metot çağrısından sonra değişmez. Çünkü
+	argümanlardan parametrelere aktarım bir atama işlemidir	
+	
+	Mordor: Burada öngürülemeyen bir çıktı yok fakat bu davranışın  sebebi açısından önemli.
+-----------------------------------------------------------------------------------------------------------------------*/
+package csd;
+
+class App {
+	public static void main(String [] args)	
+	{
+		int a = 10;
+		
+		Sample.foo(a);
+		
+		System.out.printf("a = %d%n", a);
+	}
+}
+
+class Sample {
+	public static void foo(int a)
+	{
+		++a;
+	}
+}
+
+/*----------------------------------------------------------------------------------------------------------------------
+	Bir metodun parametre değişkeni bir referans olabilir. Bu durumda metot aynı türden bir referans ile çağrılabilir. 
+	Metoda geçilen referans ile metot içerisinde ilgili nesneye erişilmiş olur. Referans parametreli bir metot aldığı
+	referansa ilişkin nesne üzerinde değişiklik yapabilir. Bu durumda bu değişiklik metodu çağrıdan koddaki referans
+	üzerinden aynı nesneye erişildiği için görülebilir. Bir metodun geri dönüş değeri de referans olabilir. Bu durumda
+	metodun geri dönüş değerine ilişkin return deyimine ait ifadenin türünün aynı türden bir referans olması gerekir.
+	
+	Aşağıdaki örnekte createTime metodu, içeride yaratmış olduğu nesnenin referansına geri dönmektedir. printTime
+	metodu parametresi ile aldığı Time türünden referansın gösterdiği nesneye erişip bilgilerini akrana yazdırmaktadır.
+	changeTime metodu aldığı refeeransa ilişkin nesneye erişip hour, minute, second ve millisecond elemanlarının 
+	değerlerini değiştirmektedir. Örneği çalıştırarak durumu gözlemleyiniz
+
+	Mordor
+-----------------------------------------------------------------------------------------------------------------------*/
+package csd;
+
+class App {
+	public static void main(String [] args)	
+	{
+		Time time;
+		
+		time = TimeUtil.createTime(19, 19, 14, 234);
+		TimeUtil.printTime(time);
+		TimeUtil.changeTime(time, 20, 34, 45, 345);
+		TimeUtil.printTime(time);
+	}
+}
+
+class TimeUtil {
+	public static Time createTime(int hour, int minute, int second, int millisecond)
+	{
+		Time time = new Time();
+		
+		changeTime(time, hour, minute, second, millisecond);
+		
+		return time;
+	}
+	
+	public static void changeTime(Time time, int hour, int minute, int second, int millisecond)
+	{
+		//...
+		time.hour = hour;
+		time.minute = minute;
+		time.second = second;
+		time.millisecond = millisecond;
+	}
+	
+	public static void printTime(Time time)
+	{
+		System.out.printf("%02d:%02d:%02d.%03d%n", time.hour, time.minute, time.second, time.millisecond);
+	}
+}
+
+class Time {
+	public int hour;
+	public int minute;
+	public int second;
+	public int millisecond;
+	//...
+}
+
