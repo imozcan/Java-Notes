@@ -1,3 +1,4 @@
+
 /*----------------------------------------------------------------------------------------------------------------------
     Ders Notunun üzerine tarafımca açıklamalar yapılmıştır. Not içerisinde yer alan kod parçalarının renklenmesi için
     dosyayı java dosyası olarak görüntüleyiniz.
@@ -15515,3 +15516,734 @@ class App {
 		System.out.println("Geçme notunuz:" + grade + (grade >= 50 ? " Geçti" : " Kaldı"));
 	}
 }
+
+/*----------------------------------------------------------------------------------------------------------------------
+	18.03.2023
+-----------------------------------------------------------------------------------------------------------------------*/
+
+/*----------------------------------------------------------------------------------------------------------------------
+	Sınıf Çalışması: Parametresi ile aldığı bir yazının tersini döndüren reverse isimli metodu StringUtil
+	sınıfı içerisinde yazınız ve aşağıdaki kod ile test ediniz  
+	
+	Dikkat: *** ile belirtilen kodda yeni String nesnesi yaratılıp result referansına atanmaktadır. Bu işlem görece
+	olarak performansı olumsuz etkileyebilir. İleride bu şekilde olmayan daha etkin başka çözümleri de göreceğiz
+-----------------------------------------------------------------------------------------------------------------------*/
+package csd;
+
+class App {
+	public static void main(String [] args)	
+	{	
+		ReverseTest.run();
+	}
+}
+
+class ReverseTest {
+	public static void run()
+	{
+		java.util.Scanner kb = new java.util.Scanner(System.in);
+		
+		for (;;) {
+			System.out.print("Bir yazı giriniz:");
+			String str = kb.nextLine();
+			
+			if ("elma".equals(str))
+				break;
+			
+			System.out.printf("Yazının tersi:%s%n", StringUtil.reverse(str));
+		}
+		
+		System.out.println("Tekrar yapıyor musunuz?");
+	}
+}
+
+class StringUtil {
+	public static String reverse(String str)
+	{
+		String result = "";
+		
+		for (int i = str.length() - 1; i >= 0; --i)
+			result += str.charAt(i); //***
+		
+		return result;
+	}
+}
+
+/*----------------------------------------------------------------------------------------------------------------------
+	Sınıf Çalışması: Klavyeden elma girilene kadar alınan yazıların arasında - karakteri olacak şekilde birleştirilmiş
+	bir String oluşturan programı yazınız
+	Örneğin: anstkara ianbul izmir girilirse -> ankara-istanbul-izmir
+	Örneği: ankara girilirse -> ankara
+	Açıklamalar:
+	  - Tamamı whitespace karakterlerden oluşan string ve boş string yazıya eklenmeyecektir
+-----------------------------------------------------------------------------------------------------------------------*/
+package csd;
+
+class App {
+	public static void main(String [] args)	
+	{	
+		ConcatWithHyphenApp.run();
+	}
+}
+
+class ConcatWithHyphenApp {
+	public static void run()
+	{
+		java.util.Scanner kb = new java.util.Scanner(System.in);
+		String str = "";
+		
+		for (;;) {
+			System.out.print("Bir yazı giriniz:");
+			String s = kb.nextLine();
+			
+			if (s.trim().isEmpty())
+				continue;
+			
+			if ("elma".equals(s))
+				break;
+			
+			if (!str.isEmpty())
+				str += "-";
+			
+			str += s;
+		}	
+		
+		System.out.println(str);
+	}
+}
+
+
+/*----------------------------------------------------------------------------------------------------------------------
+	String sınıfının substring metotları
+-----------------------------------------------------------------------------------------------------------------------*/
+package csd;
+
+class App {
+	public static void main(String [] args)	
+	{	
+		String s = "ankara";
+		
+		System.out.println(s.substring(2)); //kara
+		System.out.println(s.substring(2, 5)); //kar [min, bound)
+	}
+}
+
+
+/*----------------------------------------------------------------------------------------------------------------------
+	String sınıfının substring metoduna beginIndex olarak yazının uzunluğu verilirse boş string referansına
+	geri döner. Yazının uzunluğundan daha büyük bir indeks numarası için exception oluşur
+
+	Mordor
+-----------------------------------------------------------------------------------------------------------------------*/
+package csd;
+
+class App {
+	public static void main(String [] args)	
+	{	
+		String s = "ankara";
+		
+		System.out.println(s.substring(s.length()).isEmpty() ? "Boş string" : "Boş string değil"); 	
+	}
+}
+
+
+/*----------------------------------------------------------------------------------------------------------------------
+	String sınıfının substring metoduna beginIndex ve endIndex değerleri, sınırlar içerisinde olması 
+	koşuluyla (length dahil) aynı değer verilirse boş string referansına geri döner
+
+	Mordor
+-----------------------------------------------------------------------------------------------------------------------*/
+package csd;
+
+class App {
+	public static void main(String [] args)	
+	{	
+		String s = "ankara";
+		
+		System.out.println(s.substring(3, 3).isEmpty() ? "Boş string" : "Boş string değil"); 	
+	}
+}
+
+/*----------------------------------------------------------------------------------------------------------------------
+	Sınıf Çalışması: Klavyeden elma girilene kadar alınan yazıların arasında - karakteri olacak şekilde birleştirilmiş
+	bir String oluşturan programı yazınız
+	Örneğin: ankara istanbul izmir girilirse -> ankara-istanbul-izmir
+	Örneği: ankara girilirse -> ankara
+	Açıklamalar:
+	  - Tamamı whitespace karakterlerden oluşan string ve boş string yazıya eklenmeyecektir
+
+	Morgot
+-----------------------------------------------------------------------------------------------------------------------*/
+package csd;
+
+class App {
+	public static void main(String [] args)	
+	{	
+		ConcatWithHyphenApp.run();
+	}
+}
+
+class ConcatWithHyphenApp {
+	public static void run()
+	{
+		java.util.Scanner kb = new java.util.Scanner(System.in);
+		String str = "";
+		
+		for (;;) {
+			System.out.print("Bir yazı giriniz:");
+			String s = kb.nextLine();
+			
+			if (s.trim().isEmpty())
+				continue;
+			
+			if ("elma".equals(s))
+				break;
+			
+			str += s + "-";
+		}	
+		
+		if (!str.isEmpty())
+			str = str.substring(0, str.length() - 1);
+		
+		System.out.println(str);
+	}
+}
+
+
+/*----------------------------------------------------------------------------------------------------------------------
+	Aşağıdaki örneği inceleyiniz
+-----------------------------------------------------------------------------------------------------------------------*/
+package csd;
+
+class App {
+	public static void main(String [] args)	
+	{	
+		System.out.println("Java" + 10 + 20); //Java1020
+		System.out.println("Java" + (10 + 20)); //Java30
+	}
+}
+
+/*----------------------------------------------------------------------------------------------------------------------
+    IntegerDecimalOccurence 
+	String pattern matching in decimal representations of ints.
+	
+	Task description
+	Two integers A and B are given. We are interested in positions at which decimal representation of A occurs as a substring 
+	in the decimal representation of B (counting from 0) For example:
+	
+		- 53 occurs in 1953786 at position 2.
+		- 78 occurs in 1953786786 at positions 4 and 7
+		- 57 does not occur in 153786.
+	
+	Decimal representations are assumed to be big-endian and without leading zeros (the only exception being the number 0, whose 
+	decimal representation is "0")
+	
+	Write function
+		
+		class Solution { public int solution(int A, int B); }
+	
+	that, given two integers A and B, returns the leftmost position at which A occurs in B the function should return -1 
+	if A does not occur in B. 
+	For example, given A = 53 and B = 1985378653, the function should return 3, as explained above.
+	Assume that:
+		
+		- A and B are integers within the range [0..999,999,999].
+		
+	In your solution, focus on correctness. The performance of your solution will not be the focus of the assessment.
+---------------------------------------------------------------------------------------------------------------------*/
+package csd;
+
+class App {
+	public static void main(String [] args)	
+	{	
+		SolutionTest.run();
+	}
+}
+
+
+class SolutionTest {
+	public static void run()
+	{
+		java.util.Scanner kb = new java.util.Scanner(System.in);
+		
+		Solution s = new Solution();
+		
+		for (;;) {
+			System.out.print("Input the first number:");
+			int A = Integer.parseInt(kb.nextLine());
+			
+			System.out.print("Input the second number:");
+			int B = Integer.parseInt(kb.nextLine());
+			
+			System.out.println(s.solution(A, B));
+		}
+	}
+}
+
+class Solution { 
+	public int solution(int A, int B)
+	{
+		String AStr = A + "";
+		String BStr = B + "";
+		
+		return BStr.indexOf(AStr);
+	}
+}
+
+
+
+/*----------------------------------------------------------------------------------------------------------------------
+  	String sınıfının startsWith metodu
+---------------------------------------------------------------------------------------------------------------------*/
+package csd;
+
+class App {
+	public static void main(String [] args)	
+	{	
+		java.util.Scanner kb = new java.util.Scanner(System.in);
+		
+		System.out.print("Input the web address:");
+		String address = kb.nextLine();
+		
+		if (!address.startsWith("https://")) //bununla başlamıyorsa 
+			address = "https://" + address; // ekle gibi bir yaklaşımla yazdık
+		
+		System.out.println(address);
+	}
+}
+
+/*----------------------------------------------------------------------------------------------------------------------
+  	String sınıfının endsWith metodu
+---------------------------------------------------------------------------------------------------------------------*/
+package csd;
+
+class App {
+	public static void main(String [] args)	
+	{	
+		java.util.Scanner kb = new java.util.Scanner(System.in);
+		
+		System.out.print("Input your email:");
+		String email = kb.nextLine();
+		
+		if (!email.endsWith(".com"))
+			email += ".com";
+		
+		System.out.println(email);
+	}
+}
+
+
+/*----------------------------------------------------------------------------------------------------------------------
+  	Aşağıdaki örneği inceleyiniz
+---------------------------------------------------------------------------------------------------------------------*/
+package csd;
+
+class App {
+	public static void main(String [] args)	
+	{	
+		java.util.Scanner kb = new java.util.Scanner(System.in);
+		
+		System.out.print("Input your email:");
+		String email = kb.nextLine();
+		
+		int atIdx = email.indexOf('@');
+		int atIdx2 = email.lastIndexOf('@');
+		
+		if (atIdx != -1 && atIdx == atIdx2 && atIdx != email.length() - 1) {
+			if (email.substring(atIdx + 1).lastIndexOf(".") == -1)
+				email += ".com";
+			
+			System.out.println(email);
+		}
+		else
+			System.out.println("Invalid email");
+	}
+}
+
+/*----------------------------------------------------------------------------------------------------------------------
+  	Character isXXX metotları. Aşağıdaki örneği inceleyiniz
+
+	Mordor
+---------------------------------------------------------------------------------------------------------------------*/
+package csd;
+
+class App {
+	public static void main(String [] args)	
+	{	
+		java.util.Scanner kb = new java.util.Scanner(System.in);
+		
+		System.out.print("Bir yazı giriniz:");
+		String str = kb.nextLine();
+		
+		int whitespaceCount = 0, digitCount = 0, letterCount = 0;
+		
+		int len = str.length();
+		
+		for (int i = 0; i < len; ++i) {
+			char ch = str.charAt(i);
+			
+			if (Character.isWhitespace(ch))
+				++whitespaceCount;
+			else if (Character.isDigit(ch))
+				++digitCount;
+			else if (Character.isLetter(ch))
+				++letterCount;
+			else
+				System.out.printf("%c", ch);
+		}
+		
+		System.out.println();
+		System.out.printf("Boşluk sayısı:%d%n", whitespaceCount);
+		System.out.printf("Rakam sayısı:%d%n", digitCount);
+		System.out.printf("harf sayısı:%d%n", letterCount);
+	}
+}
+
+/*----------------------------------------------------------------------------------------------------------------------
+  	Character toXXX metotları. Aşağıdaki örneği inceleyiniz
+
+	MORDOR MORGOT
+---------------------------------------------------------------------------------------------------------------------*/
+package csd;
+
+class App {
+	public static void main(String [] args)	
+	{	
+		java.util.Scanner kb = new java.util.Scanner(System.in);
+		
+		System.out.print("Bir yazı giriniz:");
+		String str = kb.nextLine();
+		
+		int len = str.length();
+		
+		for (int i = 0; i < len; ++i) {
+			char ch = str.charAt(i);
+			
+			ch = Character.isLowerCase(ch) ? Character.toUpperCase(ch) : Character.toLowerCase(ch);
+			
+			System.out.printf("%s", ch);
+		}
+		
+		System.out.println();
+	}
+}
+
+/*----------------------------------------------------------------------------------------------------------------------
+  	Sınıf Çalışması: Parametresi ile aldığı bir yazının ilk harfi büyük geri kalan harfleri küçük olacak şekilde
+  	ve harf dışı karakter de aynı kalacak şekilde bir yazı döndüren capitalize isimli metodu StringUtil metodu 
+  	içerisinde yazınız ve aşağıdaki kod ile test ediniz.
+  	Örnek jAVA Programcısı çok çalışmalıdır -> Java programcısı çok çalışmalıdır
+---------------------------------------------------------------------------------------------------------------------*/
+package csd;
+
+class App {
+	public static void main(String [] args)	
+	{	
+		CapitalizeTest.run();
+	}
+}
+
+class CapitalizeTest {
+	public static void run()
+	{
+		java.util.Scanner kb = new java.util.Scanner(System.in);
+		
+		for (;;) {
+			System.out.print("Bir yazı giriniz:");
+			String s = kb.nextLine();
+			
+			System.out.printf("[%s]%n", StringUtil.capitalize(s));
+			
+			if ("elma".equals(s))
+				break;
+		}
+		
+		System.out.println("Tekrar yapıyor musunuz?");
+	}
+}
+
+
+class StringUtil {
+	public static String capitalize(String s)
+	{
+		return s.isEmpty() ? "" : Character.toUpperCase(s.charAt(0)) + s.substring(1).toLowerCase();
+	}
+}
+// burada isEmpty ise boş stringe gedi dönüyor değilse Character metodlarından touppercase ise s.charAt(0) ile ilk karakteri büyütüyor
+// ve devamını + operatörü ile substringin başlangıç indeksini vererek yazının kalanını ekliyor, eklerken de onları küçültüyor
+
+
+/*----------------------------------------------------------------------------------------------------------------------
+  	Sınıf Çalışması: Parametresi ile aldığı bir sadece başındaki boşluk karakterlerini atan trimLeading ve sadece
+  	sonundaki boşluk karakterlerini atan trimTrailing isimli metotları StringUtil sınıfı içerisinde yazınız ve 
+  	aşağıdaki kod ile test ediniz
+---------------------------------------------------------------------------------------------------------------------*/
+package csd;
+
+class App {
+	public static void main(String [] args)	
+	{	
+		TrimLeadingTrailingTest.run();
+	}
+}
+
+class TrimLeadingTrailingTest {
+	public static void run()
+	{
+		java.util.Scanner kb = new java.util.Scanner(System.in);
+		
+		for (;;) {
+			System.out.print("Bir yazı giriniz:");
+			String s = kb.nextLine();
+			
+			if ("elma".equals(s))
+				break;
+			
+			System.out.printf("(%s)%n", s);
+			System.out.printf("(%s)%n", StringUtil.trimLeading(s));
+			System.out.printf("(%s)%n", StringUtil.trimTrailing(s));
+		}
+		
+		System.out.println("Tekrar yapıyor musunuz?");
+	}
+}
+
+
+class StringUtil {
+	public static String trimLeading(String s)
+	{
+		int i;
+		int len = s.length();
+		
+		for (i = 0; i < len && Character.isWhitespace(s.charAt(i)); ++i)
+			;
+		
+		return s.substring(i);
+	}
+	
+	public static String trimTrailing(String s)
+	{
+		int i;
+		
+		for (i = s.length() - 1; i >= 0 && Character.isWhitespace(s.charAt(i)); --i)
+			;
+		
+		return s.substring(0, i + 1);	
+		// boşluk olduğu sürece döngü dönüyor son boşluğu bulduğunda döngüden çıkıyor ve i bize son boşluğun konumunu 
+		//vermiş oluyor. substringin [min bound) parametreleri ile istenen bölümü elde etmiş oluyoruz. bound) yüzünden i + 1 
+	}
+}
+
+/*----------------------------------------------------------------------------------------------------------------------
+  	Java 11 ile birlikte String sınıfına strip, stripLeading ve stripTrailing metotları eklenmiştir
+
+	Mordor
+---------------------------------------------------------------------------------------------------------------------*/
+package csd;
+
+class App {
+	public static void main(String [] args)	
+	{	
+		StripLeadingTrailingTest.run();
+	}
+}
+
+class StripLeadingTrailingTest {
+	public static void run()
+	{
+		java.util.Scanner kb = new java.util.Scanner(System.in);
+		
+		for (;;) {
+			System.out.print("Bir yazı giriniz:");
+			String s = kb.nextLine();
+			
+			if ("elma".equals(s))
+				break;
+			
+			System.out.printf("(%s)%n", s);
+			System.out.printf("(%s)%n", s.strip());	//baş ve son boşlukları kırpar
+			System.out.printf("(%s)%n", s.stripTrailing());
+			System.out.printf("(%s)%n", s.stripLeading());
+		}
+		
+		System.out.println("Tekrar yapıyor musunuz?");
+	}
+}
+
+/*----------------------------------------------------------------------------------------------------------------------
+  	Anahtar Notlar: Java'da aşağıdaki koşullardan birini sağlayan bir karakter whitespace karakterdir. Tersine
+  	whitespace bir karakter aşağıdaki koşullardan birini sağlar (if an only if):
+  	
+  	- Karakter "Unicode space" karakter ve "Non-breaking space" olmayan karakterlerdir. 
+  	Unicode space karakterler şunlardır:  Space Seperator, Line Seperator, Paragraph Seperator. Bu karakterler
+  	UNICODE çeşitli kategorilerdir. Detaylar burada ele alınmayacaktır. Bu karakter Character sınıfının
+  	SPACE_SEPERATOR, LINE_SEPERATOR, PARAGRAPH_SEPERATOR isimli static veri elemanları ile elde edilebilir. 
+  	non-breaking space karakterler şunlardır: '\u00A0', '\u2007', '\u202F'
+  	
+  	- '\t' horizontal tabulation
+  	
+  	- '\n' line feed (LF)
+  	
+  	- '\u000b' vertical tabulation
+  	
+  	- '\f' form tabulation
+  	
+  	- '\r' carriage tabulation (CR)
+  	
+  	- '\u001C' file separator
+  	
+  	- '\u001D' group separator
+  	
+  	- '\u001E' record separator
+  	
+  	- '\u001F' unit separator
+  	
+  	Character sınıfının isWhitespce metodu bir karakter için bu koşullara bakar. 
+  	
+  	trim metodu dökumana göre '\u0020''den küçük veya eşit olan whitespace karakterleri atar. strip metodu baştaki
+  	ve sondaki yukarıda anlatılan "whitespace" karakterlerini atar.
+  	
+  	Yukarıda anlatılanların detayları vardır. Şu aşamada önemsizdir. 
+  	
+  	
+  	Bu durumda programcı Java11+ ile çalışıyorsa, trim whitespace karakterler için strip metodunu çağırmalıdır. Java 11
+  	öncesi için tüm whitespace karakterleri atan bir trim metodu yazılabilir
+---------------------------------------------------------------------------------------------------------------------*/
+
+/*----------------------------------------------------------------------------------------------------------------------
+  	Aşağıdaki metotlar Java 11 öncesi için yazılabilir
+---------------------------------------------------------------------------------------------------------------------*/
+package csd;
+
+class App {
+	public static void main(String [] args)	
+	{	
+		TrimLeadingTrailingTest.run();
+	}
+}
+
+class TrimLeadingTrailingTest {
+	public static void run()
+	{
+		java.util.Scanner kb = new java.util.Scanner(System.in);
+		
+		for (;;) {
+			System.out.print("Bir yazı giriniz:");
+			String s = kb.nextLine();
+			
+			if ("elma".equals(s))
+				break;
+			
+			System.out.printf("(%s)%n", s);
+			System.out.printf("(%s)%n", StringUtil.trim(s));
+			System.out.printf("(%s)%n", StringUtil.trimLeading(s));
+			System.out.printf("(%s)%n", StringUtil.trimTrailing(s));
+		}
+		
+		System.out.println("Tekrar yapıyor musunuz?");
+	}
+}
+
+
+class StringUtil {
+	public static String trim(String s)
+	{
+		return trimLeading(trimTrailing(s));
+	}
+	
+	public static String trimLeading(String s)
+	{
+		int i;
+		int len = s.length();
+		
+		for (i = 0; i < len && Character.isWhitespace(s.charAt(i)); ++i)
+			;
+		
+		return s.substring(i);
+	}
+	
+	public static String trimTrailing(String s)
+	{
+		int i;
+		
+		for (i = s.length() - 1; i >= 0 && Character.isWhitespace(s.charAt(i)); --i)
+			;
+		
+		return s.substring(0, i + 1);
+	}
+}
+
+
+/*----------------------------------------------------------------------------------------------------------------------
+	Java 11 ile birlikte String sınıfına isBlank metodu eklenmiştir
+
+	Mordor
+	 baş ve son boşluklar trim edildiğinde kalan string boş mu onu verir
+-----------------------------------------------------------------------------------------------------------------------*/
+package csd;
+
+class App {
+	public static void main(String [] args)	
+	{	
+		ConcatWithHyphenApp.run();
+	}
+}
+
+class ConcatWithHyphenApp {
+	public static void run()
+	{
+		java.util.Scanner kb = new java.util.Scanner(System.in);
+		String str = "";
+		
+		for (;;) {
+			System.out.print("Bir yazı giriniz:");
+			String s = kb.nextLine();
+			
+			if (s.isBlank()) //if (s.strip().isEmpty())
+				continue;
+			
+			if ("elma".equals(s))
+				break;
+			
+			if (!str.isEmpty())
+				str += "-";
+			
+			str += s;
+		}	
+		
+		System.out.println(str);
+	}
+}
+
+/*----------------------------------------------------------------------------------------------------------------------
+	Java 11 ile birlikte String sınıfına repeat metodu eklenmiştir
+-----------------------------------------------------------------------------------------------------------------------*/
+package csd;
+
+class App {
+	public static void main(String [] args)	
+	{	
+		RepeatTest.run();
+	}
+}
+
+class RepeatTest {
+	public static void run()
+	{
+		java.util.Scanner kb = new java.util.Scanner(System.in);
+		String str = "";
+		
+		for (;;) {
+			System.out.print("Bir yazı giriniz:");
+			String s = kb.nextLine();
+		
+			if ("elma".equals(s))
+				break;
+			
+			System.out.print("Bir sayı giriniz:");
+			int count = Integer.parseInt(kb.nextLine());
+			
+			System.out.println(s.repeat(count));
+		}
+	}
+}
+
