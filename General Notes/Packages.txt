@@ -1,0 +1,74 @@
+Paketler (Packages) ve İsim Arama (Name Lookup):
+	Aşağıdaki maddelerde "user defined type (UDT)" olarak bildirilen kavram için şu ana kadarki bilgilerimizle
+	sınıf düşünülebilir. Anımsanacağı gibi ileride başka UDT'ler de göreceğiz.
+	
+	Java kodlarını içeren ve gennelikle ".java" uzantılı olan bir dosyaya (derlenen dosyaya)
+	"derleme birimi (compilation/translation unit)" denir. Eğer .java uzantılı dosyada birden fazla UDT söz konusu
+	ise her bir UDT bir derleme birimi olarak düşünülebilir
+	
+	Paketlere ilişkin detaylar:
+	
+	- javac her UDT için ayrı bir ".class" uzantılı dosya "byte code" üretir. Bu işlem UDT'ler aynı .java uzantılı
+	dosyada olsa bile bu şekilde yapılır
+	
+	- Bir UDT herhangi bir pakette olabilir. Bir proje içerisinde kullanılan UDT'lerin aynı pakette olması gerekmez
+	
+	- Bir ".class" uzantılı dosyanın, dosyaya ilişkin UDT'nin ait olduğu paketle aynı isimde bir dizinde (directory)
+	olması gerekir. Aslında .java uzantılı dosyalar için böyle bir zorunluluk yoktur. Ancak bir çok IDE kendi
+	içerisinde bunu zorunlu tutar	Morgot
+	
+	- Bir UDT bulunduğu paket dışında yani bir paketin içerisinde, paket ismi ve nokta operatörü ile kullanılabilir.
+	
+	- Bir paket içerisinde bildirilen bir UDT'nin farklı paketlerden kullanılabilmesi için public olarak bildirilmesi
+	gerekir. public olarak bildirilmeyen bir UDT ancak aynı paketteki diğer UDT'ler tarafıdan kullanılabilir. public
+	olmayana UDT'ler için için genel olarak "friendly" ya da daha nadir de olsa "internal" terimi kullanılır
+	
+	- Farklı paketlerde UDT'ler için byte code'larının da uygun yerde olması gerekir. Uygulamanın başlatıldığı dizin
+	tüm paketlere ilişkin dizinlerin kök dizinidir. Bu durumun da bazı ayrıntıları ve istisnaları vardır.
+	
+	- Uygulamada kullanılan sınıflar içerisinde bir tane main metodu olmak zorunda değildir. Ancak "java" programına
+	verilen byte code'a ilişkin sınıfta (dikkat bu bir sınıf olmalı) uygun main metodunun olması gerekir. main metodunun
+	aşağıdaki gibi bir yapıda olması gerekir:
+		public static void main(String [] args)
+	java programına verilen main metoduna "entry point" denir
+	
+	- public olarak bildirilen bir UDT'nin kendi ismiyle aynı isimde bir .java uzantılı dosya içerisinde 
+	bildirilmesi zorunludur. Bu durumda bir .java dosyasında yalnızca o dosya ismi ile aynı isimde bir UDT public
+	olarak bildirilebilir
+	
+	- Bir .java dosyasında public bir UDT olmak zorunda değildir
+	
+	- Bir .java dosyası içerisinde dosya ismi ile aynı isimde bir UDT olmak zorunda değildir. Ancak pratikte bunu pek
+	tercih etmeyiz
+	
+	- Bir .java dosyası içerisinde public olmayan istenildiği kadar UDT bildirilebilir. Bu UDT'lerin hepsi
+	aynı pakette bildirilmiş olurlar
+	
+	- Aynı paket içerisinde aynı isimde birden fazla UDT bildirimi geçersizdir
+	
+	- Farklı paketlerde aynı isimde UDT'ler bildirilebilir
+	
+	- Bir .java dosyasında birden fazla paket bildirimi geçersizdir
+	
+	- Hiç bir paket bildirimi yapılmamış .java dosyalarında bildirilen UDT'ler "isimsiz paket(unnamed package)" içerisinde
+	bildirilmiş olurlar. Ancak projelerde isimsiz paket içerisinde UDT bildirimi yapılmamalıdır
+	
+	- Bir paket içerisinde alt paketler (sub packages) olabilir. Alt paket bildirimlerinin genel biçimi
+	şu şekildedir:
+		package <paket ismi>[.alt paket ismi>.<alt paket ismiz>...]
+	Alt paketlerde bulunan UDT'lerin .class dosyaları paket hiyerarşisine ile uygun alt dizinlerde bukunmalıdır.
+	Benzer şekilde IDE'ler .java dosyaları için de bunu uygularlar
+	
+	- Paketler içiçe bile olsa bunlar farklı paketlerdir. Yani örneğin org.csystem.util.array paketi içerisinde 
+	bulunan ArrayUtil isimli sınıf org.csystem.util içerisnde de bulunabilir Bu isimler çakışmaz.
+	
+	- paket isimleri genellikle firmaya özgü tekil (unique) bilgi olan domain isminden üretilir. Örneğin CSD'nin
+	pakatleri ve UDT'leri domain ismi "csystem.org" olduğundan "org.csystem" paketi altınca yazılabilir. Bu convention'a
+	uyulmalıdır
+	
+	- JavaSE'nin standart tüm paketleri java isimli bir paket altında toplanmıştır. java paketi altındaki paketler
+	içerisinde paketler ve UDT'ler bildirilmiştir
+	
+	- java.lang paketi altında bulunan tüm UDT'ler her yerde görülebilirdir (visible). Yani buradaki UDT isimleri
+	paket ismi ile kombine etmeden de kullanılabilir. İleride ele alacağımız "import bildirimi" yapılmasına da gerek
+	yoktur
