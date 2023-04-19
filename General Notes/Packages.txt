@@ -1,4 +1,5 @@
 Paketler (Packages) ve İsim Arama (Name Lookup):
+
 	Aşağıdaki maddelerde "user defined type (UDT)" olarak bildirilen kavram için şu ana kadarki bilgilerimizle
 	sınıf düşünülebilir. Anımsanacağı gibi ileride başka UDT'ler de göreceğiz.
 	
