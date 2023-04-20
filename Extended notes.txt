@@ -17730,3 +17730,1189 @@ public class Complex {
 		return String.format("(%.2f, %.2f)", real, imag);
 	}	
 }
+
+
+/*----------------------------------------------------------------------------------------------------------------------
+	26.03.2023 
+-----------------------------------------------------------------------------------------------------------------------*/
+
+/*----------------------------------------------------------
+	FILE			: StringUtil.java
+	AUTHOR			: Java-Nov-2022 Group
+	LAST UPDATE		: 26.03.2023
+	
+	Utility class for string operations
+	
+	Copyleft (c) 1993 C and System Programmers Association 
+	All Rights Free
+------------------------------------------------------------*/
+package org.csystem.util.string;
+
+public class StringUtil {
+	public static String capitalize(String s)
+	{
+		return s.isEmpty() ? "" : Character.toUpperCase(s.charAt(0)) + s.substring(1).toLowerCase();
+	}
+
+	public static int countString(String s1, String s2) 
+	{
+		int count = 0;
+
+		for (int index = -1; (index = s1.indexOf(s2, index + 1)) != -1; ++count)
+			;
+
+		return count;
+	}
+
+	public static int countStringIgnoreCase(String s1, String s2)
+	{
+		return countString(s1.toLowerCase(), s2.toLowerCase());
+	}
+
+	public static String getRandomText(java.util.Random r, int n, String text) 
+	{
+		String str = "";
+		int len = text.length();
+
+		for (int i = 0; i < n; ++i)
+			str += text.charAt(r.nextInt(len));
+
+		return str;
+	}
+
+	public static String getRandomTextEN(int n) 
+	{
+		return getRandomTextEN(new java.util.Random(), n);
+	}
+
+	public static String getRandomTextEN(java.util.Random r, int n) 
+	{
+		return getRandomText(r, n, "abcdefghijklmnopqrstuwxvyzABCDEFGHIJKLMNOPQRSTUWXYZ");
+	}
+
+	public static String getRandomTextTR(int n) 
+	{
+		return getRandomTextTR(new java.util.Random(), n);
+	}
+
+	public static String getRandomTextTR(java.util.Random r, int n) 
+	{
+		return getRandomText(r, n, "abcçdefgğhıijklmnoöprsştuüvyzABCÇDEFGĞHIİJKLMNOÖPRSŞTUÜVYZ");
+	}
+
+	public static boolean isPalindrome(String s) 
+	{
+		int left = 0;
+		int right = s.length() - 1;
+
+		while (left < right) {
+			char cLeft = Character.toLowerCase(s.charAt(left));
+
+			if (!Character.isLetter(cLeft)) {
+				++left;
+				continue;
+			}
+
+			char cRight = Character.toLowerCase(s.charAt(right));
+
+			if (!Character.isLetter(cRight)) {
+				--right;
+				continue;
+			}
+
+			if (cLeft != cRight)
+				return false;
+
+			++left;
+			--right;
+		}
+
+		return true;
+	}
+
+	public static boolean isPangram(String s, String alphabet) 
+	{
+		int len = alphabet.length();
+
+		for (int i = 0; i < len; ++i)
+			if (!s.contains(alphabet.charAt(i) + ""))
+				return false;
+
+		return true;
+	}
+
+	public static boolean isPangramEN(String s)
+	{
+		return isPangram(s.toLowerCase(), "abcdefghijklmnopqrstuwxvyz");
+	}
+
+	public static boolean isPangramTR(String s) 
+	{
+		return isPangram(s.toLowerCase(), "abcçdefgğhıijklmnoöprsştuüvyz");
+	}
+
+	public static String padLeading(String s, int len) 
+	{
+		return padLeading(s, len, ' ');
+	}
+
+	public static String padLeading(String s, int len, char ch)
+	{
+		int length = s.length();
+
+		return len <= length ? s : (ch + "").repeat(len - length) + s;
+	}
+
+	public static String padTrailing(String s, int len) 
+	{
+		return padTrailing(s, len, ' ');
+	}
+
+	public static String padTrailing(String s, int len, char ch) 
+	{
+		int length = s.length();
+
+		return len <= length ? s : s + (ch + "").repeat(len - length);
+	}
+	
+	public static String reverse(String str)
+	{
+		String result = "";
+
+		for (int i = str.length() - 1; i >= 0; --i)
+			result += str.charAt(i); // ***
+
+		return result;
+	}
+}
+
+
+/*----------------------------------------------------------
+	FILE			: NumberUtil.java
+	AUTHOR			: Java-Nov-2022 Group
+	LAST UPDATE		: 26.03.2023
+	
+	Utility class for numeric operations
+	
+	Copyleft (c) 1993 C and System Programmers Association 
+	All Rights Free
+------------------------------------------------------------*/
+package org.csystem.util.numeric;
+
+
+public class NumberUtil {
+	public static boolean areFriends(int a, int b)
+	{
+		return sumFactors(a) == b && sumFactors(b) == a;
+	}
+
+	public static int calculateDigitalRoot(int a)
+	{
+		int root = Math.abs(a);
+
+		while (root > 9)
+			root = sumDigits(root);
+
+		return root;
+	}
+
+	public static int calculateDigitsPowSum(int a)
+	{
+		int n = countDigits(a);
+
+		int total = 0;
+
+		while (a != 0) {
+			total += Math.pow(a % 10, n);
+
+			a /= 10;
+		}
+
+		return total;
+
+	}
+
+	public static int countDigits(int a)
+	{	
+		return a == 0 ? 1 : (int)Math.log10(Math.abs(a)) + 1;
+	}
+
+	public static int factorial(int n)
+	{
+		int result = 1;
+
+		for (int i = 2; i <= n; ++i)
+			result *= i;
+		
+		return result;
+	}
+
+	public static int fibonacciNumber(int n)
+	{
+
+		if (n <= 2)
+			return n - 1;
+
+		int prev1 = 1, prev2 = 0, val = 0;
+
+		for (int i = 2; i < n; ++i) {
+			val = prev1 + prev2;
+			prev2 = prev1;
+			prev1 = val;
+		}
+
+		return val;
+	}
+	
+	public static int getHardyRamanujanCount(int n)
+	{
+		int count = 0;
+
+		EXIT_LOOP:
+
+		for (int a = 1; a * a * a < n; ++a)
+			for (int b = a + 1; a * a * a + b * b * b <= n; ++b)
+				if (a * a * a + b * b * b == n) {
+					if (++count == 2)
+						break EXIT_LOOP;
+
+					++a;
+				}
+
+		return count;
+	}
+
+	public static int getPrime(int n)
+	{
+		int val = 2;
+		int count = 0;
+
+		for (;;) {
+			if (isPrime(val))
+				++count;
+
+			if (count == n)
+				return val;
+
+			++val;
+		}
+	}
+	
+	public static int indexOfPrime(long a)
+	{
+		int i = 1;
+		long val = 2;
+
+		for (;;) {
+			if (val == a)
+				return i;
+
+			if (isPrime(val))
+				++i;
+			
+			++val;
+		}
+	}
+
+
+	public static boolean isArmstrong(int a)
+	{
+		return a >= 0 && calculateDigitsPowSum(a) == a;
+	}
+
+	public static boolean isDecimalHarshad(int val)
+	{
+		return val > 0 && val % sumDigits(val) == 0; 
+	}
+	
+	public static boolean isEven(int a)
+	{
+		return a % 2 == 0;
+	}
+	
+	public static boolean isFactorian(int n)
+	{
+		return n > 0 && sumFactorialDigits(n) == n;
+	}
+
+	public static boolean isHardyRamanujan(int n)
+	{
+		return n > 0 && getHardyRamanujanCount(n) == 2;
+	}
+
+	public static boolean isOdd(int a)
+	{
+		return !isEven(a);
+	}
+
+	public static boolean isPerfect(int val)
+	{
+		return sumFactors(val) == val;
+	}
+	
+	public static boolean isPrime(long a)
+	{
+		if (a <= 1)
+			return false;
+
+		if (a % 2 == 0)
+			return a == 2;
+
+		if (a % 3 == 0)
+			return a == 3;
+
+		if (a % 5 == 0)
+			return a == 5;
+
+		if (a % 7 == 0)
+			return a == 7;
+
+		for (long i = 11; i * i <= a; i += 2)
+			if (a % i == 0)
+				return false;
+		
+		return true;
+	}		
+
+	public static boolean isPrimeX(long a)
+	{
+		boolean result;
+		
+		for (long sum = a; (result = isPrime(sum)) && sum > 9; sum = sumDigits(sum))
+			;
+		
+		return result;
+	}
+
+	public static boolean isSuperPrime(long a)
+	{
+		return isPrime(a) && isPrime(indexOfPrime(a));
+	}
+
+	public static int mid(int a, int b, int c)
+	{
+		if (a <= b && b <= c || c <= b && b <= a)
+			return b;
+
+		if (b <= a && a <= c || c <= a && a <= b)
+			return a;
+
+		return c;
+	}
+
+	public static int multiply(int a, int b)
+	{
+		return a * b;
+	}
+	
+	public static int nextFibonacciNumber(int val)
+	{
+		if (val < 0)
+			return 0;
+
+		int prev1 = 1, prev2 = 0, next;
+		
+		for (;;) {
+			next = prev1 + prev2;
+			
+			if (next > val)
+				return next;
+
+			prev2 = prev1;
+			prev1 = next;
+		}
+	}
+
+	public static int pow(int a, int b)
+	{
+		int result = 1;
+
+		while (b-- > 0)
+			result *= a;
+		
+		return result;
+	}
+	
+	public static int reversed(int a)
+	{
+		int result = 0;
+
+		while (a != 0) {
+			result = result * 10 + a % 10;
+			a /= 10;
+		}
+
+		return result;
+	}
+	
+	public static int sumDigits(long a)
+	{
+		int sum = 0;
+
+		while (a != 0) {
+			sum += a % 10;
+			a /= 10;
+		}
+
+		return Math.abs(sum);
+
+	}
+
+	public static int sumFactorialDigits(int n)
+	{
+		int sum = 0;
+		
+		while (n != 0) {
+			sum += factorial(n % 10);
+			n /= 10;
+		}
+
+		return sum;
+	}
+
+	public static long sumFactors(long val)
+	{
+		long result = 1;
+
+		for (long i = 2; i * i <= val; ++i)
+			if (val % i == 0)
+				result += (i == val / i) ? i : (i + val / i); 
+
+		return result;
+	}
+
+}
+
+/*----------------------------------------------------------------------------------------------------------------------
+	İsim arama (name lookup): Derleyici kullanılan bir ismi önce arar. Eğer bulursa erişim kontrolü yapar yani doğru
+	bir şekilde kullanılıp kullanılmadığına bakar.Derleyici isim aramayı belirli kurallara göre yapar. Burada anlatılacak 
+	genel kurallar dışında başka detaylar da vardır. Bu detaylar da isim aramanın bir parçasıdır. Özel durumlar olarak
+	düşünülmelidir. Yani önce genel kurallar sonra özel durumlar için kurallar anlatılacaktır. Hatta ileride bazı konular
+	için yine bazı özel durumlar olacaktır
+
+	MORDOR
+-----------------------------------------------------------------------------------------------------------------------*/
+/*----------------------------------------------------------------------------------------------------------------------
+	Derleyici bildirimi yapılan isimleri bildirim noktasında aramaz
+-----------------------------------------------------------------------------------------------------------------------*/
+package org.csystem.app;
+
+class App {
+	public static void main(String [] args) 
+	{	
+		int a; // a aranmaz
+	
+		//...
+	}
+}
+
+class Sample { //Sample aranmaz
+	public void foo() //foo aranmaz
+	{
+		
+	}
+}
+
+
+/*----------------------------------------------------------------------------------------------------------------------
+	Bir isim kod içerisinde iki şekilde kullanılabilir: nitelikli (qualified), niteliksiz (unqualified)
+	Bir isim nokta operatörünün sağında kalıyorsa nitelikli, kalmıyorsa niteliksiz kullanılmış olur		MORDOR
+	
+	Niteliksiz kullanılan isimler "niteliksiz isim arama (unqualified name lookup) kurallarına göre, niteliklli
+	kullanılan isimler ise "nitelikli isim arama (qualified name lookup)" kurallarına göre aranır. 
+	 
+	Anahtar Notlar: Yukarıdaki tanımlarda nitelikli ve niteliksiz olmak olumlu veya olumsuız bir anlamda düşünülmemelidir
+-----------------------------------------------------------------------------------------------------------------------*/
+package org.csystem.app;
+
+class App { //App aranmaz
+	public static void main(String [] args) //main aranmaz
+	{	
+		int a; // a aranmaz
+		
+		a = 10; // a niteliksiz aranır
+		
+		Sample s; //Sample niteliksiz aranır
+		
+		s = new Sample(); //s ve Sample niteliksiz aranır 
+		
+		s.foo(a); //s niteliksiz aranır , foo nitelikli aranır 
+	
+		//...
+	}
+}
+
+class Sample { //Sample aranmaz
+	public void foo(int x) //foo ve x aranmaz
+	{
+		++x; //x niteliksiz aranır
+	}
+}
+
+/*----------------------------------------------------------------------------------------------------------------------
+	Derleyici bir ismi bulduktan sonra erişim kontrolü yapar. Aşağıdaki örneği inceliyiniz
+-----------------------------------------------------------------------------------------------------------------------*/
+package org.csystem.app;
+
+class App { //App aranmaz
+	public static void main(String [] args) //main aranmaz
+	{	
+		int a; // a aranmaz
+		
+		++a; //error message Eclipse: The local variable a may not have been initialized
+	}
+}
+
+
+/*----------------------------------------------------------------------------------------------------------------------
+	Niteliksiz isim arama genel kuralları (else if biçiminde değerlendiriniz):
+	1. Bir isim metot içerisinde kullanılmışsa, kullanıldığı yerden yukarıya doğru metot içerisinde aranır. Burada
+	kullanılan isimden önce bildirilen yerel değişkenler ve parametre değişken isimlerine bakılır 
+-----------------------------------------------------------------------------------------------------------------------*/
+package org.csystem.app;
+
+class App {
+	public static void main(String [] args)
+	{	
+		int x;
+		
+		x = 10;
+		++x;
+	}
+}
+
+class Sample {
+	public void foo(int a)
+	{
+		int x;
+		
+		x = a; 
+	}
+}
+
+
+/*----------------------------------------------------------------------------------------------------------------------
+	Niteliksiz isim arama genel kuralları (else if biçiminde değerlendiriniz):
+	2. İsim metodun ait olduğıu sınıfın tamamında ancak tüm metotların dışında aranır. Burada sınıf içerisinde 
+	bulamazsa sırasıyla "doğrudan taban sınıf (direct super class)" ve "dolyalı taban sınıflara (indirect super class)"
+	dan bakılır. Taban sınıf kavramı ileride detaylı olarak ele alınacaktır 
+-----------------------------------------------------------------------------------------------------------------------*/
+package org.csystem.app;
+
+class App {
+	public static void main(String [] args)
+	{	
+		Sample s = new Sample();
+		
+		s.foo(67);
+		
+		System.out.printf("s.x = %d%n", s.x);
+	}
+}
+
+class Sample {
+	public void foo(int a)
+	{
+		x = a; 
+	}
+	
+	public int x;
+	
+	public void bar(int x)
+	{
+		//...
+	}
+	
+}
+
+/*----------------------------------------------------------------------------------------------------------------------
+	Yukarıdaki iki kurala göre bir sınıfın veri elemanı ile aynı isimde metot parametre değişkeni veya yerel değişken
+	bildirimi yapılabilir 
+
+	MORDOR
+-----------------------------------------------------------------------------------------------------------------------*/
+package org.csystem.app;
+
+class App {
+	public static void main(String [] args)
+	{	
+		Sample s = new Sample();
+		
+		s.foo(67);
+		
+		System.out.printf("s.x = %d%n", s.x);
+	}
+}
+
+class Sample {
+	public int x;
+	
+	public void foo(int a)
+	{
+		int x; //shadowing, masking, hiding
+		
+		x = a; 
+	}
+	
+	public void bar(int a)
+	{
+		x = a; 
+	}
+}
+
+/*----------------------------------------------------------------------------------------------------------------------
+	Niteliksiz isim arama genel kuralları (else if biçiminde değerlendiriniz):
+	3. İsim sınıfın ait olduğu paket içerisinde aranır. Burada alt ya da üst paketlere bakılmaz. Sadece ait olduğu 
+	pakete bakılır 
+-----------------------------------------------------------------------------------------------------------------------*/
+package org.csystem.app;
+
+class App {
+	public static void main(String [] args)
+	{	
+		Sample s = new Sample();
+		
+		s.foo(67);
+		
+		System.out.printf("s.x = %d%n", s.x);
+	}
+}
+
+class Sample {
+	public int x;
+	
+	public void foo(int a)
+	{
+		
+		x = a; 
+	}
+}
+
+/*----------------------------------------------------------------------------------------------------------------------
+	Niteliksiz isim arama genel kuralları (else if biçiminde değerlendiriniz):
+	3. İsim sınıfın ait olduğu paket içerisinde aranır. Burada alt ya da üst paketlere bakılmaz. Sadece ait olduğu 
+	pakete bakılır 
+-----------------------------------------------------------------------------------------------------------------------*/
+package org.csystem.app;
+
+class App {
+	public static void main(String [] args)
+	{	
+		Sample s; //error
+
+	}
+}
+
+
+package org.csystem;
+
+public class Sample {
+	public int x;
+	
+	public void foo(int a)
+	{
+		
+		x = a; 
+	}
+}
+
+/*----------------------------------------------------------------------------------------------------------------------
+	Niteliksiz isim arama genel kuralları (else if biçiminde değerlendiriniz):
+	3. İsim sınıfın ait olduğu paket içerisinde aranır. Burada alt ya da üst paketlere bakılmaz. Sadece ait olduğu 
+	pakete bakılır 
+-----------------------------------------------------------------------------------------------------------------------*/
+package org.csystem.app;
+
+class App {
+	public static void main(String [] args)
+	{	
+		Sample s; //error
+	}
+}
+
+
+package org.csystem.app.test;
+
+public class Sample {
+	public int x;
+	
+	public void foo(int a)
+	{
+		
+		x = a; 
+	}
+}
+
+
+/*----------------------------------------------------------------------------------------------------------------------
+	Niteliksiz isim arama genel kuralları (else if biçiminde değerlendiriniz):
+	4. "import on demand declaration" varsa o pakete de bakılır. Bu konu ileride ele alınacaktır  
+-----------------------------------------------------------------------------------------------------------------------*/
+
+/*----------------------------------------------------------------------------------------------------------------------
+	Yukarıdaki isim arama işlemi sonucunda isim bulunamazsa error oluşur
+-----------------------------------------------------------------------------------------------------------------------*/
+
+/*----------------------------------------------------------------------------------------------------------------------
+	Yukarıdaki kurallara göre isimsiz paket altında bulunan bir UDT2ye bir paket içerisinden erişilemez. Nitelikli
+	olarak da erişilemez. Yalnızca bu sebepten bile bir projede isimsiz paket altında UDT bildirilmemelidir
+-----------------------------------------------------------------------------------------------------------------------*/
+package org.csystem.app;
+
+class App {
+	public static void main(String [] args)
+	{	
+		Sample s;
+	}
+}
+
+
+public class Sample {
+	public int x;
+	
+	public void foo(int a)
+	{
+		
+		x = a; 
+	}
+}
+
+
+/*----------------------------------------------------------------------------------------------------------------------
+	Nitelikli isim arama genel kuralları (else if biçiminde değerlendiriniz):
+	1. Aranacak ismin solunda bir UDT ismi varsa, ilgili UDT içerisinde aranır. Bulunamazsa taban sınıflara da bakılır 
+-----------------------------------------------------------------------------------------------------------------------*/
+package org.csystem.app;
+
+class App {
+	public static void main(String [] args)
+	{	
+		Sample.x = 10;
+		Sample.foo();
+		
+		System.out.printf("Sample.x = %d%n", Sample.x);
+	}
+}
+
+class Sample {
+	public static int x;
+	public static void foo()
+	{
+		System.out.println("Sample.foo");
+	}
+}
+
+/*----------------------------------------------------------------------------------------------------------------------
+	Nitelikli isim arama genel kuralları (else if biçiminde değerlendiriniz):
+	2. Aranacak ismin solunda bir referans ismi varsa, isim o referansa ilişkin sınıf içerisinde aranır. Bukunamazsa 
+	taban sınıflara da bakılır 
+-----------------------------------------------------------------------------------------------------------------------*/
+package org.csystem.app;
+
+class App {
+	public static void main(String [] args)
+	{	
+		Sample s = new Sample();
+		
+		s.x = 10;
+		s.foo();
+				
+		System.out.printf("s.x = %d%n", s.x);
+	}
+}
+
+class Sample {
+	public int x;
+	public void foo()
+	{
+		System.out.println("Sample.foo");
+	}
+}
+
+
+/*----------------------------------------------------------------------------------------------------------------------
+	Nitelikli isim arama genel kuralları (else if biçiminde değerlendiriniz):
+	3. Aranacak ismin solunda bir paket ismi varsa, isim o paket içerisinde aranır. Alt ya da üst paketlere bakılmaz 
+-----------------------------------------------------------------------------------------------------------------------*/
+package org.csystem.app;
+
+class App {
+	public static void main(String [] args)
+	{	
+		test.Sample s;
+	}
+}
+
+class Sample {
+	public int x;
+	
+	public void foo()
+	{
+		System.out.println("Sample.foo");
+	}
+}
+
+package test;
+
+public class Sample {
+	//...
+}
+
+/*----------------------------------------------------------------------------------------------------------------------
+	Alt paket isimleri niteliksiz isim aramaya dahil değildir. Yani aşağıdaki örnekte test ismi aranırken org.csystem.app
+	içerisindeki test paketinin ismi dikkate alınmaz. Niteliksiz kullanılan bir ismin paket ismi olarak bulunabilmesi 
+	için uygulamaya ilişkin dizin içerisinde bulunması gerekir 
+-----------------------------------------------------------------------------------------------------------------------*/
+package org.csystem.app;
+
+class App {
+	public static void main(String [] args)
+	{	
+		test.Sample s; //error
+	}
+}
+
+
+package org.csystem.app.test;
+
+public class Sample {
+	//...
+}
+
+/*----------------------------------------------------------------------------------------------------------------------
+	import bildirimleri genel olarak niteliklendirmeyi azaltmak için, dolayısıyla daha yalın ve açık (clean) kod
+	yazımı için kullanılır. 
+	
+	Anahtar Notlar: import bildirimi bir kütüphaneyi "import etmek" anlamına GELMEZ
+	
+	import bildirimleri iki şekilde kullanılabilir:
+	1. Yıldızlı import bildirimi (import on demand declaration)
+	2. Yıldızsız import bildirimi (import single type declaration)
+	
+	import bildirimleri ".java" dosyasında paket bildiriminden sonra tüm diğer bildirimlerden önce yazılmalıdır. 
+	import bildirimleri istenildiği sayıda olabilir ve yazılış sırasının önemi yoktur. import bildirimi bildirildiği
+	".java" dosyasına özgüdür. Diğer derleme birimlerini etkilemez. import bildirimleri niteliksiz isim arama 
+	kurallarına ilişkindir. Nitelikli isim aramada bir etkisi yoktur.
+	
+	Anahtar Notlar: "Yıldızlı ve yıldızsız import bildirimi" terimleri kolay anlatmk için Oğuz Karan tarafından 
+	uydurulmuştur. Teknik olarak "import with asterisk" veya "import without asterisk" DENİLMEMELİDİR 
+
+	MORDOR
+-----------------------------------------------------------------------------------------------------------------------*/
+
+/*----------------------------------------------------------------------------------------------------------------------
+	Yıldızlı import bildiriminin (import on demand declaration) genel biçimi:
+	import <paket ismi>[.alt paketler].*;
+	
+	Bu bildirim niteliksiz isim arama genel kurallarına göre aranan ismin paket içerisinde de bulunamaması durumunda 
+	arama için bakılacak paketi temsil eder. Yani adeta bir paketin başka paket içerisine isim arama anlamında dahil
+	edilmesidir. Daha açık olarak söylemek gerekirse bu import bildirimleri derleyiciye "eğer niteliksiz bir ismi
+	pakette de bulamazsa yıldızlı import bildirimlerine ilişkin paketlere de bak" demektir 
+-----------------------------------------------------------------------------------------------------------------------*/
+package org.csystem.app;
+
+import java.util.*;
+import org.csystem.math.geometry.*;
+import org.csystem.util.string.*;
+
+class App {
+	public static void main(String [] args)
+	{	
+		Random r = new Random();
+		Scanner kb = new Scanner(System.in);
+		
+		Point p = new Point();
+		System.out.println(StringUtil.getRandomTextTR(r, 10));
+	}
+}
+
+
+/*----------------------------------------------------------------------------------------------------------------------
+	Yıldızlı import bildirimlerine ilişkin paketlerin hepsine bakılır. Birden fazla paket içerisinde isim blunursa
+	iki anlamlılık (ambiguity) hatası oluşur 
+-----------------------------------------------------------------------------------------------------------------------*/
+package org.csystem.app;
+
+import test.*;
+import mest.*;
+
+class App {
+	public static void main(String [] args)
+	{	
+		Sample s; // error: ambiguity
+		Mample m;
+	}
+}
+
+
+
+package test;
+
+public class Sample {
+	//...
+}
+
+package mest;
+
+public class Mample {
+	//...
+}
+
+package mest;
+
+public class Sample {
+	//...
+}
+
+
+/*----------------------------------------------------------------------------------------------------------------------
+	Yıldızlı import bildiriminin kullanımı 
+-----------------------------------------------------------------------------------------------------------------------*/
+package org.csystem.app;
+
+import java.util.*;
+import org.csystem.math.geometry.*;
+
+class App {
+	public static void main(String [] args)
+	{	
+		Scanner kb = new Scanner(System.in);
+		Random r = new Random();
+		
+		System.out.print("Bir sayı giriniz:");
+		int count = kb.nextInt();
+		
+		while (count-- > 0) {
+			Point p = new Point(r.nextDouble(-100, 100), r.nextDouble(-100, 100));
+			
+			System.out.println(p.toString());
+		}
+	}
+}
+
+
+/*----------------------------------------------------------
+	FILE			: StringUtil.java
+	AUTHOR			: Java-Nov-2022 Group
+	LAST UPDATE		: 26.03.2023
+	
+	Utility class for string operations
+	
+	Copyleft (c) 1993 C and System Programmers Association 
+	All Rights Free
+------------------------------------------------------------*/
+package org.csystem.util.string;
+
+import java.util.*;
+
+public class StringUtil {
+	public static String capitalize(String s)
+	{
+		return s.isEmpty() ? "" : Character.toUpperCase(s.charAt(0)) + s.substring(1).toLowerCase();
+	}
+
+	public static int countString(String s1, String s2) 
+	{
+		int count = 0;
+
+		for (int index = -1; (index = s1.indexOf(s2, index + 1)) != -1; ++count)
+			;
+
+		return count;
+	}
+
+	public static int countStringIgnoreCase(String s1, String s2)
+	{
+		return countString(s1.toLowerCase(), s2.toLowerCase());
+	}
+
+	public static String getRandomText(Random r, int n, String text) 
+	{
+		String str = "";
+		int len = text.length();
+
+		for (int i = 0; i < n; ++i)
+			str += text.charAt(r.nextInt(len));
+
+		return str;
+	}
+
+	public static String getRandomTextEN(int n) 
+	{
+		return getRandomTextEN(new Random(), n);
+	}
+
+	public static String getRandomTextEN(Random r, int n) 
+	{
+		return getRandomText(r, n, "abcdefghijklmnopqrstuwxvyzABCDEFGHIJKLMNOPQRSTUWXYZ");
+	}
+
+	public static String getRandomTextTR(int n) 
+	{
+		return getRandomTextTR(new Random(), n);
+	}
+
+	public static String getRandomTextTR(Random r, int n) 
+	{
+		return getRandomText(r, n, "abcçdefgğhıijklmnoöprsştuüvyzABCÇDEFGĞHIİJKLMNOÖPRSŞTUÜVYZ");
+	}
+
+	public static boolean isPalindrome(String s) 
+	{
+		int left = 0;
+		int right = s.length() - 1;
+
+		while (left < right) {
+			char cLeft = Character.toLowerCase(s.charAt(left));
+
+			if (!Character.isLetter(cLeft)) {
+				++left;
+				continue;
+			}
+
+			char cRight = Character.toLowerCase(s.charAt(right));
+
+			if (!Character.isLetter(cRight)) {
+				--right;
+				continue;
+			}
+
+			if (cLeft != cRight)
+				return false;
+
+			++left;
+			--right;
+		}
+
+		return true;
+	}
+
+	public static boolean isPangram(String s, String alphabet) 
+	{
+		int len = alphabet.length();
+
+		for (int i = 0; i < len; ++i)
+			if (!s.contains(alphabet.charAt(i) + ""))
+				return false;
+
+		return true;
+	}
+
+	public static boolean isPangramEN(String s)
+	{
+		return isPangram(s.toLowerCase(), "abcdefghijklmnopqrstuwxvyz");
+	}
+
+	public static boolean isPangramTR(String s) 
+	{
+		return isPangram(s.toLowerCase(), "abcçdefgğhıijklmnoöprsştuüvyz");
+	}
+
+	public static String padLeading(String s, int len) 
+	{
+		return padLeading(s, len, ' ');
+	}
+
+	public static String padLeading(String s, int len, char ch)
+	{
+		int length = s.length();
+
+		return len <= length ? s : (ch + "").repeat(len - length) + s;
+	}
+
+	public static String padTrailing(String s, int len) 
+	{
+		return padTrailing(s, len, ' ');
+	}
+
+	public static String padTrailing(String s, int len, char ch) 
+	{
+		int length = s.length();
+
+		return len <= length ? s : s + (ch + "").repeat(len - length);
+	}
+	
+	public static String reverse(String str)
+	{
+		String result = "";
+
+		for (int i = str.length() - 1; i >= 0; --i)
+			result += str.charAt(i); // ***
+
+		return result;
+	}
+}
+
+
+/*----------------------------------------------------------------------------------------------------------------------
+	Yıldızsız import bildiriminin (import single type declaration) genel biçimi:
+	import <paket ismi>[.alt paketler].<UDT ismi>;
+	
+	Bu bildirim UDT isminin doğrudan kullanılabileceğini belirtir. Bu bildirimin yazılabildiği durumda bu UDT ismi
+	için niteliksiz isim arama genel kuralları uygulanmaz. Programcı mümkün olduğunda bu import
+	bildirimini tercih etmelidir. Zaten bir çok IDE de programcıyı mümkün olduğunca bu bildirime
+	yönlendirir
+-----------------------------------------------------------------------------------------------------------------------*/
+
+/*----------------------------------------------------------------------------------------------------------------------
+	Aşağıdaki örnekte 
+		import org.csystem.math.geometry.Point;
+	bildirimi "bu derleme biriminde Point ismi doğrudan kullanılabilir ve bu isim org.csystem.math.geometry.Point sınıfıdır"
+	anlamına gelir
+
+Not:
+Burada sınıf isimlerinin yani udt lerin neden büyük harf conventionuna uyularak yazılması gerektiğine güzel bir örnektir
+paket isimleri küçük harfle kullanılırken sınıf isminin büyük  harfle başlaması impert bildiriminde okunabilirliği arttırır. 
+-----------------------------------------------------------------------------------------------------------------------*/
+package org.csystem.app;
+
+import java.util.Random;
+import java.util.Scanner;
+import org.csystem.math.geometry.Point;
+
+class App {
+	public static void main(String [] args)
+	{	
+		Scanner kb = new Scanner(System.in);
+		Random r = new Random();
+		
+		System.out.print("Bir sayı giriniz:");
+		int count = kb.nextInt();
+		
+		while (count-- > 0) {
+			Point p = new Point(r.nextDouble(-100, 100), r.nextDouble(-100, 100));
+			
+			System.out.println(p.toString());
+		}
+	}
+}
+
+
+/*----------------------------------------------------------------------------------------------------------------------
+	Aşağıdaki örnekte Sample sınıfının niteliksiz kullanımına ilişkin birden fazla yıldızsız import bildirimi yapılamaya
+	çalışılmıştır. Bu da anlamsız olduğundan error oluşur. Örnekte Sample ismi kullanılmasa bile error oluşur
+-----------------------------------------------------------------------------------------------------------------------*/
+package org.csystem.app;
+
+import mest.Sample;
+import test.Sample; //error
+
+class App {
+	public static void main(String [] args)
+	{	
+		Sample s;
+	}
+}
+
+
+package test;
+
+public class Sample {
+	//...
+}
+
+package mest;
+
+public class Sample {
+	//...
+}
