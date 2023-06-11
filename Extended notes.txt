@@ -24047,7 +24047,108 @@ class App {
 }
 
 /*----------------------------------------------------------------------------------------------------------------------
-	23836
+	Anahtar Notlar: Genel olarak, dizi dolaşılırken indeks numarasının kullanılması gerektiği durumlarda ve dizinin baştan
+	sona dolaşılmadığı durumlarda klasik for döngüsü kullanılması ya da başka bir deyişle for-each döngüsünün kullanılmaması
+	daha iyi bir tekniktir. Diğer durumlarda for-each döngü deyimi kullanılabilir, kullanılmalıdır
+
+	MORDOR MORDOR MORDOR
+-----------------------------------------------------------------------------------------------------------------------*/
+package org.csystem.app;
+
+class App {
+	public static void main(String [] args)
+	{
+		int [] a = {1, 2, 3, 4, 5, 6};
+
+		int i = a.length - 1;
+
+		for (int val : a)
+			System.out.printf("%d ", a[i--]);
+
+		System.out.println();
+	}
+}
+
+/*----------------------------------------------------------------------------------------------------------------------
+	String sınıfı for-each döngü deyimi ile kullanılamaz. Teknik olarak söylersek, String sınıfı "iterable" bir sınıf
+	değildir
+
+	MORDOR		iterable ?
+-----------------------------------------------------------------------------------------------------------------------*/
+package org.csystem.app;
+
+class App {
+	public static void main(String [] args)
+	{
+		String s = "ankara";
+
+		for (char c : s) //error
+			System.out.printf("%c ", c );
+
+		System.out.println();
+	}
+}
+
+/*----------------------------------------------------------------------------------------------------------------------
+	İstenirse toCharArray metodu ile elde edilen dizideki tüm karakterler for-each ile dolaşılabilir. toCharArray metodunun
+	yeni bir dizi yaratığı da unutulmamalıdır. Bu durumun dezavantaj olup olmadığı yine yazılacak koda bağlıdır
+
+	MORDOR MORDOR MORDOR
+-----------------------------------------------------------------------------------------------------------------------*/
+package org.csystem.app;
+
+class App {
+	public static void main(String [] args)
+	{
+		String s = "ankara";
+
+		for (char c : s.toCharArray())
+			System.out.printf("%c ", c );
+
+		System.out.println();
+	}
+}
+
+/*----------------------------------------------------------------------------------------------------------------------
+	for-each döngü deyimi ile dizi dizilerinin dolaşılması			???????
+
+	MORGOT
+-----------------------------------------------------------------------------------------------------------------------*/
+package org.csystem.app;
+
+class App {
+	public static void main(String [] args)
+	{
+		int [][] a = {{1, 2}, {3, 4, 5}, {6, 7}};
+
+		for (int [] array : a) {
+			for (int val : array)
+				System.out.printf("%d ", val);
+
+			System.out.println();
+		}
+	}
+}
+
+/*----------------------------------------------------------------------------------------------------------------------
+	Aşağıdaki örnekte her adımda String dizisinin elemanı olan String referansları elde edilmektedir
+
+	Mordor 
+-----------------------------------------------------------------------------------------------------------------------*/
+package org.csystem.app;
+
+class App {
+	public static void main(String [] args)
+	{
+		String [] cities = {"ankara", "istanbul", "izmir", "zonguldak"};
+
+		for (String city : cities)
+			System.out.println(city);
+	}
+}
+
+/*----------------------------------------------------------------------------------------------------------------------
+
 -----------------------------------------------------------------------------------------------------------------------*/
 /*----------------------------------------------------------------------------------------------------------------------
 	
