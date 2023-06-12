@@ -11973,7 +11973,7 @@ class Time {
 	static bir veri elemanına sınıf dışından sınıf ismi ve nokta operatörü ile erişilebilir. Sınıfın static veri elemanları
 	sınıfın bir elemanı ilk kez kullanıldığında yaratılır ve programın sonuna kadar yaşaralar. Ayrıntılar ileride
 	ele alınacaktır. Sınıfın static veri elemanları nesne içerisinde olmamalarına karşın heap'de yaratılır.Sınıfın 
-	static veri elemanlarına da yaratıldıklarında default değer atanır 
+	static veri elemanlarına da yaratıldıklarında default değer atanır  Mordor
 
 	Mordor
 
@@ -26746,12 +26746,4133 @@ public class Point {
 -----------------------------------------------------------------------------------------------------------------------*/
 
 /*----------------------------------------------------------------------------------------------------------------------
+	Singleton: Öyle bir sınıf olsun ki, o sınıf türünden program boyunca yalnızca bir tane nesne yaratılabilsin ve bu
+	nesnenin referansı elde edilebilsin.
 
+	Anahtar Notlar: Singleton sınıfın birçok implementasyonu yapılabilir
+
+	Anahtar Notlar: Burada singleton tasarım kalıbının hangi durumlarda kullanıldığı ele alınmayacaktır. Yalnızca çeşitli
+	implementasyonları yapılacaktır
+
+	Morgot Mordor (implementasyonları ve konuyu incele...)
 -----------------------------------------------------------------------------------------------------------------------*/
+
+/*----------------------------------------------------------------------------------------------------------------------
+	Singleton kalıbının "lazy" implementasyonu
+-----------------------------------------------------------------------------------------------------------------------*/
+package org.csystem.app;
+
+class App {
+	public static void main(String [] args)
+	{
+		Singleton s1 = Singleton.getInstance();
+		Singleton s2 = Singleton.getInstance();
+
+		System.out.println(s1 == s2 ? "Aynı nesne" : "Farklı nesneler");
+	}
+}
+
+class Singleton {
+	private static Singleton ms_instance;
+	private int m_value;
+
+	private Singleton()
+	{
+	}
+
+	public static Singleton getInstance()
+	{
+		if (ms_instance == null)
+			ms_instance = new Singleton();
+
+		return ms_instance;
+	}
+
+	public int getValue()
+	{
+		return m_value;
+	}
+
+	public void setValue(int value)
+	{
+		m_value = value;
+	}
+	//.:.
+}
+
+/*----------------------------------------------------------------------------------------------------------------------
+	Aşağıdaki implementasyonu inceleyiniz
+-----------------------------------------------------------------------------------------------------------------------*/
+package org.csystem.app;
+
+class App {
+	public static void main(String [] args)
+	{
+		Singleton s1 = new Singleton();
+		Singleton s2 = new Singleton();
+
+		System.out.println(s1 == s2 ? "Aynı nesne" : "Farklı nesneler");
+
+		s1.setName("weather sensor");
+
+		System.out.println(s2.getName());
+	}
+}
+
+class Singleton {
+	private static String ms_name;
+	private static int ms_value;
+
+	public String getName()
+	{
+		return ms_name;
+	}
+
+	public void setName(String name)
+	{
+		ms_name = name;
+	}
+
+	public int getValue()
+	{
+		return ms_value;
+	}
+
+	public void setValue(int value)
+	{
+		ms_value = value;
+	}
+	//...
+}
+
+
+
+/*----------------------------------------------------------------------------------------------------------------------
+	final bir yerel değişkene faaliyet alanı (scope) boyunca bir kez değer verilebilir. Genel olarak ilkdeğer verilmesi
+	uygun olsa da faaliyet alanı boyunca bir kez olmak koşuluyla atama da yapılabilir. Bir metodun parametre değişkeni
+	final olabilir. Bu durumda metodun final olan bir parametre değişkeninin değeri metot içerisinde değiştirilemez
+
+	Mordor
+-----------------------------------------------------------------------------------------------------------------------*/
+package org.csystem.app;
+
+class App {
+	public static void main(String [] args)
+	{
+		final double pi = 3.14;
+		final double avogadroNumber;
+
+		avogadroNumber = 6.02E23;
+
+		++pi; //error
+
+		avogadroNumber = 6E23; //error
+	}
+}
+
+class Sample {
+	public static void foo(final int x, int y)
+	{
+		++x; //error
+		++y;
+	}
+}
+
+/*----------------------------------------------------------------------------------------------------------------------
+	Bir sınıfın non-static ve final veri elemanlarına default değerler verilmez. Bu durumda değer verilmesi programcının
+	sorumluluğundadır
+
+	Morgot
+-----------------------------------------------------------------------------------------------------------------------*/
+package org.csystem.app;
+
+class Sample {
+	private final int m_a; //error
+}
+
+
+/*----------------------------------------------------------------------------------------------------------------------
+	Sınıfın non-static ve final olarak bildirilmiş bir veri elemanına 3 yerden birinde değer verilebilir:
+	1. Bildirim noktasında
+	2. Sınıfın tüm ctor'ları içerisinde
+	3. Sınıfın "non-static initializer" elemanı içerisinde: Bu konu ileride ele alınacaktır
+
+	Morgot Mordor
+-----------------------------------------------------------------------------------------------------------------------*/
+package org.csystem.app;
+
+class App {
+	public static void main(String [] args)
+	{
+		Sample s1 = new Sample();
+		Sample s2 = new Sample();
+		Mample m1 = new Mample();
+		Mample m2 = new Mample(11);
+
+		System.out.println(s1.getA());
+		System.out.println(s2.getA());
+		System.out.println(m1.getX());
+		System.out.println(m2.getX());
+	}
+}
+
+class Sample {
+	private final int m_a = 12;
+
+	public int getA()
+	{
+		return m_a;
+	}
+}
+
+class Mample {
+	private final int m_x;
+
+	public Mample()
+	{
+		m_x = 0;
+	}
+
+	public Mample(int a)
+	{
+		m_x = a;
+	}
+
+	public int getX()
+	{
+		return m_x;
+	}
+}
+
+/*----------------------------------------------------------------------------------------------------------------------
+	Sınıfın non-static ve final veri elemanlarına sabit ifadesi verilmesi gerekmez
+
+	Morgot
+-----------------------------------------------------------------------------------------------------------------------*/
+package org.csystem.app;
+
+import java.util.Random;
+
+class App {
+	public static void main(String [] args)
+	{
+		Sample s1 = new Sample();
+		Sample s2 = new Sample();
+
+		System.out.println(s1.getA());
+		System.out.println(s2.getA());
+	}
+}
+
+class Sample {
+	private final int m_a = randomIntValue();
+	private int randomIntValue()
+	{
+		return new Random().nextInt(100);
+	}
+
+	public int getA()
+	{
+		return m_a;
+	}
+}
+
+/*----------------------------------------------------------------------------------------------------------------------
+	Sınıfın static ve final veri elemanlarına default değer verilmez. Bu durumda bu elemanlara değer atanması da
+	programcının sorumluluğundadır
+
+
+	HATIRLATMA: 2. non-static olan (ancak final olmayan) veri elemanlarına default değerler atanır 			Satır No: 13763  
+	HATIRLATMA: non-static veri elemanlarına nesnenin yaratılması aşamasında default değerler atanır. 		Satır No: 11704
+	HATIRLATMA: Sınıfın static veri elemanlarına da yaratıldıklarında default değer atanır 					Satır No: 11976
+
+	Morgot
+-----------------------------------------------------------------------------------------------------------------------*/
+package org.csystem.app;
+
+class Sample {
+	private static final int m_a; //error
+}
+
+/*----------------------------------------------------------------------------------------------------------------------
+	Sınıfın static ve final veri elemanlarına iki yerden birinde değer verilebilir:
+	1. Bildirim noktasında
+	2. Sınıfın "static initializer" elemanı içerisinde: Bu konu ileride ele alınacaktır
+-----------------------------------------------------------------------------------------------------------------------*/
+package org.csystem.app;
+
+class Sample {
+	private static final int m_a = 32;
+}
+
+/*----------------------------------------------------------------------------------------------------------------------
+	Anahtar Notlar: Sınıfın static ve final ve özellikle public veri elemanının isimlendirilmesinde tamamen büyük
+	harfler ve birden fazla kelimeden oluşuyorsa kelimeli alttire ile ayırma biçimi kullanılır. Bu durum public
+	olmayan veri elemanları için esnetilebilir. Ancak public veri elemanları için bu "convention"'a uyulmalıdır
+
+	Mordor
+-----------------------------------------------------------------------------------------------------------------------*/
+/*----------------------------------------------------------------------------------------------------------------------
+	Aşağıdaki örneği inceleyiniz
+-----------------------------------------------------------------------------------------------------------------------*/
+package org.csystem.app;
+
+class App {
+	public static void main(String [] args)
+	{
+		System.out.println(ChemistryUtil.AVOGADRO_NUMBER);
+	}
+}
+
+class ChemistryUtil {
+	public static final double AVOGADRO_NUMBER = 6.02E23;
+	//...
+}
+
+/*----------------------------------------------------------------------------------------------------------------------
+	Singleton kalıbının "eager" implementasyonu
+
+	Morgot
+-----------------------------------------------------------------------------------------------------------------------*/
+package org.csystem.app;
+
+class App {
+	public static void main(String [] args)
+	{
+		Singleton s1 = Singleton.INSTANCE;
+		Singleton s2 = Singleton.INSTANCE;
+
+		System.out.println(s1 == s2 ? "Aynı nesne" : "Farklı nesneler");
+	}
+}
+
+class Singleton {
+	public static final Singleton INSTANCE = new Singleton();
+	private int m_value;
+
+	private Singleton()
+	{
+	}
+
+	public int getValue()
+	{
+		return m_value;
+	}
+
+	public void setValue(int value)
+	{
+		m_value = value;
+	}
+	//.:.
+}
+
+/*----------------------------------------------------------------------------------------------------------------------
+	Bir referansın final olması o referansın bir kez değer alabileceğini belirtir. O referansın gösterdiği nesnenin
+	içeriğinin değiştirilip değiştirilememesi o sınıfın immutable olup olmamasına bağlıdır
+
+	Morgot Mordor
+-----------------------------------------------------------------------------------------------------------------------*/
+package org.csystem.app;
+
+class App {
+	public static void main(String [] args)
+	{
+		final Sample s = new Sample();
+
+		System.out.println(s.x);
+		s.x += 20;
+		System.out.println(s.x);
+
+		s = new Sample(); //error
+	}
+}
+
+class Sample {
+	public int x = 5;
+}
+
+/*----------------------------------------------------------------------------------------------------------------------
+	final bir değişkene sabit ifadesi ile değer verilirse o değişken de sabit ifadesi olarak kullanılabilir
+	Morgot
+-----------------------------------------------------------------------------------------------------------------------*/
+package org.csystem.app;
+
+import java.util.Random;
+import java.util.Scanner;
+
+class App {
+	public static void main(String [] args)
+	{
+		Scanner kb = new Scanner(System.in);
+		Random r = new Random();
+
+		System.out.print("Bir sayı giriniz:");
+		int count = kb.nextInt();
+		Shape shape = new Shape();
+
+		while (count-- > 0)
+			shape.draw(r.nextInt(1, 6));
+	}
+}
+
+class Shape {
+	//...
+	public void draw(int color)
+	{
+		switch (color) {
+			case Color.RED -> System.out.println("Kırmızı");
+			case Color.GREEN -> System.out.println("Yeşil");
+			case Color.BLUE -> System.out.println("Mavi");
+			case Color.WHITE -> System.out.println("Beyaz");
+			case Color.BLACK -> System.out.println("Siyah");
+		}
+	}
+}
+
+class Color {
+	public static final int RED = 1;
+	public static final int GREEN = 2;
+	public static final int BLUE = 3;
+	public static final int BLACK = 4;
+	public static final int WHITE = 5;
+}
+
+/*----------------------------------------------------------------------------------------------------------------------
+	Aşağıdaki örnekte Color sınıfının RED veri elemanı sabit ifadesi değildir
+
+	Mordor
+-----------------------------------------------------------------------------------------------------------------------*/
+package org.csystem.app;
+
+class Shape {
+	//...
+	public void draw(int color)
+	{
+		switch (color) {
+			case Color.RED -> System.out.println("Kırmızı"); //error
+			case Color.GREEN -> System.out.println("Yeşil");
+			case Color.BLUE -> System.out.println("Mavi");
+			case Color.WHITE -> System.out.println("Beyaz");
+			case Color.BLACK -> System.out.println("Siyah");
+		}
+	}
+}
+class Color {
+	public static final int RED = new Random().nextInt(3);
+	public static final int GREEN = 2;
+	public static final int BLUE = 3;
+	public static final int BLACK = 4;
+	public static final int WHITE = 5;
+}
+
+/*----------------------------------------------------------
+	FILE			: StringUtil.java
+	AUTHOR			: Java-Nov-2022 Group
+	LAST UPDATE		: 21.05.2023
+
+	Utility class for string operations
+
+	Copyleft (c) 1993 C and System Programmers Association
+	All Rights Free
+------------------------------------------------------------*/
+package org.csystem.util.string;
+
+import org.csystem.util.array.ArrayUtil;
+
+import java.util.Random;
+
+public class StringUtil {
+	private static final String LETTERS_TR = "abcçdefgğhıijklmnoöprsştuüvyz";
+	private static final String LETTERS_EN = "abcdefghijklmnopqrstuwxvyz";
+	private static final String LETTERS_CAPITAL_TR = "ABCÇDEFGĞHIİJKLMNOÖPRSŞTUÜVYZ";
+	private static final String LETTERS_CAPITAL_EN = "ABCDEFGHIJKLMNOPQRSTUWXYZ";
+	private static final String LETTERS_ALL_TR = LETTERS_TR + LETTERS_CAPITAL_TR;
+	private static final String LETTERS_ALL_EN = LETTERS_EN + LETTERS_CAPITAL_EN;
+
+	private StringUtil()
+	{
+	}
+
+	public static String capitalize(String s)
+	{
+		return s.isEmpty() ? "" : Character.toUpperCase(s.charAt(0)) + s.substring(1).toLowerCase();
+	}
+
+	public static String changeCase(String s)
+	{
+		char [] c = s.toCharArray();
+
+		for (int i = 0; i < c.length; ++i)
+			c[i] = Character.isUpperCase(c[i]) ? Character.toLowerCase(c[i]) : Character.toUpperCase(c[i]);
+
+		return String.valueOf(c);
+	}
+
+	public static int countString(String s1, String s2)
+	{
+		int count = 0;
+
+		for (int index = -1; (index = s1.indexOf(s2, index + 1)) != -1; ++count)
+			;
+
+		return count;
+	}
+
+	public static int countStringIgnoreCase(String s1, String s2)
+	{
+		return countString(s1.toLowerCase(), s2.toLowerCase());
+	}
+
+	public static String getRandomText(Random r, int n, String text)
+	{
+		char [] c = new char[n];
+		int len = text.length();
+
+		for (int i = 0; i < n; ++i)
+			c[i] = text.charAt(r.nextInt(len));
+
+		return String.valueOf(c);
+	}
+
+	public static String getRandomTextEN(int n)
+	{
+		return getRandomTextEN(new Random(), n);
+	}
+
+	public static String getRandomTextEN(Random r, int n)
+	{
+		return getRandomText(r, n, LETTERS_ALL_EN);
+	}
+
+	public static String getRandomTextTR(int n)
+	{
+		return getRandomTextTR(new Random(), n);
+	}
+
+	public static String getRandomTextTR(Random r, int n)
+	{
+		return getRandomText(r, n, LETTERS_ALL_TR);
+	}
+
+	public static boolean isPalindrome(String s)
+	{
+		int left = 0;
+		int right = s.length() - 1;
+
+		while (left < right) {
+			char cLeft = Character.toLowerCase(s.charAt(left));
+
+			if (!Character.isLetter(cLeft)) {
+				++left;
+				continue;
+			}
+
+			char cRight = Character.toLowerCase(s.charAt(right));
+
+			if (!Character.isLetter(cRight)) {
+				--right;
+				continue;
+			}
+
+			if (cLeft != cRight)
+				return false;
+
+			++left;
+			--right;
+		}
+
+		return true;
+	}
+
+	public static boolean isPangram(String s, String alphabet)
+	{
+		int len = alphabet.length();
+
+		for (int i = 0; i < len; ++i)
+			if (!s.contains(alphabet.charAt(i) + ""))
+				return false;
+
+		return true;
+	}
+
+	public static boolean isPangramEN(String s)
+	{
+		return isPangram(s.toLowerCase(), LETTERS_EN);
+	}
+
+	public static boolean isPangramTR(String s)
+	{
+		return isPangram(s.toLowerCase(), LETTERS_TR);
+	}
+
+	public static String join(String [] str, String delimiter, boolean skipBlanks)
+	{
+		String result = "";
+
+		for (String s : str) {
+			if (skipBlanks && s.isBlank())
+				continue;
+
+			result += s + delimiter;
+		}
+
+		return result.substring(0, result.length() - delimiter.length());
+	}
+	public static String join(String [] str, String delimiter)
+	{
+		return join(str, delimiter, false);
+	}
+
+	public static String join(String [] str, char delimiter)
+	{
+		return join(str, String.valueOf(delimiter));
+	}
+
+	public static String join(String [] str, char delimiter, boolean skipBlanks)
+	{
+		return join(str, String.valueOf(delimiter), skipBlanks);
+	}
+
+	public static String padLeading(String s, int len)
+	{
+		return padLeading(s, len, ' ');
+	}
+
+	public static String padLeading(String s, int len, char ch)
+	{
+		int length = s.length();
+
+		return len <= length ? s : String.valueOf(ch).repeat(len - length) + s;
+	}
+
+	public static String padTrailing(String s, int len)
+	{
+		return padTrailing(s, len, ' ');
+	}
+
+	public static String padTrailing(String s, int len, char ch)
+	{
+		int length = s.length();
+
+		return len <= length ? s : s + String.valueOf(ch).repeat(len - length);
+	}
+
+	public static String reverse(String str)
+	{
+		char [] c = str.toCharArray();
+
+		ArrayUtil.reverse(c);
+
+		return String.valueOf(c);
+	}
+}
+
+/*----------------------------------------------------------
+	FILE			: NumberUtil.java
+	AUTHOR			: Java-Nov-2022 Group
+	LAST UPDATE		: 21.05.2023
+
+	Utility class for numeric operations
+
+	Copyleft (c) 1993 C and System Programmers Association
+	All Rights Free
+------------------------------------------------------------*/
+package org.csystem.util.numeric;
+
+import static java.lang.Math.abs;
+import static java.lang.Math.log10;
+
+public class NumberUtil {
+	private NumberUtil()
+	{
+	}
+
+	private static final String [] ONES = {"", "bir", "iki", "üç", "dört", "beş", "altı", "yedi", "sekiz", "dokuz"};
+	private static final String [] TENS = {"", "on", "yirmi", "otuz", "kırk", "elli", "altmış", "yetmiş", "seksen", "doksan"};
+
+	private static int [] getDigits(long val, int n)
+	{
+		int [] digits = new int[val == 0 ? 1 : (int)(Math.log10(Math.abs(val)) / n) + 1];
+		int powOfTen = (int)pow(10, n);
+
+		val = abs(val);
+
+		for (int i = digits.length - 1; i >= 0; digits[i] = (int)(val % powOfTen), val /= powOfTen, --i)
+			;
+
+		return digits;
+	}
+
+	private static String numToText3DigitsTR(int a, int b, int c)
+	{
+		String str = "";
+
+		if (a != 0) {
+			if (a != 1)
+				str += ONES[a];
+
+			str += "yüz";
+		}
+
+		return str  + TENS[b] + ONES[c];
+	}
+
+	private static String numToText3DigitsTR(int val)
+	{
+		if (val == 0)
+			return "sıfır";
+
+		String str = val < 0 ? "eksi" : "";
+
+		val = Math.abs(val);
+
+		int a = val / 100;
+		int b = val / 10 % 10;
+		int c = val % 10;
+
+		return str + numToText3DigitsTR(a, b, c);
+	}
+
+	public static boolean areFriends(int a, int b)
+	{
+		return sumFactors(a) == b && sumFactors(b) == a;
+	}
+
+	public static int calculateDigitalRoot(int a)
+	{
+		int root = abs(a);
+
+		while (root > 9)
+			root = sumDigits(root);
+
+		return root;
+	}
+
+	public static int calculateDigitsPowSum(int a)
+	{
+		int n = countDigits(a);
+
+		int total = 0;
+
+		while (a != 0) {
+			total += pow(a % 10, n);
+
+			a /= 10;
+		}
+
+		return total;
+
+	}
+
+	public static int countDigits(long a)
+	{
+		return a == 0 ? 1 : (int)log10(abs(a)) + 1;
+	}
+
+	public static int factorial(int n)
+	{
+		int result = 1;
+
+		for (int i = 2; i <= n; ++i)
+			result *= i;
+
+		return result;
+	}
+
+	public static int fibonacciNumber(int n)
+	{
+		if (n <= 2)
+			return n - 1;
+
+		int prev1 = 1, prev2 = 0, val = 0;
+
+		for (int i = 2; i < n; ++i) {
+			val = prev1 + prev2;
+			prev2 = prev1;
+			prev1 = val;
+		}
+
+		return val;
+	}
+
+	public static int [] getDigits(long val)
+	{
+		return getDigits(val, 1);
+	}
+
+	public static int [] getDigitsInTwos(long val)
+	{
+		return getDigits(val, 2);
+	}
+
+	public static int [] getDigitsInThrees(long val)
+	{
+		return getDigits(val, 3);
+	}
+
+	public static int getHardyRamanujanCount(int n)
+	{
+		int count = 0;
+
+		EXIT_LOOP:
+
+		for (int a = 1; a * a * a < n; ++a)
+			for (int b = a + 1; a * a * a + b * b * b <= n; ++b)
+				if (a * a * a + b * b * b == n) {
+					if (++count == 2)
+						break EXIT_LOOP;
+
+					++a;
+				}
+
+		return count;
+	}
+
+	public static int getPrime(int n)
+	{
+		int val = 2;
+		int count = 0;
+
+		for (;;) {
+			if (isPrime(val))
+				++count;
+
+			if (count == n)
+				return val;
+
+			++val;
+		}
+	}
+
+	public static int indexOfPrime(long a)
+	{
+		int i = 1;
+		long val = 2;
+
+		for (;;) {
+			if (val == a)
+				return i;
+
+			if (isPrime(val))
+				++i;
+
+			++val;
+		}
+	}
+
+	public static boolean isArmstrong(int a)
+	{
+		return a >= 0 && calculateDigitsPowSum(a) == a;
+	}
+
+	public static boolean isDecimalHarshad(int val)
+	{
+		return val > 0 && val % sumDigits(val) == 0;
+	}
+
+	public static boolean isEven(int a)
+	{
+		return a % 2 == 0;
+	}
+
+	public static boolean isFactorian(int n)
+	{
+		return n > 0 && sumFactorialDigits(n) == n;
+	}
+
+	public static boolean isHardyRamanujan(int n)
+	{
+		return n > 0 && getHardyRamanujanCount(n) == 2;
+	}
+
+	public static boolean isOdd(int a)
+	{
+		return !isEven(a);
+	}
+
+	public static boolean isPerfect(int val)
+	{
+		return sumFactors(val) == val;
+	}
+
+	public static boolean isPrime(long a)
+	{
+		if (a <= 1)
+			return false;
+
+		if (a % 2 == 0)
+			return a == 2;
+
+		if (a % 3 == 0)
+			return a == 3;
+
+		if (a % 5 == 0)
+			return a == 5;
+
+		if (a % 7 == 0)
+			return a == 7;
+
+		for (long i = 11; i * i <= a; i += 2)
+			if (a % i == 0)
+				return false;
+
+		return true;
+	}
+
+	public static boolean isPrimeX(long a)
+	{
+		boolean result;
+
+		for (long sum = a; (result = isPrime(sum)) && sum > 9; sum = sumDigits(sum))
+			;
+
+		return result;
+	}
+
+	public static boolean isSuperPrime(long a)
+	{
+		return isPrime(a) && isPrime(indexOfPrime(a));
+	}
+
+	public static int mid(int a, int b, int c)
+	{
+		if (a <= b && b <= c || c <= b && b <= a)
+			return b;
+
+		if (b <= a && a <= c || c <= a && a <= b)
+			return a;
+
+		return c;
+	}
+
+	public static int multiply(int a, int b)
+	{
+		return a * b;
+	}
+
+	public static int nextFibonacciNumber(int val)
+	{
+		if (val < 0)
+			return 0;
+
+		int prev1 = 1, prev2 = 0, next;
+
+		for (;;) {
+			next = prev1 + prev2;
+
+			if (next > val)
+				return next;
+
+			prev2 = prev1;
+			prev1 = next;
+		}
+	}
+
+	public static int pow(int a, int b)
+	{
+		int result = 1;
+
+		while (b-- > 0)
+			result *= a;
+
+		return result;
+	}
+
+	public static int reversed(int a)
+	{
+		int result = 0;
+
+		while (a != 0) {
+			result = result * 10 + a % 10;
+			a /= 10;
+		}
+
+		return result;
+	}
+
+	public static int sumDigits(long a)
+	{
+		int sum = 0;
+
+		while (a != 0) {
+			sum += a % 10;
+			a /= 10;
+		}
+
+		return abs(sum);
+
+	}
+
+	public static int sumFactorialDigits(int n)
+	{
+		int sum = 0;
+
+		while (n != 0) {
+			sum += factorial(n % 10);
+			n /= 10;
+		}
+
+		return sum;
+	}
+
+	public static long sumFactors(long val)
+	{
+		long result = 1;
+
+		for (long i = 2; i * i <= val; ++i)
+			if (val % i == 0)
+				result += (i == val / i) ? i : (i + val / i);
+
+		return result;
+	}
+}
+
+/*----------------------------------------------------------
+	FILE			: RandomIntArrayGenerator.java
+	AUTHOR			: Java-Nov-2022 Group
+	LAST UPDATE		: 21.05.2023
+
+	RandomIntArrayGenerator class that creates a randomly
+	generated array once per object
+
+	Copyleft (c) 1993 C and System Programmers Association
+	All Rights Free
+------------------------------------------------------------*/
+package org.csystem.util.generator.random;
+
+import org.csystem.util.array.ArrayUtil;
+
+import java.util.Random;
+
+public class RandomIntArrayGenerator {
+    private final int [] m_numbers;
+
+    public RandomIntArrayGenerator(Random random, int count, int min, int bound)
+    {
+        m_numbers = ArrayUtil.getRandomArray(random, count, min, bound);
+    }
+
+    public int count()
+    {
+        return m_numbers.length;
+    }
+
+    public int get(int i)
+    {
+        return m_numbers[i];
+    }
+}
+
+/*----------------------------------------------------------------------------------------------------------------------
+	Sınıf Çalışması: Bir okulda Matematik sınavı ortak olarak yapılıyor olsun. Kaç şubenin sınava gireceği ve herbir
+	şubedeki öğrenci sayısı klavyeden alınsın. Öğrencilerin notları rasgele olarak belirlensin. Bu işlemlerden sonra
+	tüm şubelerin ayrı ayrı not ortalamaları, en yüksek not ve en düşük ile tüm okulun ortalamasını hesaplayan
+	programı (simülasyon) yazınız
+	Açıklamalar:
+		- Mümkün olduğunca "Nesne Yönelimli" olarak yazmaya gayret gösteriniz
+-----------------------------------------------------------------------------------------------------------------------*/
+
+package org.csystem.app.simulation.exam;
+
+import org.csystem.simulation.exam.ExamSimulation;
+
+import java.util.Random;
+
+public class ExamSimulationApp {
+    private static void run()
+    {
+        Random r = new Random();
+
+        ExamSimulation mathSimulation = new ExamSimulation("Matematik", r);
+        ExamSimulation physSimulation = new ExamSimulation("Fizik", r);
+
+        mathSimulation.run();
+        physSimulation.run();
+
+        mathSimulation.displayReport();
+        physSimulation.displayReport();
+    }
+
+    public static void main(String[] args)
+    {
+        run();
+    }
+}
+package org.csystem.simulation.exam;
+
+import org.csystem.util.array.ArrayUtil;
+
+import java.util.Random;
+import java.util.Scanner;
+
+public class ExamSimulation {
+    private final String m_lectureName;
+    private int [][] m_grades;
+    private double m_average;
+    private double [] m_averages;
+    private int [] m_minGrades;
+    private int [] m_maxGrades;
+    private final Random m_random;
+
+    private void fillGrades()
+    {
+        Scanner kb = new Scanner(System.in);
+        System.out.printf("%s dersi için şube sayısını giriniz:", m_lectureName);
+        m_grades = new int[Integer.parseInt(kb.nextLine())][];
+
+        for (int i = 0; i < m_grades.length; ++i) {
+            System.out.printf("%d.şubenin öğrenci sayısını giriniz:", i + 1);
+            m_grades[i] = ArrayUtil.getRandomArray(m_random, Integer.parseInt(kb.nextLine()), 0, 101);
+        }
+
+        m_averages = new double[m_grades.length];
+        m_minGrades = new int[m_grades.length];
+        m_maxGrades = new int[m_grades.length];
+    }
+
+    private void findAverages()
+    {
+        int numberOfAllStudents = 0;
+        int totalGrades = 0;
+
+        for (int i = 0; i < m_grades.length; ++i) {
+            int total = ArrayUtil.sum(m_grades[i]);
+
+            numberOfAllStudents += m_grades[i].length;
+            totalGrades += total;
+            m_averages[i] = (double)total / m_grades[i].length;
+            m_minGrades[i] = ArrayUtil.min(m_grades[i]);
+            m_maxGrades[i] = ArrayUtil.max(m_grades[i]);
+        }
+
+        m_average = (double)totalGrades / numberOfAllStudents;
+    }
+
+    public ExamSimulation(String name, Random random)
+    {
+        m_lectureName = name;
+        m_random = random;
+    }
+
+    public String getLectureName()
+    {
+        return m_lectureName;
+    }
+
+    public int getGrade(int i, int k)
+    {
+        return m_grades[i][k];
+    }
+
+    public double getAverage()
+    {
+        return m_average;
+    }
+
+    public double getAverage(int i)
+    {
+        return m_averages[i];
+    }
+
+    public int getMinGrade(int i)
+    {
+        return m_minGrades[i];
+    }
+
+    public int getMaxGrade(int i)
+    {
+        return m_maxGrades[i];
+    }
+
+    public void run()
+    {
+        fillGrades();
+        findAverages();
+    }
+
+    public void displayGrades()
+    {
+        System.out.println("----------------------------------------------------------------------");
+        System.out.printf("%s dersinin şubelere göre notları:%n", m_lectureName);
+        for (int i = 0; i < m_grades.length; ++i) {
+            System.out.printf("%d.şube notları:", i + 1);
+            ArrayUtil.print(m_grades[i]);
+        }
+        System.out.println("----------------------------------------------------------------------");
+    }
+
+    public void displayReport()
+    {
+        System.out.println("#########################################################################");
+        displayGrades();
+        int n = m_grades.length;
+
+        for (int i = 0; i < n; ++i) {
+            System.out.printf("%d.şube:%n", i + 1);
+            System.out.printf("Not Ortalaması:%f%n", m_averages[i]);
+            System.out.printf("En yüksek Not:%d%n", m_maxGrades[i]);
+            System.out.printf("En düşük Not:%d%n", m_minGrades[i]);
+        }
+        System.out.printf("Okul Ortalaması:%f%n", m_average);
+        System.out.println("#########################################################################");
+    }
+}
+
+/*----------------------------------------------------------------------------------------------------------------------
+    NumericLottery sınıfı
+-----------------------------------------------------------------------------------------------------------------------*/
+package org.csystem.random.lottery.numericlottery;
+
+import java.util.Random;
+
+public class NumericLottery {
+    private final Random m_random;
+
+    private static int [] getNumbers(boolean [] flags)
+    {
+        int [] numbers = new int[6];
+        int index = 0;
+
+        for (int i = 1; i < 50; ++i)
+            if (flags[i])
+                numbers[index++] = i;
+
+        return numbers;
+    }
+
+    private boolean [] getFlags()
+    {
+        boolean [] flags = new boolean[50];
+
+        for (int i = 0; i < 6; ++i) {
+            int val;
+
+            for (;;) {
+                val = m_random.nextInt(1, 50);
+                if (!flags[val])
+                    break;
+            }
+            flags[val] = true;
+        }
+
+        return flags;
+    }
+
+    public NumericLottery()
+    {
+        m_random = new Random();
+    }
+
+    public NumericLottery(Random r)
+    {
+        m_random = r;
+    }
+
+    public int [] getNumbers()
+    {
+        return getNumbers(getFlags());
+    }
+
+    public int [][] getNumbers(int count)
+    {
+        int [][] numbers = new int[count][];
+
+        for (int i = 0; i < count; ++i)
+            numbers[i] = getNumbers();
+
+        return numbers;
+    }
+}
+
+/*----------------------------------------------------------
+	FILE			: Line.java
+	AUTHOR			: Java-Nov-2022 Group
+	LAST UPDATE		: 21.05.2023
+
+	Line class that represents a line in cartesian plane
+
+	Copyleft (c) 1993 C and System Programmers Association
+	All Rights Free
+------------------------------------------------------------*/
+package org.csystem.math.geometry;
+
+public class Line {
+    private final Point m_p1, m_p2;
+
+    //...
+
+    public Line(double x1, double y1, double x2, double y2)
+    {
+        m_p1 = Point.createCartesian(x1, y1);
+        m_p2 = Point.createCartesian(x2, y2);
+    }
+
+    public Point getPoint1()
+    {
+        return Point.createCartesian(m_p1.getX(), m_p1.getY());
+    }
+
+    public Point getPoint2()
+    {
+        return Point.createCartesian(m_p2.getX(), m_p2.getY());
+    }
+
+    public double getX1()
+    {
+        return m_p1.getX();
+    }
+
+    public void setX1(int x1)
+    {
+        m_p1.setX(x1);
+    }
+
+    public double getY1()
+    {
+        return m_p1.getY();
+    }
+
+    public void setY1(int y1)
+    {
+        m_p1.setY(y1);
+    }
+
+    public double getX2()
+    {
+        return m_p2.getX();
+    }
+
+    public void setX2(int x2)
+    {
+        m_p2.setX(x2);
+    }
+
+    public void setY2(int y2)
+    {
+        m_p1.setY(y2);
+    }
+
+    public double getY2()
+    {
+        return m_p2.getY();
+    }
+
+    public boolean isInside(Point point)
+    {
+        throw new UnsupportedOperationException("TODO:");
+    }
+
+    public String toString()
+    {
+        return String.format("%s, %s", m_p1.toString(), m_p2.toString());
+    }
+}
+
+/*----------------------------------------------------------------------------------------------------------------------
+	27.05.2023
+-----------------------------------------------------------------------------------------------------------------------*/
+/*----------------------------------------------------------------------------------------------------------------------
+	Anahtar Notlar: Java 8'den önce sınıfların factory metotları genel olarak valueOf biçiminde isimlendirilmiştir. Java 8
+	ile birlikte bu tarz metotların ofXXX olarak isimlendirilmiştir
+-----------------------------------------------------------------------------------------------------------------------*/
+/*----------------------------------------------------------------------------------------------------------------------
+	Sınıf Çalışması: Aşağıda açıklanan sınıfları yazınız
+	Açıklamalar:
+		- Sınıfların ismi IntValue ve LongValue olacaktır
+		- Sınıflar immutable olarak yazılacaktır
+		- IntValue ve LongValue sınıfları sırasıyla int türden ve long türden değerleri sarmalayacaktır (wrapper). Yani
+		int türden bir değeri tutacaktır
+		- Sınıflar [-128, 127] aralığındaki değerlere ilişkin sarmalanan nesneleri ilk kez istendiğinde yaratacak, sonraki
+		isteklerde aynı nesnenin referansını verecektir. Yani bir "önbellek (cache)" tutacaktır.
+
+	Not: Java'da bu şekilde işlem yapan sınıflar vardır ve çok sık kullanılır. Burada böyle bir sınıfın nasıl yazılması
+	gerektiğine odaklanınız
+
+
+	Morgot Mordor 
+-----------------------------------------------------------------------------------------------------------------------*/
+
+package org.csystem.wrapper.test;
+
+import org.csystem.wrapper.IntValue;
+
+public class IntValueCacheTest {
+    public static void run()
+    {
+        IntValue iVal1 = IntValue.of(100);
+        IntValue iVal2 = IntValue.of(100);
+        IntValue iVal3 = IntValue.of(-129);
+        IntValue iVal4 = IntValue.of(-129);
+
+        System.out.println(iVal1 == iVal2 ? "Aynı nesne" : "Farklı nesneler");
+        System.out.println(iVal3 == iVal4 ? "Aynı nesne" : "Farklı nesneler");
+    }
+
+    public static void main(String[] args)
+    {
+        run();
+    }
+}
+
+package org.csystem.wrapper.test;
+
+import org.csystem.wrapper.IntValue;
+
+import java.util.Scanner;
+
+public class IntValueIncTest {
+    public static void run()
+    {
+        Scanner kb = new Scanner(System.in);
+
+        System.out.print("Bir sayı giriniz:");
+        IntValue count = IntValue.of(kb.nextInt());
+
+        for (IntValue i = IntValue.ZERO; i.compareTo(count) <= 0; i = i.inc())
+            System.out.printf("%d ", i.intValue());
+
+        System.out.println();
+    }
+
+    public static void main(String[] args)
+    {
+        run();
+    }
+}
+
+package org.csystem.wrapper.test;
+
+import org.csystem.wrapper.IntValue;
+
+import java.util.Scanner;
+
+public class IntValueDecTest {
+    public static void run()
+    {
+        Scanner kb = new Scanner(System.in);
+
+        System.out.print("Bir sayı giriniz:");
+        IntValue count = IntValue.of(kb.nextInt());
+
+        for (IntValue i = count.dec(); IntValue.ZERO.compareTo(i) <= 0; i = i.dec())
+            System.out.printf("%d ", i.intValue());
+
+        System.out.println();
+    }
+
+    public static void main(String[] args)
+    {
+        run();
+    }
+}
+
+package org.csystem.wrapper.test;
+
+import org.csystem.wrapper.IntValue;
+
+import java.util.Scanner;
+
+public class IntValueAddTest {
+    public static void run()
+    {
+        Scanner kb = new Scanner(System.in);
+
+        System.out.print("Bir sayı giriniz:");
+        IntValue count = IntValue.of(kb.nextInt());
+
+        for (IntValue i = IntValue.ONE; i.compareTo(count) <= 0; i = i.add(2))
+            System.out.printf("%d ", i.intValue());
+
+        System.out.println();
+    }
+
+    public static void main(String[] args)
+    {
+        run();
+    }
+}
+package org.csystem.wrapper.test;
+
+import org.csystem.wrapper.IntValue;
+
+import java.util.Scanner;
+
+public class IntValueSubtractTest {
+    public static void run()
+    {
+        Scanner kb = new Scanner(System.in);
+
+        System.out.print("Bir sayı giriniz:");
+        IntValue count = IntValue.of(kb.nextInt());
+
+        for (IntValue i = count; IntValue.ONE.compareTo(i) <= 0; i = i.subtract(2))
+            System.out.printf("%d ", i.intValue());
+
+        System.out.println();
+    }
+
+    public static void main(String[] args)
+    {
+        run();
+    }
+}
+
+package org.csystem.wrapper.test;
+
+import org.csystem.wrapper.IntValue;
+
+import java.util.Random;
+import java.util.Scanner;
+
+public class IntValueDivideAndRemainderTest {
+    public static void run()
+    {
+        Scanner kb = new Scanner(System.in);
+        Random r = new Random();
+
+        System.out.print("Bir sayı giriniz:");
+        int count = kb.nextInt();
+
+        while (count-- > 0) {
+            int a = r.nextInt(-128, 127);
+            int b = r.nextInt(-128, 127);
+
+            System.out.printf("a = %d, b = %d%n", a, b);
+            IntValue aVal = IntValue.of(a);
+            IntValue bVal = IntValue.of(b);
+
+            IntValue [] results = aVal.divideAndRemainder(bVal);
+
+            System.out.printf("Bölüm:%d, Kalan:%d%n", results[0].intValue(), results[1].intValue());
+        }
+    }
+
+    public static void main(String[] args)
+    {
+        run();
+    }
+}
+
+/*----------------------------------------------------------------
+	FILE		: IntValue.java
+	AUTHOR		: Java-Nov-2022 Group
+	LAST UPDATE	: 27.05.2023
+
+	IntValue class that wraps an int value and use cache
+	for interval [-128, 127]
+
+	Copyleft (c) 1993 C and System Programmers Association
+	All Rights Free
+----------------------------------------------------------------*/
+package org.csystem.wrapper;
+
+public class IntValue {
+    private static final int CACHE_MIN = -128;
+    private static final int CACHE_MAX = 127;
+    private static final int CACHE_OFFSET = (CACHE_MAX - CACHE_MIN + 1) / 2;
+    private static final IntValue [] CACHE = new IntValue[CACHE_MAX - CACHE_MIN + 1];
+    private final int m_value;
+
+    public static final IntValue ZERO = of(0);
+    public static final IntValue ONE = of(1);
+    public static final IntValue TWO = of(2);
+    public static final IntValue TEN = of(10);
+
+    private IntValue(int value)
+    {
+        m_value = value;
+    }
+
+    public static IntValue of(int value)
+    {
+        if (value < CACHE_MIN || CACHE_MAX < value)
+            return new IntValue(value);
+
+        if (CACHE[value + CACHE_OFFSET] == null)
+            CACHE[value + CACHE_OFFSET] = new IntValue(value);
+
+        return CACHE[value + CACHE_OFFSET];
+    }
+
+    public int intValue()
+    {
+        return m_value;
+    }
+
+    public int compareTo(IntValue other)
+    {
+        return m_value - other.m_value;
+    }
+
+    public IntValue add(IntValue value)
+    {
+        return add(value.m_value);
+    }
+
+    public IntValue add(int value)
+    {
+        return of(m_value + value);
+    }
+
+    public IntValue subtract(IntValue value)
+    {
+        return subtract(value.m_value);
+    }
+
+    public IntValue subtract(int value)
+    {
+        return add(-value);
+    }
+
+    public IntValue multiply(IntValue value)
+    {
+        return multiply(value.m_value);
+    }
+
+    public IntValue multiply(int value)
+    {
+        return of(m_value * value);
+    }
+
+    public IntValue divide(IntValue value)
+    {
+        return divide(value.m_value);
+    }
+
+    public IntValue divide(int value)
+    {
+        return of(m_value / value);
+    }
+
+    public IntValue [] divideAndRemainder(IntValue value)
+    {
+        return divideAndRemainder(value.m_value);
+    }
+
+    public IntValue [] divideAndRemainder(int value)
+    {
+        return new IntValue[] {divide(value), mod(value)};
+    }
+
+    public IntValue mod(IntValue value)
+    {
+        return mod(value.m_value);
+    }
+
+    public IntValue mod(int value)
+    {
+        return of(m_value % value);
+    }
+    public IntValue inc()
+    {
+        return add(1);
+    }
+
+    public IntValue dec()
+    {
+        return subtract(1);
+    }
+
+    public String toString()
+    {
+        return String.valueOf(m_value);
+    }
+}
+
+/*----------------------------------------------------------------
+	FILE		: LongValue.java
+	AUTHOR		: Java-Nov-2022 Group
+	LAST UPDATE	: 27.05.2023
+
+	LongValue class that wraps a long value and use cache
+	for interval [-128, 127]
+
+	Copyleft (c) 1993 C and System Programmers Association
+	All Rights Free
+----------------------------------------------------------------*/
+package org.csystem.wrapper;
+
+public class LongValue {
+    private static final int CACHE_MIN = -128;
+    private static final int CACHE_MAX = 127;
+    private static final int CACHE_OFFSET = (CACHE_MAX - CACHE_MIN + 1) / 2;
+    private static final LongValue[] CACHE = new LongValue[CACHE_MAX - CACHE_MIN + 1];
+    private final long m_value;
+
+    public static final LongValue ZERO = of(0);
+    public static final LongValue ONE = of(1);
+    public static final LongValue TWO = of(2);
+    public static final LongValue TEN = of(10);
+
+    private LongValue(long value)
+    {
+        m_value = value;
+    }
+
+    public static LongValue of(long value)
+    {
+        if (value < CACHE_MIN || CACHE_MAX < value)
+            return new LongValue(value);
+
+        if (CACHE[(int)value + CACHE_OFFSET] == null)
+            CACHE[(int)value + CACHE_OFFSET] = new LongValue(value);
+
+        return CACHE[(int)value + CACHE_OFFSET];
+    }
+
+    public long longValue()
+    {
+        return m_value;
+    }
+
+    public int compareTo(LongValue other)
+    {
+        if (m_value < other.m_value)
+            return -1;
+
+        if (other.m_value < m_value)
+            return 1;
+
+        return 0;
+    }
+
+    public LongValue add(LongValue value)
+    {
+        return add(value.m_value);
+    }
+
+    public LongValue add(long value)
+    {
+        return of(m_value + value);
+    }
+
+    public LongValue subtract(LongValue value)
+    {
+        return subtract(value.m_value);
+    }
+
+    public LongValue subtract(long value)
+    {
+        return add(-value);
+    }
+
+    public LongValue multiply(LongValue value)
+    {
+        return multiply(value.m_value);
+    }
+
+    public LongValue multiply(long value)
+    {
+        return of(m_value * value);
+    }
+
+    public LongValue divide(LongValue value)
+    {
+        return divide(value.m_value);
+    }
+
+    public LongValue divide(long value)
+    {
+        return of(m_value / value);
+    }
+
+    public LongValue[] divideAndRemainder(LongValue value)
+    {
+        return divideAndRemainder(value.m_value);
+    }
+
+    public LongValue[] divideAndRemainder(long value)
+    {
+        return new LongValue[] {divide(value), mod(value)};
+    }
+
+    public LongValue mod(LongValue value)
+    {
+        return mod(value.m_value);
+    }
+
+    public LongValue mod(long value)
+    {
+        return of(m_value % value);
+    }
+    public LongValue inc()
+    {
+        return add(1);
+    }
+
+    public LongValue dec()
+    {
+        return subtract(1);
+    }
+
+    public String toString()
+    {
+        return String.valueOf(m_value);
+    }
+}
+ü,
+/*----------------------------------------------------------------------------------------------------------------------
+	Line sınıfı
+-----------------------------------------------------------------------------------------------------------------------*/
+package org.csystem.math.geometry.test;
+
+import org.csystem.math.geometry.Line;
+import org.csystem.math.geometry.MutablePoint;
+
+public class LineConstructorTest {
+    public static void run()
+    {
+        Line line = new Line(100, 200, 300, 400);
+
+        System.out.println(line.toString());
+
+        MutablePoint p1 = line.getPoint1();
+
+        p1.offset(20);
+
+        System.out.println(p1.toString());
+        System.out.println(line.toString());
+    }
+
+    public static void main(String[] args)
+    {
+        run();
+    }
+}
+
+/*----------------------------------------------------------
+	FILE			: Line.java
+	AUTHOR			: Java-Nov-2022 Group
+	LAST UPDATE		: 27.05.2023
+
+	Line class that represents a line in cartesian plane
+
+	Copyleft (c) 1993 C and System Programmers Association
+	All Rights Free
+------------------------------------------------------------*/
+package org.csystem.math.geometry;
+
+public class Line {
+    private final MutablePoint m_p1, m_p2;
+
+    //...
+
+    public Line(double x1, double y1, double x2, double y2)
+    {
+        m_p1 = MutablePoint.ofCartesian(x1, y1);
+        m_p2 = MutablePoint.ofCartesian(x2, y2);
+    }
+
+    public MutablePoint getPoint1()
+    {
+        return MutablePoint.ofCartesian(m_p1.getX(), m_p1.getY());
+    }
+
+    public MutablePoint getPoint2()
+    {
+        return MutablePoint.ofCartesian(m_p2.getX(), m_p2.getY());
+    }
+
+    public double getX1()
+    {
+        return m_p1.getX();
+    }
+
+    public void setX1(int x1)
+    {
+        m_p1.setX(x1);
+    }
+
+    public double getY1()
+    {
+        return m_p1.getY();
+    }
+
+    public void setY1(int y1)
+    {
+        m_p1.setY(y1);
+    }
+
+    public double getX2()
+    {
+        return m_p2.getX();
+    }
+
+    public void setX2(int x2)
+    {
+        m_p2.setX(x2);
+    }
+
+    public void setY2(int y2)
+    {
+        m_p1.setY(y2);
+    }
+
+    public double getY2()
+    {
+        return m_p2.getY();
+    }
+
+    public boolean isInside(Point point)
+    {
+        throw new UnsupportedOperationException("TODO:");
+    }
+
+    public String toString()
+    {
+        return String.format("%s, %s", m_p1.toString(), m_p2.toString());
+    }
+}
+
+/*----------------------------------------------------------------------------------------------------------------------
+	03.06.2023
+-----------------------------------------------------------------------------------------------------------------------*/
+
+/*----------------------------------------------------------------------------------------------------------------------
+	Aşağıdaki örnekte applyForce metodunun parametresi int türden olduğundan parametre değişkeninin ismi ne olduğu
+	hakkında bilgi verse de ona geçilebilecek argümanlar anlaşılamamaktadır. Ayrıca çağırma sırasında geçilen
+	argümanlar da ne anlama geldikleri hakkında bilgi vermemektedir. Yani bu yaklaşım okunabilirlik/algılanabilirlik
+	açısından iyi bir yaklaşım değildir. Şüphesiz bu yaklaşımda metoda geçilen argümanların değerileri kontrol edilecektir.
+	Ancak programcının yanlış argüman verme olasılığı da vardır
+
+	Morgot Mordor
+-----------------------------------------------------------------------------------------------------------------------*/
+package org.csystem.app;
+
+class App {
+	public static void main(String [] args)
+	{
+		GameDemoApp.run();
+	}
+}
+
+class GameDemoApp {
+	public static void run()
+	{
+		GameObject go = new GameObject();
+
+		//...
+
+		go.applyForce(1); //right
+		go.applyForce(4); //bottom
+		go.applyForce(2); //top
+		go.applyForce(2); //left
+	}
+}
+
+
+class GameObject {
+	//...
+	public void applyForce(int direction)
+	{
+		//...
+	}
+}
+
+/*----------------------------------------------------------------------------------------------------------------------
+	Aşağıdaki örnekte applyForce metodunun parametresi yine bir fikir vermemektedir. Argümanlar açısından
+	okunabilirlik/algılanabilirlik artırılmıştır. Ancak programcının çağırma sırasında argümanı yanlış verme olasılığı
+	vardır. Üstelik String karşılaştırması tamsayı karşılaştırmasına görece yavaştır. Bu da programın hızını etkileyebilir.
+	Dolayısıyla bu yaklaşımda çok iyi sayılmaz
+-----------------------------------------------------------------------------------------------------------------------*/
+package org.csystem.app;
+
+class App {
+	public static void main(String [] args)
+	{
+		GameDemoApp.run();
+	}
+}
+
+class GameDemoApp {
+	public static void run()
+	{
+		GameObject go = new GameObject();
+
+		//...
+
+		go.applyForce("right"); //right
+		go.applyForce("bottom"); //bottom
+		go.applyForce("top"); //top
+		go.applyForce("left"); //left
+	}
+}
+
+
+class GameObject {
+	//...
+	public void applyForce(String direction)
+	{
+		//...
+	}
+}
+
+/*----------------------------------------------------------------------------------------------------------------------
+	Yukarıdaki örnek için aşağıdaki yaklaşım programcının yanlış yapma olasılığını azaltmıştır. Ayrıca karşılaştırma int
+	değerler ile yapılacağından hızlı olacaktır. Ancak yukarıdaki diğer problemler halen devam etmektedir
+-----------------------------------------------------------------------------------------------------------------------*/
+package org.csystem.app;
+
+class App {
+	public static void main(String [] args)
+	{
+		GameDemoApp.run();
+	}
+}
+
+class GameDemoApp {
+	public static void run()
+	{
+		GameObject go = new GameObject();
+
+		//...
+
+		go.applyForce(GameObject.RIGHT);
+		go.applyForce(GameObject.BOTTOM);
+		go.applyForce(GameObject.TOP);
+		go.applyForce(GameObject.LEFT);
+	}
+}
+
+
+class GameObject {
+	public static final int RIGHT = 1;
+	public static final int TOP = 2;
+	public static final int LEFT = 3;
+	public static final int BOTTOM = 4;
+	//...
+	public void applyForce(int direction)
+	{
+		//...
+	}
+}
+
+
+/*----------------------------------------------------------------------------------------------------------------------
+	Yukarıda anlatılan problemlerin hepsi aşağıdaki gibi çözülebilir
+
+	Mordor
+-----------------------------------------------------------------------------------------------------------------------*/
+package org.csystem.app;
+
+class App {
+	public static void main(String [] args)
+	{
+		GameDemoApp.run();
+	}
+}
+
+class GameDemoApp {
+	public static void run()
+	{
+		GameObject go = new GameObject();
+
+		//...
+
+		go.applyForce(ForceDirection.RIGHT);
+		go.applyForce(ForceDirection.BOTTOM);
+		go.applyForce(ForceDirection.TOP);
+		go.applyForce(ForceDirection.LEFT);
+	}
+}
+
+class ForceDirection {
+	private ForceDirection()
+	{
+	}
+
+	public static final ForceDirection RIGHT = new ForceDirection();
+	public static final ForceDirection TOP = new ForceDirection();
+	public static final ForceDirection LEFT = new ForceDirection();
+	public static final ForceDirection BOTTOM = new ForceDirection();
+}
+
+class GameObject {
+	//...
+	public void applyForce(ForceDirection direction)
+	{
+		//...
+	}
+}
+
+/*----------------------------------------------------------------------------------------------------------------------
+	Yukarıdaki gibi kısıtlı sayıda değişmeyecek bilgilerin olduğu durumlarda yukarıdaki gibi bir yaklaşım uygulanır. Bu
+	yaklaşım Java 5 ile birlikte eklenen ve detayları konu içerisinde anlatılacak olan "enum sınıflar (enumeration/enum classes)"
+	kullanılarak daha yalın ve kolay bir biçimde gerçekleştiirilebilir.
+
+	MORDOR MORGOT MORDOR (Enum)
+-----------------------------------------------------------------------------------------------------------------------*/
+package org.csystem.app;
+
+class App {
+	public static void main(String [] args)
+	{
+		GameDemoApp.run();
+	}
+}
+
+class GameDemoApp {
+	public static void run()
+	{
+		GameObject go = new GameObject();
+
+		//...
+
+		go.applyForce(ForceDirection.RIGHT);
+		go.applyForce(ForceDirection.BOTTOM);
+		go.applyForce(ForceDirection.TOP);
+		go.applyForce(ForceDirection.LEFT);
+	}
+}
+
+enum ForceDirection {
+	RIGHT, TOP, LEFT, BOTTOM
+}
+
+class GameObject {
+	//...
+	public void applyForce(ForceDirection direction)
+	{
+		//...
+	}
+}
+
+/*----------------------------------------------------------------------------------------------------------------------
+	enum sınıflar enum anahtar sözcüğü ile bildirilirler. enum sınıfı içerisinde ilk noktalı virgülden önce (noktalı
+	virgülü zorunlu olmadıkça koyamayacağız) bildirilen virgülle ayrılmış isimlere enum sabitler (enum constants/literals)
+	denir. Bu isimler public static ve final olarak bildirilmiş ilgili enum class türünden referanslardır. Bu referansların
+	her biri ilgili enum türünden bir nesnenin adresini tutar. Bu sabitler için public static, final ve tür bilgisi yazılması
+	geçersizdir
+-----------------------------------------------------------------------------------------------------------------------*/
+package org.csystem.app;
+
+enum MaritalStatus {
+	SINGLE, MARRIED, DIVORCED
+}
+
+enum DeviceStatus {
+	OPEN, CLOSED, UNKNOWN
+}
+
+enum DayOfWeek {
+	SUN, MON, TUE, WED, THU, FRI, SAT
+}
+
+enum Color {
+	RED, GREEN, BLUE, WHITE, BLACK
+}
+
+/*----------------------------------------------------------------------------------------------------------------------
+	enum sınıfının ordinal isimli metodu referansa ilişkin nesnenin adresini tutan enum sabitinin ordinal numarasını
+	verir. Ordinal numarası sıfır değerinden başlar ve sabitin enum bildirimindeki sıra numarasına karşılık gelir. enum
+	sınıfının toString metodu referansa ilişkin sabitin ismini döndürür. enum sınıfının static values metodu enum
+	sabitlerine ilişkin referansları sırasıyla (bildirimdeki sırasıyla) tutan ilgili enum türünden bir dizi yaratıp
+	referansına geri döner
+-----------------------------------------------------------------------------------------------------------------------*/
+package org.csystem.app;
+
+class App {
+	public static void main(String [] args)
+	{
+		Month month = Month.SEP;
+
+		System.out.printf("Ordinal of %s is %d%n", month.toString(), month.ordinal());
+
+		Month [] months = Month.values();
+
+		for (Month m : months)
+			System.out.printf("%s ", m.toString());
+
+		System.out.println();
+	}
+}
+
+enum Month {
+	JAN, FEB, MAR, APR, MAY, JUN, JUL, AUG, SEP, OCT, NOV, DEC
+}
+
+/*----------------------------------------------------------------------------------------------------------------------
+	enum sınıfının static valueOf metodu parametresi ile aldığı yazıya ilişkin bir sabit ilgili enum sınıfında varsa
+	o sabite ilişkin referansa geri döner yoksa exception oluşur
+-----------------------------------------------------------------------------------------------------------------------*/
+package org.csystem.app;
+
+import java.util.Scanner;
+
+class App {
+	public static void main(String [] args)
+	{
+		Scanner kb = new Scanner(System.in);
+
+		System.out.print("Input the first three letters of a month:");
+		String monthStr = kb.nextLine().toUpperCase();
+
+		Month month = Month.valueOf(monthStr);
+
+		System.out.println(month.toString());
+	}
+}
+
+enum Month {
+	JAN, FEB, MAR, APR, MAY, JUN, JUL, AUG, SEP, OCT, NOV, DEC
+}
+
+/*----------------------------------------------------------------------------------------------------------------------
+	enum sınıfı türünden bir nesne new operatörü ile hiç bir yerde (sınıf içerisinde bile) yaratılamaz. Yani bir enum
+	türünden nesne sayısı program boyunca enum sabitlerinin sayısı kadardır
+-----------------------------------------------------------------------------------------------------------------------*/
+package org.csystem.app;
+
+class App {
+	public static void main(String [] args)
+	{
+		Month month = new Month(); //enum
+	}
+}
+
+enum Month {
+	JAN, FEB, MAR, APR, MAY, JUN, JUL, AUG, SEP, OCT, NOV, DEC
+}
+
+/*----------------------------------------------------------------------------------------------------------------------
+	Bir enum sınıfına sabitler dışında metot, veri elemanı, ctor vb. eklenebilir. Bunun için son sabitten sonra
+	noktalı virgül konması gerekir.
+	noktalı virgül konması gerekir. Eğer enum sınıfının hiç sabiti yoksa bile (ki bu durum aslında anlamsızdır) eklenecek
+	diğer elemanlardan önce yine noktalı virgül konmalıdır. enum sabitlerinin yaratılması sırasında doğrudan kullanım
+	ile içi boş parantez kullanımı aynı anlamdadır. İçi boş parantez kullanımı o sabite ilişkin nesnenin default ctor ile
+	yaratılacağı anlamına gelir. Şüphesiz bu durumda default ctor'un da varolması gerekir. Anımsanacağı gibi bir sınıfın
+	hiç default ctor'u yazılmazsa derleyici defualt ctor'u içi boş ve public olarak yazar. enum sınıflar için içi boş ve
+	erişilemez olarak yazar. Buradaki erişilemez, private anlamında değildir. Daha da ötesidir. enum sınıfının ctor'u
+	yazılabilse de sınıf içerisinde yine new operatörü ile nesne yaraatılamaz. ctor'lar tamamen sabitlere ilişkin nesnelerin
+	yaratılması için yazılır. enum sınıfında bir ctor yazıldığında ya private yapılmalıdır ya da hiç bir erişim belirleyici
+	yazılmamalıdır. enum sınıflarında ctor için hiç bir şey yazmamak diğer elemanlar için (sabitler hariç) hiç bir şey yazmamak
+	ile aynı anlamda değildir. Sınıflarda olduğu gibi enum sınıflarda da erişim belirleyici olarak hiç birşey yazmamak
+	friendly anlamındadır. Ancak enum sınıfların ctor'u için durum farklıdır. private'ın da ötesidir. Bir enum sabitine
+	ilişkin hangi ctor ile nesnenin yaratılacağı sabiti bildiriminde parantezler kullanılarak verilen argümanlara göre
+	belirlenir. Aşağıdaki Month enum sınıfından her ayın kaç çektiği bilgisi enum sabitine iliştirilmiştir
+-----------------------------------------------------------------------------------------------------------------------*/
+package org.csystem.app;
+
+import java.util.Random;
+import java.util.Scanner;
+
+class App {
+	public static void main(String [] args)
+	{
+		Scanner kb = new Scanner(System.in);
+		Random r = new Random();
+		RandomMonthFactory factory = new RandomMonthFactory(r);
+
+		System.out.print("Bir sayı giriniz:");
+		int count = kb.nextInt();
+
+		for (int i = 0; i < count; ++i) {
+			Month month = factory.getMonth();
+			int year = r.nextInt(1900, 2024);
+
+			System.out.println("----------------------------------------");
+			System.out.printf("Year:%d, Month:%s -> %d%n", year, month.toString(), month.getDays(year));
+			System.out.println("----------------------------------------");
+		}
+	}
+}
+
+class RandomMonthFactory {
+	private final Random m_random;
+	private static final Month [] VALUES = Month.values();
+
+	public RandomMonthFactory(Random random)
+	{
+		m_random = random;
+	}
+
+	public Month getMonth()
+	{
+		return VALUES[m_random.nextInt(VALUES.length)];
+	}
+}
+
+enum Month {
+	JAN(31), FEB(28), MAR(31), APR(30), MAY(31), JUN(30), JUL(31), AUG(31), SEP(30), OCT(31), NOV(30), DEC(31);
+	private final int m_days;
+
+	Month(int days)
+	{
+		m_days = days;
+	}
+	static boolean isLeapYear(int year)
+	{
+		return year % 4 == 0 && year % 100 != 0 || year % 400 == 0;
+	}
+
+	public int getDays(int year)
+	{
+		return ordinal() == 1 && isLeapYear(year) ? 29 : m_days;
+	}
+}
+
+/*----------------------------------------------------------------------------------------------------------------------
+	enum class ile Singleton implementasyonu. Lazy implementation gerekmedikçe ve özel bir durum yoksa Java'da Singleton
+	sınıf için en iyi implementasyon enum ile yapılabilir
+-----------------------------------------------------------------------------------------------------------------------*/
+package org.csystem.app;
+
+class App {
+	public static void main(String [] args)
+	{
+		Singleton s1 = Singleton.INSTANCE;
+		Singleton s2 = Singleton.INSTANCE;
+
+		System.out.println(s1 == s2 ? "Aynı nesne" : "Farklı nesneler");
+	}
+}
+
+enum Singleton {
+	INSTANCE;
+	private int m_value;
+
+	public int getValue()
+	{
+		return m_value;
+	}
+
+	public void setValue(int value)
+	{
+		m_value = value;
+	}
+	//...
+}
+
+/*----------------------------------------------------------------------------------------------------------------------
+	enum türlerinde eşitlik karşılaştırması yani aynı enum sabitine ilişkin referansın tutulup tutulmadığı == ve !=
+	operatörleri ile test edilebilir.
+-----------------------------------------------------------------------------------------------------------------------*/
+package org.csystem.app;
+
+import java.util.Random;
+import java.util.Scanner;
+
+class App {
+	public static void main(String [] args)
+	{
+		Scanner kb = new Scanner(System.in);
+		Random r = new Random();
+		RandomMonthFactory factory = new RandomMonthFactory(r);
+
+		System.out.print("Bir sayı giriniz:");
+		int count = kb.nextInt();
+
+		for (int i = 0; i < count; ++i) {
+			Month month1 = factory.getMonth();
+			Month month2 = factory.getMonth();
+
+			System.out.println("----------------------------------------");
+			System.out.printf("%s, %s%n", month1.toString(), month2.toString());
+			System.out.println(month1 == month2 ? "Aynı nesne" : "Farklı nesneler");
+			System.out.println(month1 != month2 ? "Farklı nesneler" : "Aynı nesne");
+			System.out.println("----------------------------------------");
+		}
+	}
+}
+
+class RandomMonthFactory {
+	private final Random m_random;
+	private static final Month [] VALUES = Month.values();
+
+	public RandomMonthFactory(Random random)
+	{
+		m_random = random;
+	}
+
+	public Month getMonth()
+	{
+		return VALUES[m_random.nextInt(VALUES.length)];
+	}
+}
+
+enum Month {
+	JAN(31), FEB(28), MAR(31), APR(30), MAY(31), JUN(30), JUL(31), AUG(31), SEP(30), OCT(31), NOV(30), DEC(31);
+	private final int m_days;
+
+	Month(int days)
+	{
+		m_days = days;
+	}
+	static boolean isLeapYear(int year)
+	{
+		return year % 4 == 0 && year % 100 != 0 || year % 400 == 0;
+	}
+
+	public int getDays(int year)
+	{
+		return ordinal() == 1 && isLeapYear(year) ? 29 : m_days;
+	}
+}
+
+/*----------------------------------------------------------------------------------------------------------------------
+	Eşitlik karşılaştırması equals metodu ile de yapılabilir
+-----------------------------------------------------------------------------------------------------------------------*/
+package org.csystem.app;
+
+import java.util.Random;
+import java.util.Scanner;
+
+class App {
+	public static void main(String [] args)
+	{
+		Scanner kb = new Scanner(System.in);
+		Random r = new Random();
+		RandomMonthFactory factory = new RandomMonthFactory(r);
+
+		System.out.print("Bir sayı giriniz:");
+		int count = kb.nextInt();
+
+		for (int i = 0; i < count; ++i) {
+			Month month1 = factory.getMonth();
+			Month month2 = factory.getMonth();
+
+			System.out.println("----------------------------------------");
+			System.out.printf("%s, %s%n", month1.toString(), month2.toString());
+			System.out.println(month1.equals(month2) ? "Aynı nesne" : "Farklı nesneler");
+
+			System.out.println("----------------------------------------");
+		}
+	}
+}
+
+class RandomMonthFactory {
+	private final Random m_random;
+	private static final Month [] VALUES = Month.values();
+
+	public RandomMonthFactory(Random random)
+	{
+		m_random = random;
+	}
+
+	public Month getMonth()
+	{
+		return VALUES[m_random.nextInt(VALUES.length)];
+	}
+}
+
+enum Month {
+	JAN(31), FEB(28), MAR(31), APR(30), MAY(31), JUN(30), JUL(31), AUG(31), SEP(30), OCT(31), NOV(30), DEC(31);
+	private final int m_days;
+
+	Month(int days)
+	{
+		m_days = days;
+	}
+	static boolean isLeapYear(int year)
+	{
+		return year % 4 == 0 && year % 100 != 0 || year % 400 == 0;
+	}
+
+	public int getDays(int year)
+	{
+		return ordinal() == 1 && isLeapYear(year) ? 29 : m_days;
+	}
+}
+
+/*----------------------------------------------------------------------------------------------------------------------
+	enum sınıfının compareTo metodu:
+		a.compareTo(b);
+	çağrısı için
+		a.ordinal() - b.ordinal()
+	sonucunu döndürür
+-----------------------------------------------------------------------------------------------------------------------*/
+package org.csystem.app;
+
+import java.util.Random;
+import java.util.Scanner;
+
+class App {
+	public static void main(String [] args)
+	{
+		Scanner kb = new Scanner(System.in);
+		Random r = new Random();
+		RandomMonthFactory factory = new RandomMonthFactory(r);
+
+		System.out.print("Bir sayı giriniz:");
+		int count = kb.nextInt();
+
+		for (int i = 0; i < count; ++i) {
+			Month month1 = factory.getMonth();
+			Month month2 = factory.getMonth();
+
+			int diff = month1.compareTo(month2);
+
+			System.out.println("----------------------------------------");
+			System.out.printf("%s, %s%n", month1.toString(), month2.toString());
+			if (diff < 0)
+				System.out.printf("%s ile %s arasında %d ay vardır%n", month1.toString(), month2.toString(), -diff);
+			else if (diff > 0)
+				System.out.printf("%s ile %s arasında %d ay vardır%n", month2.toString(), month1.toString(), diff);
+			else
+				System.out.printf("Aynı ay:%s%n", month1.toString());
+
+			System.out.println("----------------------------------------");
+		}
+	}
+}
+
+class RandomMonthFactory {
+	private final Random m_random;
+	private static final Month [] VALUES = Month.values();
+
+	public RandomMonthFactory(Random random)
+	{
+		m_random = random;
+	}
+
+	public Month getMonth()
+	{
+		return VALUES[m_random.nextInt(VALUES.length)];
+	}
+}
+
+enum Month {
+	JAN(31), FEB(28), MAR(31), APR(30), MAY(31), JUN(30), JUL(31), AUG(31), SEP(30), OCT(31), NOV(30), DEC(31);
+	private final int m_days;
+
+	Month(int days)
+	{
+		m_days = days;
+	}
+	static boolean isLeapYear(int year)
+	{
+		return year % 4 == 0 && year % 100 != 0 || year % 400 == 0;
+	}
+
+	public int getDays(int year)
+	{
+		return ordinal() == 1 && isLeapYear(year) ? 29 : m_days;
+	}
+}
+
+/*----------------------------------------------------------------------------------------------------------------------
+	enum sınıfının values metodu her çağrıldığında yeni bir dizi referansına geri döner
+-----------------------------------------------------------------------------------------------------------------------*/
+package org.csystem.app;
+
+class App {
+	public static void main(String [] args)
+	{
+		DeviceStatus [] deviceStatus1 = DeviceStatus.values();
+		DeviceStatus [] deviceStatus2 = DeviceStatus.values();
+
+		System.out.println(deviceStatus1 == deviceStatus2 ? "Aynı dizi" : "Farklı diziler");
+	}
+}
+
+
+enum DeviceStatus {
+	OPEN, CLOSED, UNKNOWN
+}
+
+/*----------------------------------------------------------------------------------------------------------------------
+	enum sınıfları switch deyimi ile de kullanılabilmektedir. Bu durumda case bölümlerinin enum sabitlerinden olması
+	gerekir. Karşılaştırma işlemi == operatörü ile yapılmış olur. case bölümlerine ilişkin sabitlerde enum ismi kullanımı
+	geçersizdir. Sabit ismi doğrudan yazılır. Zaten switch parantezi içerisindeki ifadenin türü bellidir
+-----------------------------------------------------------------------------------------------------------------------*/
+package org.csystem.app;
+
+import java.util.Scanner;
+
+class App {
+	public static void main(String [] args)
+	{
+		Scanner kb = new Scanner(System.in);
+		System.out.print("Input the device status as OPEN, CLOSED or UNKNOWN:");
+		String deviceStatusStr = kb.nextLine().toUpperCase();
+		DeviceStatus deviceStatus = DeviceStatus.valueOf(deviceStatusStr);
+
+		switch (deviceStatus) {
+			case OPEN:
+				System.out.println("Open device");
+				break;
+			case CLOSED:
+				System.out.println("Closed device");
+				break;
+			case UNKNOWN:
+				System.out.println("Unknown device");
+				break;
+		}
+	}
+}
+
+
+enum DeviceStatus {
+	OPEN, CLOSED, UNKNOWN
+}
+
+/*----------------------------------------------------------------------------------------------------------------------
+	enum sınıfları switch expression ile de kullanılabilmektedir
+-----------------------------------------------------------------------------------------------------------------------*/
+package org.csystem.app;
+
+import java.util.Scanner;
+
+class App {
+	public static void main(String [] args)
+	{
+		Scanner kb = new Scanner(System.in);
+		System.out.print("Input the device status as OPEN, CLOSED or UNKNOWN:");
+		String deviceStatusStr = kb.nextLine().toUpperCase();
+		DeviceStatus deviceStatus = DeviceStatus.valueOf(deviceStatusStr);
+
+		switch (deviceStatus) {
+			case OPEN -> System.out.println("Open device");
+			case CLOSED -> System.out.println("Closed device");
+			case UNKNOWN -> System.out.println("Unknown device");
+		}
+	}
+}
+
+enum DeviceStatus {
+	OPEN, CLOSED, UNKNOWN
+}
+
+
+/*----------------------------------------------------------------------------------------------------------------------
+    09.06.2023
+-----------------------------------------------------------------------------------------------------------------------*/
+
+/*----------------------------------------------------------------------------------------------------------------------
+	Sınıflararası İlişkiler:
+	Sınıflararası ilişkiler aslında nesneler arasındaki ilişkiler olarak düşünülmelidir. Araba ile sürücüsü arasında,
+	pilot ile uçak arasında, hastane ile doktor arasında birer ilişki vardır. Aslında bu kavramların hepsi birer sınıf
+	biçiminde yazılsa da, ilişkiler nesneler arasında düşünülerek tasarlanır. Çünkü örneğin araba nesnesi ile onun sürücü
+	nesnesi arasında bir ilişki vardır. Bu iki sınıf bu ilişki olacak şekilde yazılır.
+
+	NYPT kullanılarak geliştirilecek bir projenin kodlama aşamasına gelindiğinde önce sınıflar ve aralarındaki ilişkiler
+	belirlenir. Sonra kodlamaya geçilir. Sınıflar ve aralarındaki ilişkiler belirlenirken, sınıfların ve nesnelerin
+	konuya (domain) yani senaryoya ilişkin durumları düşünülür.
+
+	Anahtar Notlar: Bir projenin ihtiyaçlarının belirlenmesinden (requirement analysis) teslimine (deployment) kadar geçen
+	süreci (process) çeşitli şemalar ile anlatılmasını sağlayan UML (Unified Modeling Language) denilen bir araç bazı
+	durumlarda kullanılmaktadır. UML'in önemli ve programcıların kodlamasına ilişkin şemalarından biri "class diagram"'dır.
+	Bu şema genel olarak kodlama aşamasından önce yani sınıfların ve aralarındaki ilişkilerin belirlenmesi için çizilir.
+
+	Anahtar Notlar: UML her zaman ve her detayı ile kullanılmalı mıdır? Gerektiğinde gerektiği kadar kullanılmalıdır.
+	UML tüm şemaları ile programcı tarafından öğrenilmeli midir? Hayır. Bazı şemalar doğrudan programcıyı ilgilendirmez.
+	Programcı bu şemaları anlar ancak bu şemları belirleme noktası programcının işi değildir
+
+	Anahtar Notlar: Kavram ya da kavramlar modellenirken genel duurmlar düşünülür. İstisna niteliğinde olabilecek durumlar
+	modelleme yapılırken göz önünde bulundurulmaz. Aksi durumda hiç birşey modellenemez. Örneğin insan ile kimlik kartı
+	arasındaki ilişkinin adı aşağıdaki iki koşulu sağladığı için "X" olsun:
+		- İnsan nesnesi ait kimlik kartı nesnesi başka bir nesne tarafından kullanılamaz
+		- İnsan nesnesine ait kimlik kartı nesnesi ömrüne hemen hemen insan ile başlayacak ve ömrü hemen hemen insan ile
+		son bulacak
+	Burada, maddelere ilişkin bazı istisnalar olabilir. Örneğin, insan ömrü içerisinde kimlik kartını değiştirebilir. Ancak
+	bu istisna durumlar ilişkinin bütününü yani genel durumunu etkilemez.
+
+	Bir sınıfın derlenebilmesi için başka bir sınıfın var olması yani daha önceden yazılmış olması gerektiği duruma
+	"bağımlılık (dependency)" denir. Aslında bu kavram sadece sınıflara özgü değildir. Örneğin bir metdun içerisinde
+	çağrılan başka bir metoda çağıran metot bağımlıdır. Çünkü çağrılan metot olmadan çağıran metodun kodları derlenmez.
+	Burada "dependency" terimi sınıflar arasında ele alınacaktır.
+
+	İki sınıf arasında aşağıdaki ilişkilerden ya hiç birisi yoktur ya da bir tanesi vardır:
+
+	1. İçerme (composition) (has a): A ile arasındaki "A has a B" ilişkisi için aşağıdaki iki koşulun da sağlanması gerekir,
+	ya da tersine aşağıdaki iki koşul gerçekleniyor ise bu iki sınıf arasında bu ilişki vardır:
+		- A nesnesine ait B nesnesi başka bir nesne tarafından kullanılmayacak
+		- A nesnesine ait B nesnesi ömrüne hemen hemen A ile başlayacak ve hemen hemen A ile ömrü son bulacak.
+	Bu ilişkide A nesnesi kendisine ait B nesnesini istediği bir durumda (bir çok durumda ya da hemen her durumda)
+	kullanabilmektedir. Bu tarz kullanıma bütünsel kullanım (whole usage) denir.
+
+	2. Birleşme (aggregation) (holds a): A ile arasındaki "A holds a B" ilişkisi, composition koşullarının en az bir tanesinin
+	gerçeklenmediği bütünsel kullanım ilişkisidir.
+
+	3. Çağrışım (association): A nesnesinin B nesnesini ihtiyacı olduğunda kullaması, saklamaması ilişkisidir. Yani
+	bütünsel bir kullanım yoktur. Bu kullanıma "parçalı kullanım (partial usage)" da denir.
+
+	4. Türetme/kalıtım (inheritance) (is a): Biyoloji'den programlamaya aktarılmıştır. Biyoloji'de inheritance ebeveynin (parent)
+	özelliklerinin çocuğuna (child) aktarılmasıdır
+
+	Anahtar Notlar: Bu ilişkilerden "inheritance" dışında kalan ilişkiler için Java'da doğrudan kural seti yoktur. Dilin
+	genel sentaks ve semantik kuralları ile ilişkinin kuralları doğrultusunda implementasyon yapılır. Ancak "inheritance"
+	için ayrı kural seti vardır.
+
+	Anahtar Notlar: Bazı sınıfların implementasyonları gereği veya özel bir durumdan dolayı yukarıdaki ilişkilerden
+	hiç birisi olmayabilir. Ama ortada bir "dependency" söz konusu olabilir. Bu da yine genel durumu bozmaz. İlişkinin
+	bir ismi de olması gerekmez. Böylesi durumlar da konu içerisinde ele alınacaktır
+
+
+	MORDOR MORGOT ---> Ders kaydı önemli
+-----------------------------------------------------------------------------------------------------------------------*/
+
+
+/*----------------------------------------------------------------------------------------------------------------------
+	10.06.2023
+-----------------------------------------------------------------------------------------------------------------------*/
+
+/*----------------------------------------------------------------------------------------------------------------------
+	A ile B arasındaki "composition" ilişkisinin genel bir implementasyonu
+-----------------------------------------------------------------------------------------------------------------------*/
+package org.csystem.app;
+
+class App {
+	public static void main(String [] args)
+	{
+		A x;
+
+		x = new A(/*...*/);
+		x.doWork1();
+		x.doWork2();
+	}
+}
+
+class A {
+	private B m_b;
+
+	public A(/*...*/)
+	{
+		//...
+		m_b = new B(/*...*/);
+	}
+
+	public void doWork1()
+	{
+		//...
+		m_b.doSomething();
+		//...
+	}
+
+	public void doWork2()
+	{
+		//...
+		m_b.doSomething();
+		//...
+	}
+}
+
+class B {
+	//...
+	public void doSomething()
+	{
+		//...
+	}
+	//...
+}
+
+/*----------------------------------------------------------------------------------------------------------------------
+	A ile B arasındaki "aggregation" ilişkisinin genel bir implementasyonu
+-----------------------------------------------------------------------------------------------------------------------*/
+package org.csystem.app;
+
+class App {
+	public static void main(String [] args)
+	{
+		A x;
+		B y, z;
+
+		y = new B(/*...*/);
+
+		x = new A(y/*,...*/);
+		x.doWork1();
+		x.doWork2();
+		z = new B(/*...*/);
+		x.setB(z);
+		x.doWork1();
+		x.doWork2();
+	}
+}
+
+class A {
+	private B m_b;
+
+	public A(B b /*...*/)
+	{
+		//...
+		m_b = b;
+	}
+
+	public void setB(B b)
+	{
+		//...
+		m_b = b;
+	}
+
+	public B getB()
+	{
+		return m_b;
+	}
+
+	public void doWork1()
+	{
+		//...
+		m_b.doSomething();
+		//...
+	}
+
+	public void doWork2()
+	{
+		//...
+		m_b.doSomething();
+		//...
+	}
+}
+
+class B {
+	//...
+	public void doSomething()
+	{
+		//...
+	}
+	//...
+}
+
+/*----------------------------------------------------------------------------------------------------------------------
+	Car, Engine, Driver, Plane, Pilot sınıfları ve aralarındaki ilişkiler
+-----------------------------------------------------------------------------------------------------------------------*/
+package org.csystem.app;
+
+import java.util.Random;
+
+class App {
+	public static void main(String [] args)
+	{
+		DemoRaceGameApp.run();
+	}
+}
+
+class DemoRaceGameApp {
+	public static void run()
+	{
+		CarFactory carFactory = new CarFactory();
+		PlaneFactory planeFactory = new PlaneFactory();
+		Car car = carFactory.getCar();
+
+		car.run();
+
+		System.out.println("----------------------");
+
+		Plane plane = planeFactory.getPlane();
+
+		plane.fly();
+	}
+}
+
+class CarFactory {
+	private final Random m_random = new Random();
+	private static final Driver [] DRIVERS = {
+			new Driver("Ali Vefa Serçe"),
+			new Driver("Alican Keçici"),
+			new Driver("Bartu Çankaya"),};
+
+	public Car getCar()
+	{
+		return new Car(DRIVERS[m_random.nextInt(DRIVERS.length)]);
+	}
+}
+
+class PlaneFactory {
+	private final Random m_random = new Random();
+	private static final Pilot [][] PILOTS = {
+			{new Pilot(1, "Baturhan Şahin"), new Pilot(2, "Bora"), new Pilot(3, "Fatih Karabulut")},
+			{new Pilot(1, "Güneş Gülay"), new Pilot(2, "Kerim Tugal"), new Pilot(3, "Onur Özcan")},};
+
+	public Plane getPlane()
+	{
+		return new Plane(m_random.nextInt(2, 5), PILOTS[m_random.nextInt(PILOTS.length)]);
+	}
+}
+
+
+class Plane {
+	private final Engine [] m_engines;
+	private final Pilot [] m_pilots;
+
+	private void startEngines()
+	{
+		for (Engine engine : m_engines)
+			engine.startEngine();
+	}
+
+	private void accelerateEngines()
+	{
+		for (Engine engine : m_engines)
+			engine.accelerateEngine();
+	}
+
+	private void slowEngines()
+	{
+		for (Engine engine : m_engines)
+			engine.slowEngine();
+	}
+
+	private void stopEngines()
+	{
+		for (Engine engine : m_engines)
+			engine.stopEngine();
+	}
+
+	public Plane(int engineCount, Pilot [] pilots /*...*/)
+	{
+		//...
+		m_engines = new Engine[engineCount];
+		for (int i = 0; i < engineCount; ++i)
+			m_engines[i] = new Engine(/*...*/);
+
+		m_pilots = pilots;
+		//...
+	}
+
+
+	public void fly()
+	{
+		System.out.println("Pilots:");
+		for (Pilot pilot : m_pilots)
+			System.out.printf("%d %s%n", pilot.getTitle(), pilot.getName());
+
+		startEngines();
+		accelerateEngines();
+
+		//...
+		System.out.println("Fly");
+		//...
+
+		slowEngines();
+		stopEngines();
+	}
+}
+
+class Car {
+	private Engine m_engine;
+	private Driver m_driver;
+	//...
+
+	public Car(Driver driver/*..*/)
+	{
+		//...
+		m_engine = new Engine(/*...*/);
+		m_driver = driver;
+		//...
+	}
+
+	public void brake()
+	{
+		System.out.println("Brake");
+		m_engine.slowEngine();
+		//...
+	}
+
+	public void run()
+	{
+		System.out.printf("Driver:%s%n", m_driver.getName());
+		m_engine.startEngine();
+		m_engine.accelerateEngine();
+
+		System.out.println("Run");
+		//...
+		brake();
+		m_engine.stopEngine();
+	}
+}
+
+class Pilot {
+	private int m_title;
+	private String m_name;
+
+	//...
+
+
+	public Pilot(int title, String name)
+	{
+		m_title = title;
+		m_name = name;
+	}
+
+	public int getTitle()
+	{
+		return m_title;
+	}
+
+	public void setTitle(int title)
+	{
+		m_title = title;
+	}
+
+	public String getName()
+	{
+		return m_name;
+	}
+
+	public void setName(String name)
+	{
+		m_name = name;
+	}
+}
+
+class Driver {
+	private String m_name;
+	//...
+
+
+	public Driver(String name)
+	{
+		m_name = name;
+	}
+
+	public String getName()
+	{
+		return m_name;
+	}
+
+	public void setName(String name)
+	{
+		m_name = name;
+	}
+	//...
+}
+
+class Engine {
+	//...
+	public void startEngine()
+	{
+		System.out.println("Start Engine");
+	}
+
+	public void accelerateEngine()
+	{
+		System.out.println("Accelerate Engine");
+	}
+
+	public void slowEngine()
+	{
+		System.out.println("Slow Engine");
+	}
+
+	public void stopEngine()
+	{
+		System.out.println("Stop Engine");
+	}
+
+	//...
+}
+
+/*----------------------------------------------------------------------------------------------------------------------
+	A ile B arasındaki "association" ilişkisi
+-----------------------------------------------------------------------------------------------------------------------*/
+package org.csystem.app;
+
+class App {
+	public static void main(String [] args)
+	{
+		A x = new A(/*...*/);
+		B y = new B(/*...*/);
+		B z = new B(/*...*/);
+
+		x.doWork(y);
+		//...
+		x.doWork(z);
+	}
+}
+
+class A {
+	//...
+	public void doWork(B b)
+	{
+		//...
+		b.doSomething();
+		//...
+	}
+	//...
+}
+
+class B {
+	//...
+	public void doSomething()
+	{
+		//...
+	}
+	//...
+}
+
+/*----------------------------------------------------------------------------------------------------------------------
+	Taxi, Driver, Client sınıfları ve aralarındaki ilişkiler
+-----------------------------------------------------------------------------------------------------------------------*/
+package org.csystem.app;
+
+import java.util.Random;
+
+class App {
+	public static void main(String [] args)
+	{
+		DemoTaxiAutomationApp.run();
+	}
+}
+
+class DemoTaxiAutomationApp {
+	public static void run()
+	{
+		ClientFactory clientFactory = new ClientFactory();
+		TaxiFactory taxiFactory = new TaxiFactory();
+
+		Taxi taxi = taxiFactory.getTaxi();
+		Client client1 = clientFactory.getClient();
+
+		taxi.take(client1);
+
+		Client client2 = clientFactory.getClient();
+
+		taxi.take(client2);
+	}
+}
+
+class ClientFactory {
+	private final Random m_random = new Random();
+	private static final Client [] CLIENTS = {
+			new Client("Rukiye Ünal", "rukiyeunal"),
+			new Client("Güray Sönmez", "guray"),
+			new Client("Serdar Başokutan", "serdarbasokutan"),
+			new Client("Oğuz Karan", "oguzkaran"),};
+	public Client getClient()
+	{
+		return CLIENTS[m_random.nextInt(CLIENTS.length)];
+	}
+}
+
+class TaxiFactory {
+	private final Random m_random = new Random();
+	private static final Driver [] DRIVERS = {
+			new Driver("Veli"),
+			new Driver("Selami"),
+			new Driver("Secati"),
+			new Driver("Necati"),
+			new Driver("Ali Papila"),};
+
+	public Taxi getTaxi()
+	{
+		return new Taxi(DRIVERS[m_random.nextInt(DRIVERS.length)]);
+	}
+}
+
+class Taxi {
+	private Driver m_driver;
+
+	public Taxi(Driver driver/*.*/)
+	{
+		m_driver = driver;
+	}
+
+	public void take(Client client)
+	{
+		System.out.printf("Client:%s%n", client.getUserName());
+	}
+}
+
+class Client {
+	private String m_name;
+	private String m_userName;
+
+	//...
+
+
+	public Client(String name, String userName)
+	{
+		m_name = name;
+		m_userName = userName;
+	}
+
+	public String getName()
+	{
+		return m_name;
+	}
+
+	public void setName(String name)
+	{
+		m_name = name;
+	}
+
+	public String getUserName()
+	{
+		return m_userName;
+	}
+
+	public void setUserName(String userName)
+	{
+		m_userName = userName;
+	}
+	//...
+}
+
+class Driver {
+	private String m_name;
+	private int m_rating;
+	//...
+
+
+	public Driver(String name)
+	{
+		m_name = name;
+	}
+
+	public String getName()
+	{
+		return m_name;
+	}
+
+	public void setName(String name)
+	{
+		m_name = name;
+	}
+
+	public int getRating()
+	{
+		return m_rating;
+	}
+
+	public void setRating(int rating)
+	{
+		m_rating = rating;
+	}
+
+	//...
+}
+
+/*----------------------------------------------------------------------------------------------------------------------
+	Inheritance kavramı NYPT'de bir sınıfın kodlarına dokunmadan ve kodlarnı kopyalamadan genişletmek (extension)
+	için kullanılır. Burada genişletme var olan özelliklere eklenti anlamına gelir. Bu ilişkide B sınıfı A sınıfından
+	türetilmişse "B is an A" cümlesi geçerli olur
+
+	B sınıfı A sınıfından türetilmiş olsun. B sınıfına A sınıfının bir türemiş sınıfı (derived class) denir. A sınıfına da
+	B sınıfının taban sınıfı (base class) denir. Bu iki terim NYPT'ye ilişkin genel terimlerdir. Java'da base class
+	yerine super class, derived class yerine ise sub class terimleri daha çok kullanılır. NYPT'de base class
+	yerine Biyoloji'den gelen parent class, derived class yerine de yine Biyoloji'den gelen child class terimleri de
+	kullanılır.
+
+	Bir dizi türetme söz konusu olabilir. Örneğin C sınıfı, B sınıfından, B sınıfı da A sınıfından türetilmiş olabilir. Bu
+	durumda C'nin taban sınıfı (super class) dendiğinde doğrudan taban sınıfa (direct super class) olan B sınıfı anlaşılır.
+	Bu hiyerarşide A sınıfı C'nin dolaylı taban sınıfıdır (indirect super class). Bu hiyerarşide
+	"C'nin taban sınıfları B ve A'dır" cümlesi teknik olarak doğru değildir. Doğrusu "C'nin taban sınıfı B'dir, dolaylı
+	taban sınıflarından biri A'dır" cümlesidir.
+
+	Java'da bir sınıf birden fazla (doğrudan) taban sınıfa sahip olamaz. Yani Java'da "çoklu türetme (multiple inheritance)"
+	yoktur. Java'da bir sınıf yalnızca tek bir sınıftan türetilebilir.
+
+	Anahtar Notlar: Java'da çoklu türetmenin olmaması bir eksiklik değildir. Çünkü pratikte çoklu türetmeye yönelik
+	bir senaryo slz konusu değildir. Bu anlamda kısmi'de olsa gerektiği durumlarda Java'da ileride ele alacağımız
+	interface denilen bir UDT bulnmaktadır.
+
+	Mordor Morgot ----> Tüm Ders
+-----------------------------------------------------------------------------------------------------------------------*/
+
+/*----------------------------------------------------------------------------------------------------------------------
+	Java'da türetme extends anahtar sözcüğü ile aşağıdaki gibi yapılır
+-----------------------------------------------------------------------------------------------------------------------*/
+package org.csystem.app;
+
+class E extends B {
+	//...
+}
+
+class D extends A {
+	//...
+}
+class C extends B {
+	//...
+}
+
+class B extends A {
+	//...
+}
+
+class A {
+	//...
+}
+
+/*----------------------------------------------------------------------------------------------------------------------
+	Taban sınıfın metotları türemiş sınıfa da aktarılır. Aşağıdaki örnekte foo metodu B sınıfında da bulunur. foo
+	ve bar metodu C sınıfında da bulunur. Bu kavrama yani mertotlar ekleyerek sınıfın genişletilmesine
+	davranışsal genişletme (behavioral extension) da denilmektedir. Extension terimi tek başına kullanıldığında
+	genel olarak veri elemanı ile genişletmek anlamına gelir. Ancak metot eklemek de bir genişletmedir
+-----------------------------------------------------------------------------------------------------------------------*/
+package org.csystem.app;
+
+class App {
+	public static void main(String [] args)
+	{
+		C c = new C();
+		B b = new B();
+
+		c.foo();
+		c.bar();
+		c.tar();
+
+		b.foo();
+		b.bar();
+	}
+}
+
+class C extends B {
+	//...
+	public void tar()
+	{
+		System.out.println("C.tar");
+	}
+}
+
+class B extends A {
+	public void bar()
+	{
+		System.out.println("B.bar");
+	}
+}
+
+class A {
+	public void foo()
+	{
+		System.out.println("A.foo");
+	}
+}
+
+/*----------------------------------------------------------------------------------------------------------------------
+	Türemiş sınıf nesnesi içerisinde taban sınıf nesnesi kadar alan da bulunur. Yani, türemiş sınıf nesnesi içerisinde
+	taban sınıf nesnesi de yaratılmış olur. Yani türemiş sınıf nesnesi içerisinde taban sınıfın non-static veri elemanlarıda
+	vardır. Bu durumda belleksel yani nesnesel bir kapsama vardır. Bu durumda türemiş sınıf nesnesinin uzunluğu
+	"en az, taban sınıf nesnesinin uzunluğu + türemiş sınıfa eklenen non-static veri elemanlarının toplam uzunluğu kadardır"
+-----------------------------------------------------------------------------------------------------------------------*/
+package org.csystem.app;
+
+class App {
+	public static void main(String [] args)
+	{
+		C c = new C();
+
+		c.x = 10;
+		c.y = 3.4;
+		c.z = true;
+
+		System.out.printf("c.x = %d, c.y = %f, c.z = %b%n", c.x, c.y, c.z);
+	}
+}
+
+class C extends B {
+	//...
+	public boolean z;
+	//...
+}
+
+class B extends A {
+	//...
+	public double y;
+	//...
+}
+
+class A {
+	//...
+	public int x;
+
+	//...
+}
+
+
+/*----------------------------------------------------------------------------------------------------------------------
+	11.06.2023		Mordor --> Tüm Ders
+-----------------------------------------------------------------------------------------------------------------------*/
+/*----------------------------------------------------------------------------------------------------------------------
+	Anımsanacağı gibi bir nesnenin yaratılması aşamalarının sonunda ctor çağrılır. ctor çağrısı düzgün bir biçimde yani
+	exception oluşmadan tamamlandıktan sonra nesne yaratılmış olur. Bu durumda türemiş sınıf nesnesinin ctor'undan önce
+	taban sınıf kısmı için yani kendisine ait olan taban sınıf nesnesi için ctor çağrılır. Eğer herhangi bir belirtme
+	yapılmazsa taban sınıfın default ctor'u çağrılır. Şüphesiz bu durumda default ctor'un var olması ya da erişim bakımdan
+	türemiş sınıftan erişilebilir olması gerekir. Yani aslında derleyici türemiş sınıfında herhangi bir belirtme yapılmamışsa
+	adeta başında taban sınıfın default ctor'unun çağrısına ilişkin kodu üretir. Aşağıdaki kodu inceleyiniz
+-----------------------------------------------------------------------------------------------------------------------*/
+package org.csystem.app;
+
+class App {
+	public static void main(String [] args)
+	{
+		B b1 = new B();
+		System.out.println("-----------------------------------");
+		B b2 = new B(10);
+		System.out.println("-----------------------------------");
+		C c1 = new C();
+		System.out.println("-----------------------------------");
+		C c2 = new C(10, 3.4);
+
+		//...
+	}
+}
+
+class C extends B {
+	//...
+	public C()
+	{
+		System.out.println("I am default ctor of C");
+	}
+
+	public C(int a, double b)
+	{
+		System.out.println("I am a ctor of C with parameter type: int, double");
+	}
+	//...
+}
+
+class B extends A {
+	//...
+	public B()
+	{
+		System.out.println("I am default ctor of B");
+	}
+
+	public B(int a)
+	{
+		System.out.println("I am a ctor of B with parameter type: int");
+	}
+
+	//...
+}
+
+class A {
+	//...
+
+	public A()
+	{
+		System.out.println("I am default ctor of A");
+	}
+
+	public A(int a)
+	{
+		System.out.println("I am a ctor of A with parameter type: int");
+	}
+	//...
+}
+
+/*----------------------------------------------------------------------------------------------------------------------
+	Aşağıdaki örnekte A'nın yani B'nin taban sınıfının default ctor'u private olduğundan error oluşur
+-----------------------------------------------------------------------------------------------------------------------*/
+package org.csystem.app;
+
+
+class B extends A {
+	//...
+	public B() //error
+	{
+		System.out.println("I am default ctor of B");
+	}
+
+	public B(int a) //error
+	{
+		System.out.println("I am a ctor of B with parameter type: int");
+	}
+
+	//...
+}
+
+class A {
+	//...
+
+	private A()
+	{
+		System.out.println("I am default ctor of A");
+	}
+
+	public A(int a)
+	{
+		System.out.println("I am a ctor of A with parameter type: int");
+	}
+	//...
+}
+
+/*----------------------------------------------------------------------------------------------------------------------
+	Aşağıdaki örnekte A'nın yani B'nin taban sınıfının default ctor'u olmadığından dolayı error oluşur
+-----------------------------------------------------------------------------------------------------------------------*/
+package org.csystem.app;
+
+class B extends A {
+	//...
+	public B() //error
+	{
+		System.out.println("I am default ctor of B");
+	}
+
+	public B(int a) //error
+	{
+		System.out.println("I am a ctor of B with parameter type: int");
+	}
+
+	//...
+}
+
+class A {
+	//...
+
+	public A(int a)
+	{
+		System.out.println("I am a ctor of A with parameter type: int");
+	}
+	//...
+}
+
+/*----------------------------------------------------------------------------------------------------------------------
+	Türemiş sınıfı yazan programcı "super ctor sentaksı" ile taban sınıfın istenilen ctor'unun çağrılmasını sağlayabilir.
+	super ctor sentaksında hengi ctor'un çağrılacağı derleyici tarafından "method overload resolution" kuralları ile
+	belirlenir. Aşağıdaki örneği inceleyiniz
+-----------------------------------------------------------------------------------------------------------------------*/
+package org.csystem.app;
+
+class App {
+	public static void main(String [] args)
+	{
+		B b1 = new B();
+		System.out.println("-----------------------------------");
+		B b2 = new B(10);
+		System.out.println("-----------------------------------");
+
+		//...
+	}
+}
+
+class B extends A {
+	//...
+	public B()
+	{
+		System.out.println("I am default ctor of B");
+	}
+
+	public B(int a)
+	{
+		super(a);
+		System.out.println("I am a ctor of B with parameter type: int");
+	}
+
+	//...
+}
+
+class A {
+	//...
+	public A()
+	{
+		System.out.println("I am default ctor of A");
+	}
+
+	public A(int a)
+	{
+		System.out.println("I am a ctor of A with parameter type: int");
+	}
+	//...
+}
+
+/*----------------------------------------------------------------------------------------------------------------------
+	Aşağıdaki örneği inceleyiniz
+-----------------------------------------------------------------------------------------------------------------------*/
+package org.csystem.app;
+
+class App {
+	public static void main(String [] args)
+	{
+		B b1 = new B();
+		System.out.println("-----------------------------------");
+		B b2 = new B(10);
+		System.out.println("-----------------------------------");
+
+		//...
+	}
+}
+
+class B extends A {
+	//...
+	public B()
+	{
+		super(0);
+		System.out.println("I am default ctor of B");
+	}
+
+	public B(int a)
+	{
+		super(a);
+		System.out.println("I am a ctor of B with parameter type: int");
+	}
+
+	//...
+}
+
+class A {
+	//...
+
+	public A(int a)
+	{
+		System.out.println("I am a ctor of A with parameter type: int");
+	}
+	//...
+}
+
+/*----------------------------------------------------------------------------------------------------------------------
+    Aşağıdaki kodu inceleyiniz
+-----------------------------------------------------------------------------------------------------------------------*/
+package org.csystem.app;
+
+class App {
+	public static void main(String [] args)
+	{
+		B b1 = new B();
+		System.out.println("-----------------------------------");
+		B b2 = new B(10);
+		System.out.println("-----------------------------------");
+		C c1 = new C();
+		System.out.println("-----------------------------------");
+		C c2 = new C(10, 3.4);
+
+		//...
+	}
+}
+
+class C extends B {
+	//...
+	public C()
+	{
+		System.out.println("I am default ctor of C");
+	}
+
+	public C(int a, double b)
+	{
+		super(a);
+		System.out.println("I am a ctor of C with parameter type: int, double");
+	}
+	//...
+}
+
+class B extends A {
+	//...
+	public B()
+	{
+		System.out.println("I am default ctor of B");
+	}
+
+	public B(int a)
+	{
+		super(a);
+		System.out.println("I am a ctor of B with parameter type: int");
+	}
+
+	//...
+}
+
+class A {
+	//...
+
+	public A()
+	{
+		System.out.println("I am default ctor of A");
+	}
+
+	public A(int a)
+	{
+		System.out.println("I am a ctor of A with parameter type: int");
+	}
+	//...
+}
+/*----------------------------------------------------------------------------------------------------------------------
+	Aşağıdaki örnekte ** ve *** ile belirtilen super ctor çağrılarının yazılması ve yazılmaması aynı anlamdadır
+-----------------------------------------------------------------------------------------------------------------------*/
+package org.csystem.app;
+
+class App {
+	public static void main(String [] args)
+	{
+		B b1 = new B();
+		System.out.println("-----------------------------------");
+		B b2 = new B(10);
+		System.out.println("-----------------------------------");
+		C c1 = new C();
+		System.out.println("-----------------------------------");
+		C c2 = new C(10, 3.4);
+
+		//...
+	}
+}
+
+class C extends B {
+	//...
+	public C()
+	{
+		super(); //**
+		System.out.println("I am default ctor of C");
+	}
+
+	public C(int a, double b)
+	{
+		super(a);
+		System.out.println("I am a ctor of C with parameter type: int, double");
+	}
+	//...
+}
+
+class B extends A {
+	//...
+	public B()
+	{
+		super(); //***
+		System.out.println("I am default ctor of B");
+	}
+
+	public B(int a)
+	{
+		super(a);
+		System.out.println("I am a ctor of B with parameter type: int");
+	}
+
+	//...
+}
+
+class A {
+	//...
+
+	public A()
+	{
+		System.out.println("I am default ctor of A");
+	}
+
+	public A(int a)
+	{
+		System.out.println("I am a ctor of A with parameter type: int");
+	}
+	//...
+}
+
+/*----------------------------------------------------------------------------------------------------------------------
+	super ctor sentaksı ctor'un ilk deyimi olmalıdır
+-----------------------------------------------------------------------------------------------------------------------*/
+package org.csystem.app;
+
+
+
+class B extends A {
+	//...
+
+	public B(int a)
+	{
+		System.out.println("I am a ctor of B with parameter type: int");
+		super(a); //error
+	}
+
+	//...
+}
+
+class A {
+	//...
+
+	public A()
+	{
+		System.out.println("I am default ctor of A");
+	}
+
+	public A(int a)
+	{
+		System.out.println("I am a ctor of A with parameter type: int");
+	}
+	//...
+}
+
+/*----------------------------------------------------------------------------------------------------------------------
+	super ctor sentaksı adından da anlaşılabileceği gibi ctor dışında kullanılamaz
+-----------------------------------------------------------------------------------------------------------------------*/
+package org.csystem.app;
+
+class B extends A {
+	//...
+	public void foo(int a)
+	{
+		super(a); //error
+	}
+
+	//...
+}
+
+class A {
+	//...
+
+	public A()
+	{
+		System.out.println("I am default ctor of A");
+	}
+
+	public A(int a)
+	{
+		System.out.println("I am a ctor of A with parameter type: int");
+	}
+	//...
+}
+
+/*----------------------------------------------------------------------------------------------------------------------
+	Bazı durumlarda sınıfın bir ctor'u içerisinde başka bir ctor'unun çağrılması istenebilir. Bu durumda "this ctor sentaksı"
+	this ctor sentaksı super ctor sentaksı gibi ctor'un başında yazılmalıdır. Dolayısıyla this ctor sentaksının yazıldığı
+	ctor'dan önce this ctor sentaksı ile belirlenen çağrılır
+-----------------------------------------------------------------------------------------------------------------------*/
+package org.csystem.app;
+
+class App {
+	public static void main(String [] args)
+	{
+		A x = new A();
+		System.out.println("-------------------------------------------------");
+		A y = new A(3.4F);
+		System.out.println("-------------------------------------------------");
+		A z = new A(3, "ankara");
+		System.out.println("-------------------------------------------------");
+		A t = new A("istanbul");
+		System.out.println("-------------------------------------------------");
+	}
+}
+
+
+
+class A {
+	//...
+
+	public A()
+	{
+		System.out.println("I am default ctor of A");
+	}
+
+	public A(float a)
+	{
+		this();
+		System.out.println("I am a ctor of A with parameter type: float");
+	}
+
+	public A(int a, String s)
+	{
+		this(s);
+		System.out.println("I am a ctor of A with parameter type: int, String");
+	}
+
+	public A(String b)
+	{
+		System.out.println("I am a ctor of A with parameter type: String");
+	}
+
+	//...
+}
+
+/*----------------------------------------------------------------------------------------------------------------------
+	this ctor sentaksı da ctor'un ilk deyimi olmalıdır
+-----------------------------------------------------------------------------------------------------------------------*/
+package org.csystem.app;
+
+class A {
+	//...
+
+	public A()
+	{
+		System.out.println("I am default ctor of A");
+	}
+
+	public A(float a)
+	{
+		this();
+		System.out.println("I am a ctor of A with parameter type: float");
+	}
+
+	public A(int a, String s)
+	{
+		System.out.println("I am a ctor of A with parameter type: int, String");
+		this(s);//error
+
+	}
+
+	public A(String b)
+	{
+		System.out.println("I am a ctor of A with parameter type: String");
+	}
+
+	//...
+}
+
+/*----------------------------------------------------------------------------------------------------------------------
+	this ctor sentaksında döngüsel durum geçersizdir
+-----------------------------------------------------------------------------------------------------------------------*/
+package org.csystem.app;
+
+class A {
+	//...
+
+	public A()
+	{
+		System.out.println("I am default ctor of A");
+	}
+
+	public A(float a) //error
+	{
+		this(10, "ankara");
+		System.out.println("I am a ctor of A with parameter type: float");
+	}
+
+	public A(int a, String s) //error
+	{
+		this(s);
+		System.out.println("I am a ctor of A with parameter type: int, String");
+	}
+
+	public A(String b) //error
+	{
+		this(3.4F);
+		System.out.println("I am a ctor of A with parameter type: String");
+	}
+
+	//...
+}
+
+/*----------------------------------------------------------------------------------------------------------------------
+	this ve super ctor sentaksları aynı anda aynı ctor içerisinde yazılamaz. Çünkü ikisinin de ctor'u ilk deyimi olması
+	gerekir. Böyle bir durumla karşılaşan programcı (ki normal şartlarda karşılaşmamalıdır) yazdığı koda ve tasarımına
+	bakmalıdır. Çünkü doğru bir tasarım, doğru bir kodlama ile programcıyı böyle bir noktaya getirmez
+-----------------------------------------------------------------------------------------------------------------------*/
+package org.csystem.app;
+
+class B extends A {
+	public B()
+	{
+		super(0);
+		this(0); //error
+
+		System.out.println("I am default ctor of B");
+	}
+
+	public B(int a)
+	{
+		super(a);
+		System.out.println("I am a ctor of B with parameter type: int");
+	}
+}
+
+class A {
+	//...
+
+	public A()
+	{
+		System.out.println("I am default ctor of A");
+	}
+
+	public A(int a)
+	{
+		System.out.println("I am a ctor of A with parameter type: int");
+	}
+
+	//...
+}
+
+/*----------------------------------------------------------------------------------------------------------------------
+	Yukarıdaki problem aşağıdaki gibi yazılırsa zaten ortadan kalkmış olur
+-----------------------------------------------------------------------------------------------------------------------*/
+package org.csystem.app;
+
+class App {
+	public static void main(String [] args)
+	{
+		B x = new B();
+
+		//...
+	}
+}
+
+class B extends A {
+	public B()
+	{
+		this(0);
+
+		System.out.println("I am default ctor of B");
+	}
+
+	public B(int a)
+	{
+		super(a);
+		System.out.println("I am a ctor of B with parameter type: int");
+	}
+}
+
+class A {
+	//...
+
+	public A()
+	{
+		System.out.println("I am default ctor of A");
+	}
+
+	public A(int a)
+	{
+		System.out.println("I am a ctor of A with parameter type: int");
+	}
+
+	//...
+}
+
+/*----------------------------------------------------------------------------------------------------------------------
+	Java'da sınıf bildiriminde extends anahtar sözcüğü ile bir sınıftan türetme yapılmamışsa sınıf java.lang paketindeki
+	Object isimli bir sınıftan türetilmiş olur. Yani Java'da tüm sınıflar doğrudan ya da dolaylı olarak Object sınıfından
+	türetilmiştir. Başka bir deyişle Object sınıfı tüm sınıfların doğrudan ya da dolaylı olarak taban sınıfıdır. Object
+	sınıfı istenirse sınıf başka bir sınıftan türetilmiyorsa bildirime extends ile yazılabilir. Yazılmasa da aynı anlamdadır.
+	Yazmamayı tercih edeceğiz. Her sınıfın doğrudan ya da dolaylı olarak böyle bir sınıftan türetilmiş olması yaklaşımının
+	önemi ve anlamı ileride detaylı olarak ele alınacaktır
+-----------------------------------------------------------------------------------------------------------------------*/
+package org.csystem.app;
+
+class A {
+	//...
+}
+
+class B extends Object {
+	//....
+}
+
+/*----------------------------------------------------------------------------------------------------------------------
+	Nitelikli ve niteliksiz isim arama genel kurallarına göre bir isim bulunamazsa taban sınıfa ve dolaylı taban sınıflara
+	da bulununcaya veya bulunamayaıncaya kadar sırasıyla bakılır. Bulunursa ilk bulunan sınıftaki isim alınır
+-----------------------------------------------------------------------------------------------------------------------*/
+package org.csystem.app;
+
+class App {
+	public static void main(String [] args)
+	{
+		C c = new C();
+
+		c.bar(10);
+		System.out.printf("c.x = %d%n", c.x);
+		System.out.printf("c.y = %d%n", c.y);
+	}
+}
+
+class C extends B {
+	//...
+	public void bar(int val)
+	{
+		foo();
+		y = -val;
+		x += val;
+	}
+}
+
+class B extends A {
+	public int y;
+
+	public void foo()
+	{
+		System.out.println("B.foo");
+	}
+}
+class A {
+	public int x;
+	//...
+}
+
+/*----------------------------------------------------------------------------------------------------------------------
+	Sınıfın protected bölümüne türemiş sınıf içerisinde aşağıdaki gibi erişilemez
+-----------------------------------------------------------------------------------------------------------------------*/
+package org.csystem;
+
+public class A {
+    protected int a;
+
+    protected A()
+    {
+        //...
+    }
+
+    protected  void foo()
+    {
+        //...
+    }
+}
+
+package com.bartucankaya;
+
+import org.csystem.A;
+
+public class B extends A {
+    public void bar(int val)
+    {
+        A x = new A(); //error
+
+        x.a = val; //error
+        x.foo(); //error
+    }
+}
+
+/*----------------------------------------------------------------------------------------------------------------------
+    Türemiş sınıf içerisinde kendisine ait olan taban sınıf bölümüne erişilebilir. Yani , protected bri ctor türemiş
+    sınıf nesnesi yaratılmadan önce çağrılabilir, protected bir metot doğrudan çağrılabilir, protected bir veri elemanına da
+    doğrudan erişiebilir
+-----------------------------------------------------------------------------------------------------------------------*/
+package org.csystem;
+
+public class A {
+    protected int a;
+
+    protected A()
+    {
+        //...
+    }
+
+    protected  void foo()
+    {
+        //...
+    }
+}
+
+
+public class B extends A {
+    public B(int val)
+    {
+        //...
+    }
+
+    public void bar(int val)
+    {
+        a = val;
+        foo();
+    }
+}
+/*----------------------------------------------------------------------------------------------------------------------
+	AnalyticalCircle sınıfı
+-----------------------------------------------------------------------------------------------------------------------*/
+package com.bartucankaya.test;
+
+import com.bartucankaya.AnalyticalCircle;
+import com.bartucankaya.test.factory.AnalyticalCircleFactory;
+import org.csystem.math.geometry.Circle;
+
+import java.util.Random;
+import java.util.Scanner;
+
+public class AnalyticalCircleConstructorGetterSetterTest {
+    private static void print(AnalyticalCircle c)
+    {
+        System.out.println("Daire/çember bilgileri:");
+        System.out.printf("Yarıçap:%f%n", c.getRadius());
+        System.out.printf("Alan:%f%n", c.getArea());
+        System.out.printf("Çevre:%f%n", c.getCircumference());
+        System.out.printf("Merkez Noktası:(%f, %f)%n", c.getX(), c.getY());
+    }
+
+    private static void run()
+    {
+        Scanner kb = new Scanner(System.in);
+        Random random = new Random();
+        AnalyticalCircleFactory factory = new AnalyticalCircleFactory();
+
+        System.out.print("Bir sayı giriniz:");
+        int count = kb.nextInt();
+
+        while (count-- > 0) {
+            System.out.println("--------------------------------------------------------------");
+            print(factory.createRandomAnalyticalCircle(-100, 100));
+            System.out.println("--------------------------------------------------------------");
+        }
+    }
+
+    public static void main(String[] args)
+    {
+        run();
+    }
+}
+
+
 /*----------------------------------------------------------------------------------------------------------------------
 	
 -----------------------------------------------------------------------------------------------------------------------*/
 /*----------------------------------------------------------------------------------------------------------------------
 	
 -----------------------------------------------------------------------------------------------------------------------*/
-
