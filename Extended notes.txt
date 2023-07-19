@@ -30072,6 +30072,7 @@ class A {
 /*----------------------------------------------------------------------------------------------------------------------
 	11.06.2023		Mordor --> Tüm Ders
 -----------------------------------------------------------------------------------------------------------------------*/
+
 /*----------------------------------------------------------------------------------------------------------------------
 	Anımsanacağı gibi bir nesnenin yaratılması aşamalarının sonunda ctor çağrılır. ctor çağrısı düzgün bir biçimde yani
 	exception oluşmadan tamamlandıktan sonra nesne yaratılmış olur. Bu durumda türemiş sınıf nesnesinin ctor'undan önce
@@ -30211,6 +30212,23 @@ class A {
 	Türemiş sınıfı yazan programcı "super ctor sentaksı" ile taban sınıfın istenilen ctor'unun çağrılmasını sağlayabilir.
 	super ctor sentaksında hengi ctor'un çağrılacağı derleyici tarafından "method overload resolution" kuralları ile
 	belirlenir. Aşağıdaki örneği inceleyiniz
+
+	Mordor
+
+				Super ctor sentaksı geregi süper ctor çağrısının içinde bulunduğu ctorun ilk deyimi olmalıdır.
+
+				public B(int a)
+				{
+					super(a);
+					System.out.println("I am a ctor of B with parameter type: int");
+				}
+
+
+				public B(int a)		//ERROR
+				{
+					System.out.println("I am a ctor of B with parameter type: int");
+					super(a);
+				}
 -----------------------------------------------------------------------------------------------------------------------*/
 package org.csystem.app;
 
@@ -30501,6 +30519,11 @@ class A {
 	Bazı durumlarda sınıfın bir ctor'u içerisinde başka bir ctor'unun çağrılması istenebilir. Bu durumda "this ctor sentaksı"
 	this ctor sentaksı super ctor sentaksı gibi ctor'un başında yazılmalıdır. Dolayısıyla this ctor sentaksının yazıldığı
 	ctor'dan önce this ctor sentaksı ile belirlenen çağrılır
+
+	Mordor
+			Yani this sentaksı aynı sınıfın farklı parametresi içindir. Farklı sınıfın parametresi this ctor ile çağrılamaz
+			aynı sınıfın yani a sınıfının default ctoru içerisinnde yine a nın int paramatreli ctorunu çağırmak istersek
+			this ctor sentansını kullanırız.
 -----------------------------------------------------------------------------------------------------------------------*/
 package org.csystem.app;
 
@@ -30584,6 +30607,9 @@ class A {
 
 /*----------------------------------------------------------------------------------------------------------------------
 	this ctor sentaksında döngüsel durum geçersizdir
+
+	Yani a nın default ctorunda a nın int parametreli ctorunun anın int parametreli ctorunda da a nın default ctorunu çağırmak
+	istersek Error olur. loop a girmiş oluruz 
 -----------------------------------------------------------------------------------------------------------------------*/
 package org.csystem.app;
 
@@ -30619,7 +30645,10 @@ class A {
 /*----------------------------------------------------------------------------------------------------------------------
 	this ve super ctor sentaksları aynı anda aynı ctor içerisinde yazılamaz. Çünkü ikisinin de ctor'u ilk deyimi olması
 	gerekir. Böyle bir durumla karşılaşan programcı (ki normal şartlarda karşılaşmamalıdır) yazdığı koda ve tasarımına
-	bakmalıdır. Çünkü doğru bir tasarım, doğru bir kodlama ile programcıyı böyle bir noktaya getirmez
+	bakmalıdır. Çünkü doğru bir tasarım, doğru bir kodlama ile programcıyı böyle bir noktaya getirmez.
+
+
+	Mordor
 -----------------------------------------------------------------------------------------------------------------------*/
 package org.csystem.app;
 
@@ -30707,6 +30736,8 @@ class A {
 	sınıfı istenirse sınıf başka bir sınıftan türetilmiyorsa bildirime extends ile yazılabilir. Yazılmasa da aynı anlamdadır.
 	Yazmamayı tercih edeceğiz. Her sınıfın doğrudan ya da dolaylı olarak böyle bir sınıftan türetilmiş olması yaklaşımının
 	önemi ve anlamı ileride detaylı olarak ele alınacaktır
+
+	Mordor
 -----------------------------------------------------------------------------------------------------------------------*/
 package org.csystem.app;
 
@@ -30721,6 +30752,8 @@ class B extends Object {
 /*----------------------------------------------------------------------------------------------------------------------
 	Nitelikli ve niteliksiz isim arama genel kurallarına göre bir isim bulunamazsa taban sınıfa ve dolaylı taban sınıflara
 	da bulununcaya veya bulunamayaıncaya kadar sırasıyla bakılır. Bulunursa ilk bulunan sınıftaki isim alınır
+
+	Morgot Mordor
 -----------------------------------------------------------------------------------------------------------------------*/
 package org.csystem.app;
 
@@ -30739,7 +30772,7 @@ class C extends B {
 	//...
 	public void bar(int val)
 	{
-		foo();
+		foo();		// burada foo yu kendi sınıfından çağrılan metodun dışarısında bulamadı taban sınıfı olan b nin içerisinde buldu ve onu çağırdı
 		y = -val;
 		x += val;
 	}
@@ -30759,7 +30792,7 @@ class A {
 }
 
 /*----------------------------------------------------------------------------------------------------------------------
-	Sınıfın protected bölümüne türemiş sınıf içerisinde aşağıdaki gibi erişilemez
+	Sınıfın protected bölümüne türemiş içerisinde aşağıdaki gibi erişilemez
 -----------------------------------------------------------------------------------------------------------------------*/
 package org.csystem;
 
@@ -30792,9 +30825,12 @@ public class B extends A {
 }
 
 /*----------------------------------------------------------------------------------------------------------------------
-    Türemiş sınıf içerisinde kendisine ait olan taban sınıf bölümüne erişilebilir. Yani , protected bri ctor türemiş
+    Türemiş sınıf içerisinde kendisine ait olan taban sınıf bölümüne erişilebilir. Yani, protected bir ctor türemiş
     sınıf nesnesi yaratılmadan önce çağrılabilir, protected bir metot doğrudan çağrılabilir, protected bir veri elemanına da
     doğrudan erişiebilir
+
+
+	Mordor
 -----------------------------------------------------------------------------------------------------------------------*/
 package org.csystem;
 
@@ -30812,6 +30848,9 @@ public class A {
     }
 }
 
+package com.bartucankaya;
+
+import org.csystem.A;
 
 public class B extends A {
     public B(int val)
@@ -30825,8 +30864,13 @@ public class B extends A {
         foo();
     }
 }
+
+
 /*----------------------------------------------------------------------------------------------------------------------
-	AnalyticalCircle sınıfı
+    17.06.2023
+-----------------------------------------------------------------------------------------------------------------------*/
+/*----------------------------------------------------------------------------------------------------------------------
+	AnalyticalCircle sınıfı    Constructor = Ctor
 -----------------------------------------------------------------------------------------------------------------------*/
 package com.bartucankaya.test;
 
@@ -30869,6 +30913,744 @@ public class AnalyticalCircleConstructorGetterSetterTest {
     }
 }
 
+package com.bartucankaya.test;
+
+import com.bartucankaya.AnalyticalCircle;
+
+import java.util.Random;
+import java.util.Scanner;
+
+public class AnalyticalCircleConstructorJustRadiusTest {
+    private static void print(AnalyticalCircle c)
+    {
+        System.out.println("Daire/çember bilgileri:");
+        System.out.printf("Yarıçap:%f%n", c.getRadius());
+        System.out.printf("Alan:%f%n", c.getArea());
+        System.out.printf("Çevre:%f%n", c.getCircumference());
+        System.out.printf("Merkez Noktası:(%f, %f)%n", c.getX(), c.getY());
+    }
+
+    private static void run()
+    {
+        Scanner kb = new Scanner(System.in);
+        Random random = new Random();
+
+        System.out.print("Bir sayı giriniz:");
+        int count = kb.nextInt();
+
+        while (count-- > 0) {
+            System.out.println("--------------------------------------------------------------");
+            double radius = random.nextDouble(-100, 100);
+            print(new AnalyticalCircle(radius));
+            System.out.println("--------------------------------------------------------------");
+        }
+    }
+
+    public static void main(String[] args)
+    {
+        run();
+    }
+}
+
+/*----------------------------------------------------------------------------------------------------------------------
+    Bir sınıfın private olarak tuttuğu bir referansa ilişkin sınıfın bir metodunun genel olarak aynı imzaya sahip ve
+    aynı geri dönüş değeri ile birlikte sınıf dışından erişime açılması (daha çok public) durumunda yazılan metoda
+    "delagate/pass  throogh/forwarding method" denir. Java'da daha çok "delagate method" terimi kullanılır
+
+	Mordor Morgot
+-----------------------------------------------------------------------------------------------------------------------*/
+
+package com.bartucankaya.test;
+
+import com.bartucankaya.AnalyticalCircle;
+import com.bartucankaya.test.factory.AnalyticalCircleFactory;
+
+import java.util.Random;
+import java.util.Scanner;
+
+public class AnalyticalCircleOffsetTest {
+    private static void print(AnalyticalCircle c)
+    {
+        System.out.println("Daire/çember bilgileri:");
+        System.out.printf("Yarıçap:%f%n", c.getRadius());
+        System.out.printf("Alan:%f%n", c.getArea());
+        System.out.printf("Çevre:%f%n", c.getCircumference());
+        System.out.printf("Merkez Noktası:(%f, %f)%n", c.getX(), c.getY());
+    }
+    private static void run()
+    {
+        Scanner kb = new Scanner(System.in);
+        Random random = new Random();
+        AnalyticalCircleFactory factory = new AnalyticalCircleFactory();
+
+        System.out.print("Bir sayı giriniz:");
+        int count = kb.nextInt();
+
+        while (count-- > 0) {
+            System.out.println("--------------------------------------------------------------");
+            AnalyticalCircle analyticalCircle = factory.createRandomAnalyticalCircle(-100, 100);
+            double dx = random.nextDouble(-100, 100);
+            double dy = random.nextDouble(-100, 100);
+
+            print(analyticalCircle);
+            System.out.printf("dx = %f, dy = %f%n", dx, dy);
+            analyticalCircle.offset(dx, dy);
+            print(analyticalCircle);
+            System.out.println("--------------------------------------------------------------");
+        }
+    }
+
+    public static void main(String[] args)
+    {
+        run();
+    }
+}
+
+package com.bartucankaya.test;
+
+import com.bartucankaya.AnalyticalCircle;
+import com.bartucankaya.test.factory.AnalyticalCircleFactory;
+
+import java.util.Random;
+import java.util.Scanner;
+
+public class AnalyticalCircleIsTangentTest {
+    private static void print(AnalyticalCircle c)
+    {
+        System.out.println("Daire/çember bilgileri:");
+
+        System.out.printf("Yarıçap:%f%n", c.getRadius());
+
+        System.out.printf("Merkez Noktası:(%f, %f)%n", c.getX(), c.getY());
+    }
+
+    private static void doWorkForTest(AnalyticalCircle analyticalCircle, AnalyticalCircle other)
+    {
+        System.out.printf("Çember merkezleri arası uzaklık: %f%n", analyticalCircle.centerDistance(other));
+
+        System.out.printf("isTangent: %b%n", analyticalCircle.isTangent(other));
+    }
+
+    private static void run()
+    {
+        Scanner kb = new Scanner(System.in);
+        Random random = new Random();
+        AnalyticalCircleFactory factory = new AnalyticalCircleFactory();
+
+        System.out.print("Bir sayı giriniz:");
+        int count = kb.nextInt();
+
+        while (count-- > 0) {
+            AnalyticalCircle analyticalCircle = factory.createRandomAnalyticalCircle(-100, 100);
+            AnalyticalCircle other = new AnalyticalCircle(random.nextDouble(1, 100));
+            double sumOfRadius = analyticalCircle.getRadius() + other.getRadius();
+
+            other.set(analyticalCircle.getX() + sumOfRadius, analyticalCircle.getY());
+            System.out.println("--------------------------------------------------------------");
+            print(analyticalCircle);
+            print(other);
+            doWorkForTest(analyticalCircle, other);
+            other.offset(random.nextDouble(1, 10));
+            System.out.println("------------------ 2. Daire/çember ötelendi ------------------");
+            doWorkForTest(analyticalCircle, other);
+            System.out.println("--------------------------------------------------------------");
+        }
+    }
+
+    public static void main(String[] args)
+    {
+        run();
+    }
+}
+
+package com.bartucankaya.test;
+
+
+import com.bartucankaya.AnalyticalCircle;
+import com.bartucankaya.test.factory.AnalyticalCircleFactory;
+
+import java.util.Scanner;
+
+import static java.lang.Math.*;
+
+public class AnalyticalCircleCenterDistanceTest {
+    private static final double DELTA = 0.00001;
+    private static void print(AnalyticalCircle c)
+    {
+        System.out.println("Daire/çember bilgileri:");
+        System.out.printf("Merkez Noktası:(%f, %f)%n", c.getX(), c.getY());
+    }
+
+    private static boolean areDistanceEquals(AnalyticalCircle c1, AnalyticalCircle c2)
+    {
+        double distance = sqrt(pow(c1.getX() - c2.getX(), 2) + pow(c1.getY() - c2.getY(), 2));
+
+        System.out.printf("%f%n", distance);
+        System.out.printf("Çember merkezleri arası uzaklık: %f%n", c1.centerDistance(c2));
+
+        return abs(distance - c1.centerDistance(c2)) < DELTA;
+    }
+
+    private static void run()
+    {
+        Scanner kb = new Scanner(System.in);
+        AnalyticalCircleFactory factory = new AnalyticalCircleFactory();
+
+        System.out.print("Bir sayı giriniz:");
+        int count = kb.nextInt();
+
+        while (count-- > 0) {
+            System.out.println("--------------------------------------------------------------");
+            AnalyticalCircle analyticalCircle = factory.createRandomAnalyticalCircle(-100, 100);
+            AnalyticalCircle other = factory.createRandomAnalyticalCircle(-100, 100);
+
+            print(analyticalCircle);
+            print(other);
+            System.out.println(areDistanceEquals(analyticalCircle, other) ? "Test Passed" : "Test Failed");
+            System.out.println("--------------------------------------------------------------");
+        }
+    }
+
+    public static void main(String[] args)
+    {
+        run();
+    }
+}
+
+/*----------------------------------------------------------
+	FILE			: AnalyticalCircle.java						Ders kaydından kontrol et.
+	AUTHOR			: Java-Nov-2022 Group
+	LAST UPDATE		: 17.06.2023								
+
+	AnalyticalCircle class that represents a circle
+	int cartesian plane
+
+	Copyleft (c) 1993 C and System Programmers Association
+	All Rights Free
+------------------------------------------------------------*/
+package com.bartucankaya;
+
+import org.csystem.math.geometry.Circle;
+import org.csystem.math.geometry.MutablePoint;
+
+public class AnalyticalCircle extends Circle {
+    private static final double DELTA = 0.00001;
+
+    private final MutablePoint m_mutablePoint;
+
+    public AnalyticalCircle()
+    {
+        this(0);
+    }
+
+    public AnalyticalCircle(double radius)
+    {
+       this(radius, 0, 0);
+    }
+
+    public AnalyticalCircle(double x, double y)
+    {
+        this(0, x, y);
+    }
+
+    public AnalyticalCircle(double radius, double x, double y)
+    {
+        super(radius);
+        m_mutablePoint = MutablePoint.ofCartesian(x, y);
+    }
+
+    public double getX()
+    {
+        return m_mutablePoint.getX();
+    }
+
+    public void setX(double x)
+    {
+        m_mutablePoint.setX(x);
+    }
+
+    public double getY()
+    {
+        return m_mutablePoint.getY();
+    }
+
+    public void setY(double y)
+    {
+        m_mutablePoint.setY(y);
+    }
+
+    public void set(double x, double y)
+    {
+        setX(x);
+        setY(y);
+    }
+
+    public double centerDistance(AnalyticalCircle other)
+    {
+        return m_mutablePoint.distance(other.m_mutablePoint);
+    }
+
+    public boolean isTangent(AnalyticalCircle other)
+    {
+        return Math.abs(centerDistance(other) - getRadius() - other.getRadius()) < DELTA;
+    }
+
+    public void offset(double dx, double dy)
+    {
+        m_mutablePoint.offset(dx, dy);
+    }
+
+    public void offset(double dxy)
+    {
+        offset(dxy, dxy);
+    }
+}
+
+/*----------------------------------------------------------
+	FILE			: Circle.java
+	AUTHOR			: Java-Nov-2022 Group
+	LAST UPDATE		: 13.05.2023
+
+	Circle class that represents a circle
+
+	Copyleft (c) 1993 C and System Programmers Association
+	All Rights Free
+------------------------------------------------------------*/
+package org.csystem.math.geometry;
+
+import static java.lang.Math.PI;
+
+public class Circle {
+    private double m_radius;
+
+    public Circle()
+    {
+    }
+
+    public Circle(double radius)
+    {
+        setRadius(radius);
+    }
+
+    public double getRadius()
+    {
+        return m_radius;
+    }
+
+    public void setRadius(double radius)
+    {
+        m_radius = Math.abs(radius);
+    }
+
+    public double getArea()
+    {
+        return PI * m_radius * m_radius;
+    }
+
+    public double getCircumference()
+    {
+        return 2 * PI * m_radius;
+    }
+
+    public String toString()
+    {
+        return String.format("Radius:%f, Area:%f, Circumference:%f", m_radius, getArea(), getCircumference());
+    }
+}
+
+/*----------------------------------------------------------
+	FILE			: MutablePoint.java
+	AUTHOR			: Java-Nov-2022 Group
+	LAST UPDATE		: 27.05.2023
+
+	MutablePoint class that represents a point in cartesian plane
+
+	Copyleft (c) 1993 C and System Programmers Association
+	All Rights Free
+------------------------------------------------------------*/
+package org.csystem.math.geometry;
+
+import static java.lang.Math.*;
+
+public class MutablePoint {
+	private double m_x, m_y;
+
+	private MutablePoint(double a, double b, boolean polar)
+	{
+		if (polar) {
+			m_x = a * cos(a);
+			m_y = a * sin(a);
+		}
+		else {
+			m_x = a;
+			m_y = b;
+		}
+	}
+
+	public static MutablePoint ofCartesian()
+	{
+		return ofCartesian(0);
+	}
+
+	public static MutablePoint ofCartesian(double x)
+	{
+		return ofCartesian(x, 0);
+	}
+
+	public static MutablePoint ofCartesian(double x, double y)
+	{
+		return new MutablePoint(x, y, false);
+	}
+
+	public static MutablePoint ofPolar(double radius, double theta)
+	{
+		return new MutablePoint(radius, theta, true);
+	}
+
+	public double getX()
+	{
+		return m_x;
+	}
+
+	public void setX(double x)
+	{
+		m_x = x;
+	}
+
+	public double getY()
+	{
+		return m_y;
+	}
+
+	public void setY(double y)
+	{
+		m_y = y;
+	}
+
+	public double distance()
+	{
+		return distance(0, 0);
+	}
+
+	public double distance(double x, double y)
+	{
+		return PointCommon.distance(m_x, m_y, x, y);
+	}
+
+	public double distance(MutablePoint other)
+	{
+		return distance(other.m_x, other.m_y);
+	}
+
+	public void offset(double dxy)
+	{
+		offset(dxy, dxy);
+	}
+
+	public void offset(double dx, double dy)
+	{
+		m_x += dx;
+		m_y += dy;
+	}
+
+	public String toString()
+	{
+		return PointCommon.toString(m_x, m_y);
+	}
+}
+
+/*----------------------------------------------------------
+	FILE			: PointCommon.java
+	AUTHOR			: Java-Nov-2022 Group
+	LAST UPDATE		: 27.05.2023
+
+	Friendly class for common operations of Point and MutablePoint
+
+	Copyleft (c) 1993 C and System Programmers Association
+	All Rights Free
+------------------------------------------------------------*/
+package org.csystem.math.geometry;
+
+import static java.lang.Math.pow;
+import static java.lang.Math.sqrt;
+
+class PointCommon {
+    private PointCommon()
+    {}
+
+    static double distance(double x1, double y1, double x2, double y2)
+    {
+        return sqrt(pow(x1 - x2, 2) + pow(y1 - y2, 2));
+    }
+
+    static String toString(double x, double y)
+    {
+        return String.format("(%.2f, %.2f)", x, y);
+    }
+
+    static MutablePoint toMutablePoint(Point point)
+    {
+        return MutablePoint.ofCartesian(point.getX(), point.getY());
+    }
+
+    static Point toPoint(MutablePoint mutablePoint)
+    {
+        return Point.ofCartesian(mutablePoint.getX(), mutablePoint.getY());
+    }
+}
+
+/*----------------------------------------------------------------------------------------------------------------------
+    Aşağıdaki örnekte NumericLottery sınıfı ile Random sınıfı arasında 4 ilişkiden hiç birisi yoktur. Özel durumdur. Random
+    sınıfının tuttuğu verilerin kullanan açısından önemi yoktur. Bu anlamda mantıksal Random sınıfı bir veri sınıfı (data class)
+    değildir.
+
+	Morodor.
+-----------------------------------------------------------------------------------------------------------------------*/
+package org.csystem.random.lottery.numericlottery;
+
+import java.util.Random;
+
+public class NumericLottery {
+    private final Random m_random;
+
+    private static int [] getNumbers(boolean [] flags)
+    {
+        int [] numbers = new int[6];
+        int index = 0;
+
+        for (int i = 1; i < 50; ++i)
+            if (flags[i])
+                numbers[index++] = i;
+
+        return numbers;
+    }
+
+    private boolean [] getFlags()
+    {
+        boolean [] flags = new boolean[50];
+
+        for (int i = 0; i < 6; ++i) {
+            int val;
+
+            for (;;) {
+                val = m_random.nextInt(1, 50);
+                if (!flags[val])
+                    break;
+            }
+            flags[val] = true;
+        }
+
+        return flags;
+    }
+
+    public NumericLottery()
+    {
+        m_random = new Random();
+    }
+
+    public NumericLottery(Random r)
+    {
+        m_random = r;
+    }
+
+    public int [] getNumbers()
+    {
+        return getNumbers(getFlags());
+    }
+
+    public int [][] getNumbers(int count)
+    {
+        int [][] numbers = new int[count][];
+
+        for (int i = 0; i < count; ++i)
+            numbers[i] = getNumbers();
+
+        return numbers;
+    }
+}
+
+/*----------------------------------------------------------------------------------------------------------------------
+	String sınıfı immutable olduğundan aşağıdaki ilişki ne aggregation ne de composition'dır. İkisinde belirli ölçüde
+	benzemektedir ancak ikisi de olamaz.
+-----------------------------------------------------------------------------------------------------------------------*/
+package org.csystem.app;
+
+class App {
+	public static void main(String [] args)
+	{
+		String name = "Weather sensor";
+		String host = "www.mysernsors.com";
+		int port = 33000;
+		Sensor sensor = new Sensor(name, host, port);
+
+		System.out.println(sensor.toString());		//Weather sensor, www.mysernsors.com:33000
+		name = "Rain sensor";
+		System.out.println(name);					//Rain sensor
+		System.out.println(sensor.toString());		//Weather sensor, www.mysernsors.com:33000
+	}
+}
+
+class Sensor {
+	private String m_name;
+	private String m_host;
+	private int m_port;
+
+	public Sensor(String name, String host, int port)
+	{
+		m_name = name;
+		m_host = host;
+		m_port = port;
+	}
+
+	public String getName()
+	{
+		return m_name;
+	}
+
+	public void setName(String name)
+	{
+		m_name = name;
+	}
+
+	public String getHost()
+	{
+		return m_host;
+	}
+
+	public void setHost(String host)
+	{
+		m_host = host;
+	}
+
+	public int getPort()
+	{
+		return m_port;
+	}
+
+	public void setPort(int port)
+	{
+		m_port = port;
+	}
+
+	public String toString()
+	{
+		return String.format("%s, %s:%d", m_name, m_host, m_port);
+	}
+
+	//...
+}
+/*----------------------------------------------------------------------------------------------------------------------
+	Aralarında türetme ilişkisi olmayan iki sınıf türünden referans birbirine explicit olarak bile atanamazlar.
+
+	Mordor
+-----------------------------------------------------------------------------------------------------------------------*/
+package org.csystem.app;
+
+class App {
+	public static void main(String [] args)
+	{
+		A a = new A();
+		B b;
+
+		b = (B)a; //error
+	}
+}
+
+class B {
+	//...
+}
+
+class A {
+	//...
+}
+
+/*----------------------------------------------------------------------------------------------------------------------
+	Türemiş sınıf türünden bir referans taban sınıf türünden bir referansa doğrudan atanabilir.
+	Taban sınıf türünden bir referans ise türemiş sınıf türünden bir referansa doğrudan atanamaz. 
+	Taban türünden bir referans türemiş sınıf türünden bir referansa explicit olarak atanabilir.
+
+
+	Mordor Morgot
+-----------------------------------------------------------------------------------------------------------------------*/
+package org.csystem.app;
+
+class App {
+	public static void main(String [] args)
+	{
+		A x = new A();
+		B y = new B();
+		A a;
+		B b;
+
+		a = y;
+		b = x; //error
+		b = (B)x;
+
+		//...
+	}
+}
+
+class B extends A {
+	//...
+}
+
+class A {
+	//...
+}
+
+/*----------------------------------------------------------------------------------------------------------------------
+	Türemiş sınıf türünden bir referans taban sınıf türünden bir referansa doğrudan atanabilir (upcasting). Bu durumda
+	taban sınıf türünden referansın içerisine türemiş sınıf nesnesinin taban sınıf kısmının adresi verilmiş olur
+
+	MORMOOR  MORGOT MORGOT MORGOT
+-----------------------------------------------------------------------------------------------------------------------*/
+package org.csystem.app;
+
+class App {
+	public static void main(String [] args)
+	{
+		B x = new B();
+		A y;
+
+		x.a = 10;
+		x.b = 20;
+
+		System.out.printf("x.a = %d%n", x.a);
+		System.out.printf("x.b = %d%n", x.b);
+		System.out.println("---------------------------------------");
+
+		y = x; //upcasting
+
+		++y.a;
+		System.out.printf("x.a = %d%n", x.a);
+		System.out.printf("y.a = %d%n", y.a);
+		System.out.printf("x.b = %d%n", x.b);
+		System.out.println("---------------------------------------");
+
+		++x.a;
+
+		System.out.printf("x.a = %d%n", x.a);
+		System.out.printf("y.a = %d%n", y.a);
+		System.out.printf("x.b = %d%n", x.b);
+		System.out.println("---------------------------------------");
+	}
+}
+
+class B extends A {
+	//...
+	public int b;
+	//...
+}
+
+class A {
+	//...
+	public int a;
+	//...
+}
+
+/*----------------------------------------------------------------------------------------------------------------------
+	18.06.2023
+-----------------------------------------------------------------------------------------------------------------------*/
 
 /*----------------------------------------------------------------------------------------------------------------------
 	
