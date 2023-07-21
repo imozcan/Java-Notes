@@ -31652,6 +31652,1051 @@ class A {
 	18.06.2023 Arwen
 -----------------------------------------------------------------------------------------------------------------------*/
 
+
+/*----------------------------------------------------------------------------------------------------------------------
+	Programlamada genelleştirme açısından türden bağımsız (type independent) yazılır. Aslında programlamda temel amaçlardan
+	biri yapılacak eklentiler durumunda eski kodlara dokunmamaktır. Aslında şöyle bir genel durum söylenebilir: Bir programın
+	ilerleyen bir versiyonunda önceden yazılmış kodlara yönelik senaryo değişmedikten sonra, eski kodlara ne kadar az
+	müdahale edilmesi gerekirse, kod o kadar kaliteli (iyi) yazılmıştır". İşte bu sebeple türden bağımsız kod yazmak programa
+	eklenecek örneğin sınıfların bir lego'nun parçası gibi diğer parçalara dokunmadan eklenebilmesini sağlar.
+
+	Aşağıdaki örnekte VehicleOperation sınıfının payTax metodu vehicle parametresi aldığından, tüm Vehicle sınıfından doğrudan
+	ya da dolaylı olarak türetilmiş referans ile çağrılabilir. Bu durumda bu hiyararşiye yeni bir "vehicle" eklendiğinde
+	payTax metodunun değiştirilmesi ya da yeni bir metot eklenmesi gerekmez.
+
+	Not: Aşağıdaki örnek durumu göstermek için yazılmıştır. Şüphesiz konuya ilişkin bir çok detay da bulunmaktasır. Detaylar
+	dışında senaryonun bu kısmının türden bağımsızlığına odaklanınız
+
+	Not: Aşağıdaki kullanılan ThreadUtil sınıfının ayrıntılarının bir önemi yoktur. Yalnızca akışı bekletmek için
+	kullanılmaktadır
+
+	Morodor
+-----------------------------------------------------------------------------------------------------------------------*/
+package com.baturhansahin.app.rental;
+
+import com.alicankececi.rental.vehicle.Vehicle;
+import com.alicankececi.rental.vehicle.VehicleOperation;
+import com.emrekantarci.VehicleFactory;
+import org.csystem.util.thread.ThreadUtil;
+
+public class RentalVehicleDemoApp {
+    public static void run()
+    {
+        VehicleFactory factory = new VehicleFactory();
+        VehicleOperation vehicleOperation = new VehicleOperation();
+
+        while (true) {
+            Vehicle vehicle = factory.createVehicle();
+
+            vehicleOperation.payTax(vehicle);
+            ThreadUtil.sleep(1000);
+        }
+    }
+    public static void main(String[] args)
+    {
+        run();
+    }
+}
+
+package com.alicankececi.rental.vehicle;
+
+public class Vehicle {
+    private String m_id;
+    private String m_plate;
+    private String m_brand;
+    private String m_model;
+    private double m_cc;
+    private int m_year;
+
+    //...
+
+    public String getId()
+    {
+        return m_id;
+    }
+
+    public void setId(String id)
+    {
+        //...
+        m_id = id;
+    }
+
+    public String getPlate()
+    {
+        return m_plate;
+    }
+
+    public void setPlate(String plate)
+    {
+        //...
+        m_plate = plate;
+    }
+
+    public String getBrand()
+    {
+        return m_brand;
+    }
+
+    public void setBrand(String brand)
+    {
+        m_brand = brand;
+    }
+
+    public String getModel()
+    {
+        return m_model;
+    }
+
+    public void setModel(String model)
+    {
+        //...
+        m_model = model;
+    }
+
+    public double getCc()
+    {
+        return m_cc;
+    }
+
+    public void setCc(double cc)
+    {
+        m_cc = cc;
+    }
+
+    public int getYear()
+    {
+        return m_year;
+    }
+
+    public void setYear(int year)
+    {
+        m_year = year;
+    }
+}
+
+package com.alicankececi.rental.vehicle;
+
+public class VehicleOperation {
+    //...
+    public void payTax(Vehicle vehicle)
+    {
+        System.out.println("-----------------------------------------");
+        System.out.printf("Plate:%s%n", vehicle.getPlate());
+        System.out.printf("Year:%d%n", vehicle.getYear());
+        System.out.println("-----------------------------------------");
+    }
+}
+
+package com.boraserce.vehicle;
+
+import com.alicankececi.rental.vehicle.Vehicle;
+
+public class CommercialVehicle extends Vehicle {
+    protected boolean forPassenger;
+
+    //
+
+    public CommercialVehicle(boolean passenger)
+    {
+        forPassenger = passenger;
+    }
+
+    //...
+}
+
+package com.emrekantarci;
+
+import com.alicankececi.rental.vehicle.*;
+import com.fatihkarabulut.vehicle.commercial.Taxi;
+import com.fatihkarabulut.vehicle.commercial.Truck;
+import com.onurozcan.vehicle.Bus;
+import com.onurozcan.vehicle.Car;
+
+import java.util.Random;
+
+public class VehicleFactory {
+    private final Random m_random = new Random();
+
+    private Car createCar()
+    {
+        Car car = new Car();
+
+        car.setId("123456");
+        car.setModel("Focus");
+        car.setYear(2022);
+        car.setBrand("Ford");
+        car.setType("Sedan");
+        car.setPlate("34 XXX 1234");
+        car.setCc(1600);
+
+        return car;
+    }
+
+    private Truck createTruck()
+    {
+        Truck truck = new Truck();
+
+        truck.setId("1234567");
+        truck.setModel("XXX");
+        truck.setYear(2022);
+        truck.setBrand("Setra");
+        truck.setPlate("34 YYY 234");
+        truck.setCc(60000);
+        truck.setLength(20);
+        truck.setMaxCapacity(10);
+
+        return truck;
+    }
+    private Bus createBus()
+    {
+        Bus bus = new Bus();
+
+        bus.setId("1234565");
+        bus.setModel("Tourismo");
+        bus.setYear(2022);
+        bus.setBrand("Mercedes");
+        bus.setPlate("34 ZZZ 123");
+        bus.setCc(40000);
+        bus.setLength(13.3);
+        bus.setPassengerCount(40);
+
+        return bus;
+    }
+
+    private Taxi createTaxi()
+    {
+        Taxi taxi = new Taxi();
+
+        taxi.setId("12345658");
+        taxi.setModel("Linea");
+        taxi.setYear(2022);
+        taxi.setBrand("Fiat");
+        taxi.setPlate("34 TTT 12");
+        taxi.setCc(1600);
+        taxi.setCity("istanbul");
+
+        return taxi;
+    }
+
+    public Vehicle createVehicle()
+    {
+        return switch (m_random.nextInt(4)) {
+            case 0 -> createCar();
+            case 1 -> createBus();
+            case 2 -> createTaxi();
+            default -> createTruck();
+        };
+    }
+
+}
+
+package com.fatihkarabulut.vehicle.commercial;
+
+import com.boraserce.vehicle.CommercialVehicle;
+
+public class Taxi extends CommercialVehicle {
+    private String m_city;
+
+    //...
+
+    public Taxi()
+    {
+        super(true);
+    }
+
+    public String getCity()
+    {
+        return m_city;
+    }
+
+    public void setCity(String city)
+    {
+        m_city = city;
+    }
+
+    //...
+}
+package com.fatihkarabulut.vehicle.commercial;
+
+import com.boraserce.vehicle.CommercialVehicle;
+
+public class Truck extends CommercialVehicle {
+    private double m_length;
+    private double m_maxCapacity;
+
+    //...
+
+    public Truck()
+    {
+        super(false);
+    }
+
+    public double getLength()
+    {
+        return m_length;
+    }
+
+    public void setLength(double length)
+    {
+        m_length = length;
+    }
+
+    public double getMaxCapacity()
+    {
+        return m_maxCapacity;
+    }
+
+    public void setMaxCapacity(double maxCapacity)
+    {
+        m_maxCapacity = maxCapacity;
+    }
+}
+
+package com.haticekubraulusoy.vehicle;
+
+import com.alicankececi.rental.vehicle.Vehicle;
+
+public class PersonalVehicle extends Vehicle {
+    protected int controlPeriod;
+
+    //...
+
+    public PersonalVehicle(int period)
+    {
+        controlPeriod = period;
+    }
+    //...
+}
+
+package com.onurozcan.vehicle;
+
+import com.boraserce.vehicle.CommercialVehicle;
+
+public class Bus extends CommercialVehicle {
+    private double m_length;
+    private int m_passengerCount;
+    //...
+
+    public Bus()
+    {
+        super(true);
+    }
+
+    public double getLength()
+    {
+        return m_length;
+    }
+
+    public void setLength(double length)
+    {
+        m_length = length;
+    }
+
+    public int getPassengerCount()
+    {
+        return m_passengerCount;
+    }
+
+    public void setPassengerCount(int passengerCount)
+    {
+        m_passengerCount = passengerCount;
+    }
+}
+
+package com.onurozcan.vehicle;
+
+import com.haticekubraulusoy.vehicle.PersonalVehicle;
+
+public class Car extends PersonalVehicle {
+    private String m_type;
+    //...
+
+    public Car()
+    {
+        super(2);
+    }
+
+    public String getType()
+    {
+        return m_type;
+    }
+
+    public void setType(String type)
+    {
+        m_type = type;
+    }
+    //...
+}
+
+/*----------------------------------------------------------------------------------------------------------------------
+	Bir referansın iki tane türü vardır:static type, dynamic type
+	- static type: Referansın bildirildiği türdür. "Referansın türü" dendiğinde static tür anlaşılır. Derleme zamanına
+	zamanına ilişkin bir bilgidir ve değişmez
+
+	- dynamic type: Referansın gösterdiği nesnenin  gerçek türüdür. Çalışma zamanına ilişkindir ve değişebilir.
+
+	Anahtar Notlar: Bir referansın dinamik türü "fully qualified" biçimde String olarak aşağıdaki kalıp ile
+	elde edilebilir:
+		<referans>.getClass().getName();
+
+	Mordor
+-----------------------------------------------------------------------------------------------------------------------*/
+
+/*----------------------------------------------------------------------------------------------------------------------
+	Aşağıdaki örneği inceleyiniz
+-----------------------------------------------------------------------------------------------------------------------*/
+package org.csystem.app;
+
+import java.util.Random;
+import java.util.Scanner;
+
+class App {
+	public static void main(String [] args)
+	{
+		Application.run();
+	}
+}
+
+class Application {
+	public static void run()
+	{
+		AFactory factory = new AFactory();
+		Scanner kb = new Scanner(System.in);
+		System.out.print("Bir sayı giriniz:");
+		int count = kb.nextInt();
+
+		while (count-- > 0) {
+			A a = factory.create();
+
+			System.out.println("------------------------------------------------");
+			System.out.println(a.getClass().getName());
+			System.out.println("------------------------------------------------");
+		}
+	}
+}
+
+class AFactory {
+	private final Random m_random = new Random();
+
+	public A create()
+	{
+		return switch (m_random.nextInt(4)) {
+			case 0 -> new B();
+			case 1 -> new C();
+			case 2 -> new D();
+			default -> new E();
+		};
+	}
+}
+
+class E extends A {
+	//...
+}
+
+class D extends B {
+	//...
+}
+
+class C extends B {
+	//..
+}
+
+class B extends A {
+	//...
+}
+
+class A {
+	//...
+}
+
+/*----------------------------------------------------------------------------------------------------------------------
+	Bir dizi referansının dinamik türü JNI Type (Java Native Interface Type) ismi olarak elde edilir. Bu isim genel olarak
+	arakoddaki isimdir. Detaylar burada ele alınmayacaktır. Aşağıdaki örneğin çıktılarını inceleyiniz
+
+	mordor
+-----------------------------------------------------------------------------------------------------------------------*/
+package org.csystem.app;
+
+class App {
+	public static void main(String [] args)
+	{
+		int [] a = new int[10];
+		double [] b = new double[20];
+		boolean [] c = new boolean[20];
+		String [] d = new String[20];
+		A [] e = new A[30];
+		int [][] f = new int[10][];
+		A [][] g = new A[2][];
+		char [] h = new char[12];
+		long [] i = new long[12];
+		float [] j = new float[12];
+		byte [] k = new byte[23];
+		short [] m = new short[23];
+
+		System.out.println(a.getClass().getName());
+		System.out.println(b.getClass().getName());
+		System.out.println(c.getClass().getName());
+		System.out.println(d.getClass().getName());
+		System.out.println(e.getClass().getName());
+		System.out.println(f.getClass().getName());
+		System.out.println(g.getClass().getName());
+		System.out.println(h.getClass().getName());
+		System.out.println(i.getClass().getName());
+		System.out.println(j.getClass().getName());
+		System.out.println(k.getClass().getName());
+		System.out.println(m.getClass().getName());
+	}
+}
+
+class A {
+	//...
+}
+
+/*----------------------------------------------------------------------------------------------------------------------
+	Taban sınıf türünden bir referans türemiş türünden bir referansa explicit olarak atanabilir (downcasting). Burada
+	tür dönüştürme operatörü derlemeden geçmek için kullanılır. Çalışma zamanında kaynak referansın dinamik türünün tür
+	dönüştürme operatörüne yazılan türü kapsayıp kapsamadığına bakılır. Kapsıyorsa haklı dönüşümdür, akış devam eder.
+	Kapsamıyorsa haksız dönüşümdür. exception oluşur. Buradaki kaopsama nesnesel kapsamadır.
+
+	
+-----------------------------------------------------------------------------------------------------------------------*/
+
+
+/*----------------------------------------------------------------------------------------------------------------------
+											A : Türemiş Sınıf   B : Taban sınıf
+
+	Upcasticng impilicit yani doğrudan, downcasting ise expiliicit yani tür dönüştürme operatörü ile atanabilir
+-----------------------------------------------------------------------------------------------------------------------*/
+package org.csystem.app;
+class App {
+	public static void main(String[] args) {
+		A a = new A();
+		B b = new B();
+
+		b = a;        //upcasting
+		a = (A)b;    //downcasting
+	}
+}
+class A extends B {
+	//...
+}
+
+class B {
+	//...
+}
+
+
+
+/*----------------------------------------------------------------------------------------------------------------------
+	Aşağıdaki örnekte a'nın dinamik türü B, C veya D dışında türlerden biri gelirse dönüşüm haksız olur ve exception
+	oluşur
+
+	MORGOT
+
+	b referansının türü B sınıfı
+	C ve D de downcast edebiliyor çünkü taban sınıfları B'dir ve B sınıfının referansı da b de tutuluyor.
+
+	
+-----------------------------------------------------------------------------------------------------------------------*/
+package org.csystem.app;
+
+import java.util.Random;
+import java.util.Scanner;
+
+class App {
+	public static void main(String [] args)
+	{
+		Application.run();
+	}
+}
+
+class Application {
+	public static void run()
+	{
+		AFactory factory = new AFactory();
+		Scanner kb = new Scanner(System.in);
+		System.out.print("Bir sayı giriniz:");
+		int count = kb.nextInt();
+
+		while (count-- > 0) {
+			A a = factory.create();
+			B b;
+
+			System.out.println("------------------------------------------------");
+			System.out.print("a'nın Dinamik türü: ");
+			System.out.println(a.getClass().getName());
+			b = (B)a; //downcasting
+			System.out.println("------------------------------------------------");
+		}
+	}
+}
+
+class AFactory {
+	private final Random m_random = new Random();
+
+	public A create()
+	{
+		return switch (m_random.nextInt(5)) {
+			case 0 -> new B();
+			case 1 -> new C();
+			case 2 -> new D();
+			case 4 -> new E();
+			default -> new A();
+		};
+	}
+}
+
+class E extends A {
+	//...
+}
+
+class D extends B {
+	//...
+}
+
+class C extends B {
+	//..
+}
+
+class B extends A {
+	//...
+}
+
+class A {
+	//...
+}
+
+/*----------------------------------------------------------------------------------------------------------------------
+	Object sınıfı doğrudan ya da dolaylı olarak her sınıfın taban sınıfı olduğuna göre herhangi bir türden referans
+	Object türden bir referansa doğrudan atanabilir. Ayrıca Object ile ilgili türe downcasting de yapılabilir. Şüphesiz
+	downcasting işleminin çalışma zamanında haklı dönüşüm olması için dinamik türünün uygun olması gerekir. Örneğin
+	Object türden bir dizinin dinamik olarak her türden olabilir. Yani Object türden bir dizide heterojen türler tutulabilir.
+	Peki bu durumda programcı Object türden dizinin içerisindeki elemanların dinamik türleri nasıl bilecek ve uygun
+	dowcasting işlemini yapacaktır? Bu durumda programcının çalışma zamanında dinamik türün ne olduğunu anlayıp ona
+	göre downcasting yapması gerekir. Burada ilk olarak programcı dinamik tür isimlerini elde edip karşılaştırmayı
+	düşünebilir. Bu düşünce kesinlikle doğrudur. Ancak programcının ismi yanlış yazma olasılığı vardır ayrıca yazı
+	karşılaştırması görece yavaş bir işlemdir. Senaryoya göre bu yavaşlık programı etkileyebilir.
+	Aşağıdaki örneği inceleyiniz
+
+	Morgot -> Ders kaydına bakabilirsin.
+-----------------------------------------------------------------------------------------------------------------------*/
+package com.haticekubraulusoy.app.objectgenerator;
+
+import org.csystem.math.geometry.Line;
+import org.csystem.math.geometry.Point;
+import org.csystem.util.array.ArrayUtil;
+import org.csystem.util.generator.random.ObjectArrayGenerator;
+import org.csystem.wrapper.IntValue;
+
+import java.util.Arrays;
+import java.util.Scanner;
+
+public class DemoApp {
+    private static void doWorkFor(Object [] objects)
+    {
+        //String, IntValue, Point, MutableComplex, Line, int []
+        for (Object object : objects) {
+            System.out.println("-----------------------------------------------------------");
+            String typeName = object.getClass().getName();
+            System.out.printf("Dynamic type:%s%n", typeName);
+
+            if (typeName.equals("java.lang.String")) {
+                String s = (String)object;
+
+                System.out.printf("Text:%s, upper:%s%n", s, s.toUpperCase());
+            }
+            else if (typeName.equals("org.csystem.wrapper.IntValue")) {
+                IntValue intValue = (IntValue)object;
+                int val = intValue.intValue();
+
+                System.out.printf("%d * %d = %d%n", val, val, val * val);
+            }
+            else if (typeName.equals("org.csystem.math.geometry.Point")) {
+                Point point = (Point)object;
+
+                System.out.printf("Distance between %s and (0, 0):%f%n", point.toString(), point.distance());
+            }
+            else if (typeName.equals("org.csystem.math.geometry.Line")) {
+                Line line = (Line)object;
+                Point midPoint = line.midPoint();
+
+                System.out.printf("Mid point of %s is %s%n", line.toString(), midPoint.toString());
+            }
+            else if (typeName.equals("[I")) {
+                int [] a = (int[])object;
+
+                ArrayUtil.print(2, a);
+                System.out.printf("Total:%d%n", ArrayUtil.sum(a));
+            }
+            System.out.println("-----------------------------------------------------------");
+        }
+    }
+
+    public static void run()
+    {
+        ObjectArrayGenerator generator = new ObjectArrayGenerator();
+        Scanner kb = new Scanner(System.in);
+
+        System.out.print("Input count:");
+        doWorkFor(generator.createObjects(kb.nextInt()));
+    }
+
+    public static void main(String[] args)
+    {
+        run();
+    }
+}
+
+package org.csystem.util.generator.random;
+
+import org.csystem.math.geometry.Line;
+import org.csystem.math.geometry.Point;
+import org.csystem.util.array.ArrayUtil;
+import org.csystem.util.string.StringUtil;
+import org.csystem.wrapper.IntValue;
+
+import java.util.Random;
+
+public class ObjectArrayGenerator {
+    private final Random m_random = new Random();
+
+    //String, IntValue, Point, Line, int []
+    private Object createObject()
+    {
+        return switch (m_random.nextInt(5)) {
+            case 0 -> StringUtil.getRandomTextTR(m_random, m_random.nextInt(5, 16));
+            case 1 -> IntValue.of(m_random.nextInt(-128, 127));
+            case 2 -> Point.ofCartesian(m_random.nextDouble(-100, 100), m_random.nextDouble(-100, 100));
+            case 3 -> new Line(m_random.nextDouble(-100, 100), m_random.nextDouble(-100, 100), m_random.nextDouble(-100, 100), m_random.nextInt(-100, 100));
+            default -> ArrayUtil.getRandomArray(m_random, m_random.nextInt(5, 16), 0, 99);
+        };
+    }
+
+    public Object[] createObjects(int n)
+    {
+        Object [] objects = new Object[n];
+
+        for (int i = 0; i < n; ++i)
+            objects[i] = createObject();
+
+        return objects;
+    }
+}
+
+
+/*----------------------------------------------------------------------------------------------------------------------
+	instanceof operatörü özel amaçlı, iki operandlı (binary) ve araek (infix) durumunda bir operatördür. Operatör temel
+	büyüklük küçüklük karşılaştrma operatörleri ile aynı seviyededir. Operatörün yan etkisi yoktur. Operatörün birinci
+	operandı bir referans olmalıdır, ikinci operandı ise bir referans türü olmalıdır. Operatör birinci operandına ilişkin
+	referansın dinamik türünün ikinci operandı olan türü kapsayıp kapsamadığına bakar, kapsıyorsa true, kapsamıyorsa false
+	değerini üretir. Buradaki kapsama da yine nesnesel kapsamadır. Bu operatör özellikle downcasting işleminin güvenli yapılması
+	için kullanılmaktadır
+
+	Mordor Morgot
+
+
+	***instanceof Dinamik tür ( Dynamic type ) karşılaştırması yapıyor 
+
+	*Operatör birinci operandına ilişkin referansın dinamik türünün ikinci operandı olan türü kapsayıp kapsamadığına bakar.
+	Operatörün birinci operandı bir referans olmalıdır, ikinci operandı ise bir referans türü olmalıdır
+
+	Object object;
+	String str;
+	A a;
+	....
+
+	object referansının türü Object
+	str referansının türü String 
+	a referansının türü a;
+-----------------------------------------------------------------------------------------------------------------------*/
+
+/*----------------------------------------------------------------------------------------------------------------------
+    Aşağıdaki örneği inceleyiniz
+-----------------------------------------------------------------------------------------------------------------------*/
+package com.haticekubraulusoy.app.objectgenerator;
+
+import org.csystem.math.geometry.Line;
+import org.csystem.math.geometry.Point;
+import org.csystem.util.array.ArrayUtil;
+import org.csystem.util.generator.random.ObjectArrayGenerator;
+import org.csystem.wrapper.IntValue;
+
+import java.util.Scanner;
+
+public class DemoApp {
+    private static void doWorkFor(Object [] objects)
+    {
+        //String, IntValue, Point, MutableComplex, Line, int []
+        for (Object object : objects) {
+            System.out.println("-----------------------------------------------------------");
+            String typeName = object.getClass().getName();
+            System.out.printf("Dynamic type:%s%n", typeName);
+
+            if (object instanceof String) {
+                String s = (String)object;
+
+                System.out.printf("Text:%s, upper:%s%n", s, s.toUpperCase());
+            }
+            else if (object instanceof IntValue) {
+                IntValue intValue = (IntValue)object;
+                int val = intValue.intValue();
+
+                System.out.printf("%d * %d = %d%n", val, val, val * val);
+            }
+            else if (object instanceof Point) {
+                Point point = (Point)object;
+
+                System.out.printf("Distance between %s and (0, 0):%f%n", point.toString(), point.distance());
+            }
+            else if (object instanceof Line) {
+                Line line = (Line)object;
+                Point midPoint = line.midPoint();
+
+                System.out.printf("Mid point of %s is %s%n", line.toString(), midPoint.toString());
+            }
+            else if (object instanceof int []) {
+                int [] a = (int[])object;
+
+                ArrayUtil.print(2, a);
+                System.out.printf("Total:%d%n", ArrayUtil.sum(a));
+            }
+            System.out.println("-----------------------------------------------------------");
+        }
+    }
+
+    public static void run()
+    {
+        ObjectArrayGenerator generator = new ObjectArrayGenerator();
+        Scanner kb = new Scanner(System.in);
+
+        System.out.print("Input count:");
+        doWorkFor(generator.createObjects(kb.nextInt()));
+    }
+
+    public static void main(String[] args)
+    {
+        run();
+    }
+}
+
+package org.csystem.util.generator.random;
+
+import org.csystem.math.geometry.Line;
+import org.csystem.math.geometry.Point;
+import org.csystem.util.array.ArrayUtil;
+import org.csystem.util.string.StringUtil;
+import org.csystem.wrapper.IntValue;
+
+import java.util.Random;
+
+public class ObjectArrayGenerator {
+    private final Random m_random = new Random();
+
+    //String, IntValue, Point, Line, int []
+    private Object createObject()
+    {
+        return switch (m_random.nextInt(5)) {
+            case 0 -> StringUtil.getRandomTextTR(m_random, m_random.nextInt(5, 16));
+            case 1 -> IntValue.of(m_random.nextInt(-128, 127));
+            case 2 -> Point.ofCartesian(m_random.nextDouble(-100, 100), m_random.nextDouble(-100, 100));
+            case 3 -> new Line(m_random.nextDouble(-100, 100), m_random.nextDouble(-100, 100), m_random.nextDouble(-100, 100), m_random.nextInt(-100, 100));
+            default -> ArrayUtil.getRandomArray(m_random, m_random.nextInt(5, 16), 0, 99);
+        };
+    }
+
+    public Object[] createObjects(int n)
+    {
+        Object [] objects = new Object[n];
+
+        for (int i = 0; i < n; ++i)
+            objects[i] = createObject();
+
+        return objects;
+    }
+}
+
+/*----------------------------------------------------------------------------------------------------------------------
+    Java 14 ile birlikte instanceof operatörü ile derleyicinin downcasting işlemini otomatik olarak yaptığı
+    "pattern matching" dile eklenmiştir. Aşağıdaki örneği inceleyiniz
+
+	Ders kaydını incele Morgot
+-----------------------------------------------------------------------------------------------------------------------*/
+package com.haticekubraulusoy.app.objectgenerator;
+
+import org.csystem.math.geometry.Line;
+import org.csystem.math.geometry.Point;
+import org.csystem.util.array.ArrayUtil;
+import org.csystem.util.generator.random.ObjectArrayGenerator;
+import org.csystem.wrapper.IntValue;
+
+import java.util.Scanner;
+
+public class DemoApp {
+    private static void doWorkFor(Object [] objects)
+    {
+        //String, IntValue, Point, MutableComplex, Line, int []
+        for (Object object : objects) {
+            System.out.println("-----------------------------------------------------------");
+            String typeName = object.getClass().getName();
+            System.out.printf("Dynamic type:%s%n", typeName);
+
+            if (object instanceof String s)
+                System.out.printf("Text:%s, upper:%s%n", s, s.toUpperCase());
+            else if (object instanceof IntValue intValue) {
+                int val = intValue.intValue();
+
+                System.out.printf("%d * %d = %d%n", val, val, val * val);
+            }
+            else if (object instanceof Point point)
+                System.out.printf("Distance between %s and (0, 0):%f%n", point.toString(), point.distance());
+            else if (object instanceof Line line) {
+                Point midPoint = line.midPoint();
+
+                System.out.printf("Mid point of %s is %s%n", line.toString(), midPoint.toString());
+            }
+            else if (object instanceof int[] a) {
+                ArrayUtil.print(2, a);
+                System.out.printf("Total:%d%n", ArrayUtil.sum(a));
+            }
+            System.out.println("-----------------------------------------------------------");
+        }
+    }
+
+    public static void run()
+    {
+        ObjectArrayGenerator generator = new ObjectArrayGenerator();
+        Scanner kb = new Scanner(System.in);
+
+        System.out.print("Input count:");
+        doWorkFor(generator.createObjects(kb.nextInt()));
+    }
+
+    public static void main(String[] args)
+    {
+        run();
+    }
+}
+
+package org.csystem.util.generator.random;
+
+import org.csystem.math.geometry.Line;
+import org.csystem.math.geometry.Point;
+import org.csystem.util.array.ArrayUtil;
+import org.csystem.util.string.StringUtil;
+import org.csystem.wrapper.IntValue;
+
+import java.util.Random;
+
+public class ObjectArrayGenerator {
+    private final Random m_random = new Random();
+
+    //String, IntValue, Point, Line, int []
+    private Object createObject()
+    {
+        return switch (m_random.nextInt(5)) {
+            case 0 -> StringUtil.getRandomTextTR(m_random, m_random.nextInt(5, 16));
+            case 1 -> IntValue.of(m_random.nextInt(-128, 127));
+            case 2 -> Point.ofCartesian(m_random.nextDouble(-100, 100), m_random.nextDouble(-100, 100));
+            case 3 -> new Line(m_random.nextDouble(-100, 100), m_random.nextDouble(-100, 100), m_random.nextDouble(-100, 100), m_random.nextInt(-100, 100));
+            default -> ArrayUtil.getRandomArray(m_random, m_random.nextInt(5, 16), 0, 99);
+        };
+    }
+
+    public Object[] createObjects(int n)
+    {
+        Object [] objects = new Object[n];
+
+        for (int i = 0; i < n; ++i)
+            objects[i] = createObject();
+
+        return objects;
+    }
+}
+
+/*----------------------------------------------------------------------------------------------------------------------
+	instanceof operatörü birinci operandına ilişkin referansın dinamik türünün ikinci operandına ilişkin türü kapsayıp
+	kapsamadığına bakar. Aşağıdaki programı çalıştırıp sonucu gözlemleyiniz
+
+
+	MORDOR MORDOR MORDOR
+-----------------------------------------------------------------------------------------------------------------------*/
+package org.csystem.app;
+
+import java.util.Random;
+import java.util.Scanner;
+
+class App {
+	public static void main(String [] args)
+	{
+		Application.run();
+	}
+}
+
+class Application {
+	public static void run()
+	{
+		AFactory factory = new AFactory();
+		Scanner kb = new Scanner(System.in);
+		System.out.print("Bir sayı giriniz:");
+		int count = kb.nextInt();
+
+		while (count-- > 0) {
+			A a = factory.create();
+			B b;
+
+			System.out.println("------------------------------------------------");
+			System.out.println(a.getClass().getName());
+
+			if (a instanceof B) {
+				b = (B)a;
+				System.out.println("Haklı dönüşüm");
+			}
+			else
+				System.out.println("Haksız dönüşüm");
+
+			System.out.println("------------------------------------------------");
+		}
+	}
+}
+
+class AFactory {
+	private final Random m_random = new Random();
+
+	public A create()
+	{
+		return switch (m_random.nextInt(5)) {
+			case 0 -> new B();
+			case 1 -> new C();
+			case 2 -> new D();
+			case 4 -> new E();
+			default -> new A();
+		};
+	}
+}
+
+class E extends A {
+	//...
+}
+
+class D extends B {
+	//...
+}
+
+class C extends B {
+	//..
+}
+
+class B extends A {
+	//...
+}
+
+class A {
+	//...
+}
+
+/*----------------------------------------------------------------------------------------------------------------------
+    24.06.2023 Arwen
+-----------------------------------------------------------------------------------------------------------------------*/
 /*----------------------------------------------------------------------------------------------------------------------
 	
 -----------------------------------------------------------------------------------------------------------------------*/
