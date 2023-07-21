@@ -32697,9 +32697,1676 @@ class A {
 /*----------------------------------------------------------------------------------------------------------------------
     24.06.2023 Arwen
 -----------------------------------------------------------------------------------------------------------------------*/
+
+/*----------------------------------------------------------------------------------------------------------------------
+	Mordor 	wrapper -> Sarmalayan sınıg
+
+	Anımsanacağı gibi her temel türe bir sınıf karşılık getirilmiştir. Bu sınıflara "wrapper classes" veya "platform classes"
+	denilmektedir:
+		Tür					Sarmalayan Sınıf
+		-------------------------------------
+		short					Short
+		int						Integer
+		long					Long
+		byte					Byte
+		float					Float
+		double					Double
+		boolean					Boolean
+		char					Character
+
+	Bu sınıfların temel özellikleri şunlardır:
+	- Bu sınıflardan tamsayı ve gerçek sayı türlerine ilişkin olanları (Short, Integer, Long, Byte, Double ve Float)
+	java.lang.Number sınfından türetilmiştir. Bu sebeple bunlara "numerik sarmalayan sınıflar (numeric wrapper classes" da
+	denilmektedir.
+
+	- Sarmalayan sınıfların hepsi java.lang paketi içerisinde bildirilşmiştir. Dolayısıyla isimleri doğrudan kullanılabilir.
+
+	- Sarmalayan sınıfların hepsi imuutable'dır
+
+	- Bu sınıflar temel türden değerlerin heap'de tutulması için kullanılır. Bu kavrama "kutulama (boxing)" denir. Bu konu
+	ileride ele alınacaktır
+
+	- Bu sınıflar içerisinde ilişkin oldukları temel türe yönelik kullanılan elemanlar (member) bulunmaktadır. Character
+	sınıfının isXXX metotlarını anımsayınız.
+
+	- Java 9 ile birlikte bu sınıfların ctor'ları deprecated olmuştur. Hatta, ileride olmayacakları belirtilmiştir. Zaten
+	Java 5'den itibaren ctor'ların kullanılması iyi bir teknik değildir. Artık deprecated olduğundan kullanılması hiç
+	düşünülmemelidir. Bunun nedeni ileride anlaşılacaktır.
+-----------------------------------------------------------------------------------------------------------------------*/
+
+/*----------------------------------------------------------------------------------------------------------------------
+	Boolean sınıfı dışında kalan tüm sarmalayan sınıfların MIN_VALUE ve MAX_VALUE isimli final ve static veri elemanları
+	vardır. Bu elemanlar ilişkin oldukları temel türdendir ve o türe ilişkin sırasıyla en küçük ve en büyük değerleri yani
+	sınır değerleri tutarlar. Double ve Float sınıflarında bu değerrle pozitiftir. Bu durum IEE754 standardına ilişkindir.
+	double ve float türleri için sınırlar "+-" biçimindedir. Yani MIN_VALUE değerinin de MAX_VALUE değerinin de hem pozitif
+	hem de negatif değerleri sınır değerleridir
+-----------------------------------------------------------------------------------------------------------------------*/
+package org.csystem.app;
+
+class App {
+	public static void main(String [] args)
+	{
+		System.out.printf("byte:[%d, %d] [0x%X, 0x%X]%n", Byte.MIN_VALUE, Byte.MAX_VALUE, Byte.MIN_VALUE, Byte.MAX_VALUE);
+		System.out.printf("short:[%d, %d] [0x%X, 0x%X]%n", Short.MIN_VALUE, Short.MAX_VALUE, Short.MIN_VALUE, Short.MAX_VALUE);
+		System.out.printf("int:[%d, %d] [0x%X, 0x%X]%n", Integer.MIN_VALUE, Integer.MAX_VALUE, Integer.MIN_VALUE, Integer.MAX_VALUE);
+		System.out.printf("long:[%d, %d] [0x%X, 0x%X]%n", Long.MIN_VALUE, Long.MAX_VALUE, Long.MIN_VALUE, Long.MAX_VALUE);
+		System.out.println("double:[+-" + Double.MIN_VALUE + ", +-" + Double.MAX_VALUE + "]");
+		System.out.println("float:[+-" + Float.MIN_VALUE + ", +-" + Float.MAX_VALUE + "]");
+		System.out.printf("char:[%d, %d]%n", (int)Character.MIN_VALUE, (int)Character.MAX_VALUE);
+	}
+}
+
+/*----------------------------------------------------------------------------------------------------------------------
+	Boolean sınıfı dışında kalan tüm sarmalayan sınıfların SIZE ve BYTES isimli final ve static olarak bildirilmiş veri
+	elemanları bulunur. Bu veri elemanları ilişkin oldukları türlerin sırasıyla bit ve byte uzunluklarını tutarlar. Java'da
+	boolean türünün uzunluğu belirtilmemiştir. Bu sebeple Boolean sınıfında bu elemanlar yoktur. Anımsanacağı gibi boolean
+	türü dışında kalan tüm temel türlerin uzunlukları sistemden sisteme değişmez hep aynıdır
+-----------------------------------------------------------------------------------------------------------------------*/
+package org.csystem.app;
+
+class App {
+	public static void main(String [] args)
+	{
+		System.out.printf("byte:%d/%d byte/bits%n", Byte.BYTES, Byte.SIZE);
+		System.out.printf("short:%d/%d byte/bits%n", Short.BYTES, Short.SIZE);
+		System.out.printf("int:%d/%d byte/bits%n", Integer.BYTES, Integer.SIZE);
+		System.out.printf("long:%d/%d byte/bits%n", Long.BYTES, Long.SIZE);
+		System.out.printf("double:%d/%d byte/bits%n", Double.BYTES, Double.SIZE);
+		System.out.printf("float:%d/%d byte/bits%n", Float.BYTES, Float.SIZE);
+		System.out.printf("char:%d/%d byte/bits%n", Character.BYTES, Character.SIZE);
+	}
+}
+
+/*----------------------------------------------------------------------------------------------------------------------
+	Character sınıfı dışında kalan tüm sarmalayan sınıfların parseXXX metotları vardır. Boolean sınıfı dışındaki sınıfların
+	parseXXX mettoları yazıyı ilgili türe çeviremezlerse exception oluşur. Boolean sınıfınınn parseBoolen metodu çeviremediği
+	her yazı için false değerine geri döner. Yani bu metot case-insensitive olarak yazının true olması durumunda true değerine,
+	diğer tüm yazılar için false değerine geri döner
+
+	Mordor  parseXXX: yazıyı ilgili türe döndürür 
+-----------------------------------------------------------------------------------------------------------------------*/
+package org.csystem.app;
+
+import java.util.Scanner;
+
+class App {
+	public static void main(String [] args)
+	{
+		Scanner kb = new Scanner(System.in);
+		System.out.print("true veya false giriniz:");
+		boolean flag = Boolean.parseBoolean(kb.nextLine());
+
+		System.out.printf("flag = %b%n", flag);
+	}
+}
+
+/*----------------------------------------------------------------------------------------------------------------------
+	Tamsayı türlerine ilişkin sarmalayan sınıfların parseXXX metotlarının sayı sistemi (radix) parametreli overload'ları
+	vardır. Bu metotlar ilgili yazıyı verilen sayı sistemine göre çevirmeye çalışır. Çeviremezlerse exception oluşur
+-----------------------------------------------------------------------------------------------------------------------*/
+package org.csystem.app;
+
+import java.util.Scanner;
+
+class App {
+	public static void main(String [] args)
+	{
+		Scanner kb = new Scanner(System.in);
+
+		while (true) {
+			System.out.print("16'lık sistemde bir sayı giriniz:");
+			int val = Integer.parseInt(kb.nextLine(), 16);
+
+			if (val == 0x0)
+				break;
+
+			System.out.printf("val = %d%n", val);
+		}
+	}
+}
+
+/*----------------------------------------------------------------------------------------------------------------------
+	Java 9 ile birlikte sarmalayan sınıfların ctor'ları deprecated olmuştur. Kutulama işlemi ctor'lar ile yapılmamalıdır.
+	Bu ctor'lar Java'nuın ilerleyen versiyonlarında kullanılamayacaktır
+-----------------------------------------------------------------------------------------------------------------------*/
+package org.csystem.app;
+
+class App {
+	public static void main(String [] args)
+	{
+		Integer iVal = new Integer(10);
+		Double dVal = new Double(3.4);
+
+		//...
+	}
+}
+
+/*----------------------------------------------------------------------------------------------------------------------
+	Kutulama işlemi için sarmalayan sınıfların, ilişkin oldukları türden parametreli valueOf metotları kullanılır
+
+	Mordor
+-----------------------------------------------------------------------------------------------------------------------*/
+package org.csystem.app;
+
+class App {
+	public static void main(String [] args)
+	{
+		Integer iVal = Integer.valueOf(10);
+		Double dVal = Double.valueOf(3.4);
+
+		//...
+	}
+}
+
+/*----------------------------------------------------------------------------------------------------------------------
+	Tamsayı türlerine ilişkin sarmalayan sınıfların valueOf metotları [-128, 127] aralığındaki değerleri bir "cache"'den
+	alır. Böylece daha etkin kodlar yazılabilir. Bu aralık dışındaki değerlerin cach'de tutulup tutulmayacağı garanti
+	değildir
+	Not: IntValue ve LongValue sınıflarını tekrar inceleyiniz
+
+	Mordor
+-----------------------------------------------------------------------------------------------------------------------*/
+package org.csystem.app;
+
+class App {
+	public static void main(String [] args)
+	{
+		Integer iVal1 = Integer.valueOf(120);
+		Integer iVal2 = Integer.valueOf(120);
+		Integer iVal3 = Integer.valueOf(128);
+		Integer iVal4 = Integer.valueOf(128);
+
+		System.out.println(iVal1 == iVal2 ? "Aynı nesne" : "Farklı nesneler");	//Aynı nesne
+		System.out.println(iVal3 == iVal4 ? "Aynı nesne" : "Farklı nesneler");	//Farklı nesneler
+	}
+}
+
+/*----------------------------------------------------------------------------------------------------------------------
+	Character sınıfının char parmetreli valueOf metodu ['\u0000', '\u007F] aralığındaki karakterlere ilişkin sıra numaralarını
+	bir ön bellekten alır. Bu sayılar aslında ASCII tablosunun standart olan karakterlerinin sıra numarasıdır. Bunlar
+	dışındaki değerler için ön bekllek kullanımı garanti değildir
+-----------------------------------------------------------------------------------------------------------------------*/
+package org.csystem.app;
+
+class App {
+	public static void main(String [] args)
+	{
+		Character c1 = Character.valueOf('D');
+		Character c2 = Character.valueOf('D');
+		Character c3 = Character.valueOf('Ş');
+		Character c4 = Character.valueOf('Ş');
+
+		System.out.println(c1 == c2 ? "Aynı nesne" : "Farklı nesneler");
+		System.out.println(c3 == c4 ? "Aynı nesne" : "Farklı nesneler");
+	}
+}
+
+/*----------------------------------------------------------------------------------------------------------------------
+	Yöntemi ne olursa tüm sarmalayan sınıflar ve ilişkin oldukları türden parametreli valueOf metotları kullanılarak
+	referans elde edilmesi "better space and time performance" açısından önemlidir. Bu sebeple Java 5'den itibarn ctor
+	kullanılması tavsiye edilmemektedir.
+
+	MORDOR MORGOT
+-----------------------------------------------------------------------------------------------------------------------*/
+/*----------------------------------------------------------------------------------------------------------------------
+	Number sınıfının xxxValue metotları numerik sarmalayan sınıflar için ilişkin oldukları temel türe göre tür dönüştürme
+	kurallarına uygun olarak çalışırlar. Yani örneğin int türden bir değerin short türüne explicit olarak dönüştürülmesi
+	durumunda elde edilen değer ile Integer sınıfı ile sarmalanmış nesne ilikin shortValue metodunun döndürdüğü değer
+	aynıdır
+
+	Morgot
+-----------------------------------------------------------------------------------------------------------------------*/
+package org.csystem.app;
+
+import java.util.Scanner;
+
+class App {
+	public static void main(String [] args)
+	{
+		Scanner kb = new Scanner(System.in);
+		System.out.print("Bir sayı giriniz:");	//8128
+		int val = Integer.parseInt(kb.nextLine());
+
+		Integer iVal = Integer.valueOf(val);
+		short a = (short)val;
+		short b = iVal.shortValue();
+
+		System.out.printf("val = %d, val = %X%n", val, val);
+		System.out.printf("a = %d, b = %d%n", a, b);
+		System.out.printf("a = %X, b = %X%n", a, b);	//16 lık sistem
+
+		System.out.println(a == b ? "Eşit" : "Eşit değil");
+	}
+}
+
+/*----------------------------------------------------------------------------------------------------------------------
+	Sarmalayan sınıflar ile temel türden bir değer de mantıksal olarak Object referansında tutulabilir. Bu işlem kutulama
+	ile yapılır. Aynı şekilde kutu açarak (unboxing) değer elde edilebilir. Yani genel amaç temel türden değerlerin
+	"heap"'de tutulmasıdır. Kutu açma işlemi için sarmalayan sınıfların ilgili türe ilişkin xxxvalue metotları kullanılır.
+	Aşağıdaki örneği inceleyiniz
+
+	Morgot
+-----------------------------------------------------------------------------------------------------------------------*/
+package com.haticekubraulusoy.app.objectgenerator;
+
+import org.csystem.math.geometry.Line;
+import org.csystem.math.geometry.Point;
+import org.csystem.util.array.ArrayUtil;
+import org.csystem.util.generator.random.ObjectArrayGenerator;
+
+import java.util.Scanner;
+
+public class DemoApp {
+    private static void doWorkFor(Object [] objects)
+    {
+        //String, IntValue, Point, MutableComplex, Line, int []
+        for (Object object : objects) {
+            System.out.println("-----------------------------------------------------------");
+            String typeName = object.getClass().getName();
+            System.out.printf("Dynamic type:%s%n", typeName);
+
+            if (object instanceof String s)
+                System.out.printf("Text:%s, upper:%s%n", s, s.toUpperCase());
+            else if (object instanceof Integer i) {
+                int val = i.intValue();
+
+                System.out.printf("%d * %d = %d%n", val, val, val * val);
+            }
+            else if (object instanceof Point point)
+                System.out.printf("Distance between %s and (0, 0):%f%n", point.toString(), point.distance());
+            else if (object instanceof Line line) {
+                Point midPoint = line.midPoint();
+
+                System.out.printf("Mid point of %s is %s%n", line.toString(), midPoint.toString());
+            }
+            else if (object instanceof int[] a) {
+                ArrayUtil.print(2, a);
+                System.out.printf("Total:%d%n", ArrayUtil.sum(a));
+            }
+            else if (object instanceof Character c) {
+                char ch = c.charValue();
+
+                System.out.printf("ch = %c, ch = '\\u%04X'%n", ch, (int)ch);
+            }
+            else if (object instanceof Boolean b) {
+                boolean flag = b.booleanValue();
+
+                System.out.println(flag ? "Open" : "Closed");
+            }
+            System.out.println("-----------------------------------------------------------");
+        }
+    }
+
+    public static void run()
+    {
+        ObjectArrayGenerator generator = new ObjectArrayGenerator();
+        Scanner kb = new Scanner(System.in);
+
+        System.out.print("Input count:");
+        doWorkFor(generator.createObjects(kb.nextInt()));
+    }
+
+    public static void main(String[] args)
+    {
+        run();
+    }
+}
+
+package org.csystem.util.generator.random;
+
+import org.csystem.math.geometry.Line;
+import org.csystem.math.geometry.Point;
+import org.csystem.util.array.ArrayUtil;
+import org.csystem.util.string.StringUtil;
+
+import java.util.Random;
+
+public class ObjectArrayGenerator {
+    private final Random m_random = new Random();
+
+    //String, Integer, Point, Line, int [], Boolean, Character
+    private Object createObject()
+    {
+        return switch (m_random.nextInt(7)) {
+            case 0 -> StringUtil.getRandomTextTR(m_random, m_random.nextInt(5, 16));
+            case 1 -> Integer.valueOf(m_random.nextInt(-128, 127));
+            case 2 -> Point.ofCartesian(m_random.nextDouble(-100, 100), m_random.nextDouble(-100, 100));
+            case 3 -> new Line(m_random.nextDouble(-100, 100), m_random.nextDouble(-100, 100), m_random.nextDouble(-100, 100), m_random.nextInt(-100, 100));
+            case 4 -> Boolean.valueOf(m_random.nextBoolean());
+            case 5 -> Character.valueOf((char)(m_random.nextInt(26) + (m_random.nextBoolean() ? 'A' : 'a')));
+            default -> ArrayUtil.getRandomArray(m_random, m_random.nextInt(5, 16), 0, 99);
+        };
+    }
+
+    public Object[] createObjects(int n)
+    {
+        Object [] objects = new Object[n];
+
+        for (int i = 0; i < n; ++i)
+            objects[i] = createObject();
+
+        return objects;
+    }
+}
+
+/*----------------------------------------------------------------------------------------------------------------------
+	Java 5 ile birlikte temel türlere ilişkin sarmalayan sınıf referanslarına, ilgiliilişkin türden bir değer doğrudan
+	atanabilir.Bu işlem aslında derleyici tarafından valuOf metodunun çağrılmasına ilişkin kod üretilerek yapılır. Bu
+	kavrama "otomatik kutulama (auto boxing) denir
+
+
+	Boxing için önemli Mordor
+-----------------------------------------------------------------------------------------------------------------------*/
+package org.csystem.app;
+
+class App {
+	public static void main(String [] args)
+	{
+		Integer i = 10; //auto boxing: Integer.valueOf(10)
+		Double d = 2.3; //auto boxing: Double.valueOf(2.3)
+
+		//...
+	}
+}
+
+/*----------------------------------------------------------------------------------------------------------------------
+	Otomatik kutulama Object sınıfı için de yapılabilir
+-----------------------------------------------------------------------------------------------------------------------*/
+package org.csystem.app;
+
+class App {
+	public static void main(String [] args)
+	{
+		Object oi = 10; //auto boxing:Integer.valueOf(10)
+		Object od = 2.3; //auto boxing: Double.valueOf(2.3)
+
+		//...
+	}
+}
+
+/*----------------------------------------------------------------------------------------------------------------------
+	Otomatik kutulama değerin kendi sarmalayan sınıfına yapılabilir. Aksi durumda error oluşur. Aşağıdaki örnekte 10 değeri
+	int türden olduğudan Integer olarak sarmalanır ve Integer referansı Double referansına atanamayacağından dolayı error
+	oluşur
+-----------------------------------------------------------------------------------------------------------------------*/
+package org.csystem.app;
+
+class App {
+	public static void main(String [] args)
+	{
+		Double d = 10; //error
+
+		//...
+	}
+}
+
+/*----------------------------------------------------------------------------------------------------------------------
+	Otomatik kutu açma (auto unboxing) işlemi xxxValue metotları ile yapılır
+
+	Mordor Morgot unboxing için önemli
+-----------------------------------------------------------------------------------------------------------------------*/
+package org.csystem.app;
+
+class App {
+	public static void main(String [] args)
+	{
+		Integer i = 10;
+		int val = i; //auto unboxing: i.intValue();
+
+		System.out.printf("val = %d%n", val);
+	}
+}
+
+/*----------------------------------------------------------------------------------------------------------------------
+	Otomatik kutu açma (auto unboxing) işlemi Object türünden temel türe tür dönüştürme operatörü ile yapılabilir. Bu durumda
+	derleyici yaklaşık olarak aşağıdaki yorum satırlarında yazılan kodları üretir
+
+	Mordor Morgot
+-----------------------------------------------------------------------------------------------------------------------*/
+package org.csystem.app;
+
+class App {
+	public static void main(String [] args)
+	{
+		Object oi = 10;
+		Object od = 3.4;
+		System.out.println(oi.getClass().getName());
+		System.out.println(od.getClass().getName());
+
+		int a = (int)oi; //auto unboxing: ((Integer)oi).intValue()
+		double b = (double)od; //auto unboxing: ((Double)od).doubleValue()
+
+		System.out.printf("a = %d%n", a);
+		System.out.printf("b = %f%n", b);
+	}
+}
+
+
+/*----------------------------------------------------------------------------------------------------------------------
+	Otomatik kutu açma uygun türe yapılmalıdır. Otomatik kutulama arka planda bir downcasting işlemi kullanılarak da
+	yapıldığından aşağıdaki örnekte haksız dönüşm dolayısıyla exception oluşur.
+
+	Mordor
+-----------------------------------------------------------------------------------------------------------------------*/
+package org.csystem.app;
+
+class App {
+	public static void main(String [] args)
+	{
+		Object oi = 3;
+
+		System.out.println(oi.getClass().getName());
+
+		double a = (double)oi; //auto unboxing: ((Double)oi).doubleValue()
+
+		System.out.printf("a = %f%n", a);
+	}
+}
+
+/*----------------------------------------------------------------------------------------------------------------------
+	Yukarıdaki problem aşağıdaki gibi çözülebilir
+-----------------------------------------------------------------------------------------------------------------------*/
+package org.csystem.app;
+
+class App {
+	public static void main(String [] args)
+	{
+		Object oi = 3;
+
+		System.out.println(oi.getClass().getName());
+
+		double a = (int)oi; //auto unboxing: ((Integer)oi).intValue()
+
+		System.out.printf("a = %f%n", a);
+	}
+}
+
+/*----------------------------------------------------------------------------------------------------------------------
+	Aşağıdaki örnekte önce int türüne kutu açılmış, elde edilen değer short türüne dönüştürülmüştür (cast). Tür
+	dönüştürme operatörünün "sağdan sola (right associative)" olduğunu anımsayınız
+-----------------------------------------------------------------------------------------------------------------------*/
+package org.csystem.app;
+
+class App {
+	public static void main(String [] args)
+	{
+		Object oi = 3;
+
+		System.out.println(oi.getClass().getName());
+
+		short a = (short)(int)oi; //auto unboxing: (short)((Integer)oi).intValue()
+
+		System.out.printf("a = %d%n", a);
+	}
+}
+
+/*----------------------------------------------------------------------------------------------------------------------
+	Aşağıdaki örnekte sanki programcı her tür Object sınfından türetilmiş gibi kod yazmıştır. Şüphesiz temel türler
+	zaten sınıfsal olmadığından Object sınıfından türetilmemiştir. Otomatik kutulama ve otomatik kutu açma sayesinde
+	temel türler için de aynı mantıkla kod yazılabilir.
+
+	Morgot DemoApp Örneğini baştan sona ders kaydından incele.
+-----------------------------------------------------------------------------------------------------------------------*/
+
+package com.haticekubraulusoy.app.objectgenerator;
+
+import org.csystem.math.geometry.Line;
+import org.csystem.math.geometry.Point;
+import org.csystem.util.array.ArrayUtil;
+import org.csystem.util.generator.random.ObjectArrayGenerator;
+
+import java.util.Scanner;
+
+public class DemoApp {
+    private static void doWorkFor(Object [] objects)
+    {
+        //String, IntValue, Point, MutableComplex, Line, int []
+        for (Object object : objects) {
+            System.out.println("-----------------------------------------------------------");
+            String typeName = object.getClass().getName();
+            System.out.printf("Dynamic type:%s%n", typeName);
+
+            if (object instanceof String s)
+                System.out.printf("Text:%s, upper:%s%n", s, s.toUpperCase());
+            else if (object instanceof Integer) {
+                int val = (int)object;
+
+                System.out.printf("%d * %d = %d%n", val, val, val * val);
+            }
+            else if (object instanceof Point point)
+                System.out.printf("Distance between %s and (0, 0):%f%n", point.toString(), point.distance());
+            else if (object instanceof Line line) {
+                Point midPoint = line.midPoint();
+
+                System.out.printf("Mid point of %s is %s%n", line.toString(), midPoint.toString());
+            }
+            else if (object instanceof int[] a) {
+                ArrayUtil.print(2, a);
+                System.out.printf("Total:%d%n", ArrayUtil.sum(a));
+            }
+            else if (object instanceof Character) {
+                char ch = (char)object;
+
+                System.out.printf("ch = %c, ch = '\\u%04X'%n", ch, (int)ch);
+            }
+            else if (object instanceof Boolean) {
+                boolean flag = (boolean)object;
+
+                System.out.println(flag ? "Open" : "Closed");
+            }
+            System.out.println("-----------------------------------------------------------");
+        }
+    }
+
+    public static void run()
+    {
+        ObjectArrayGenerator generator = new ObjectArrayGenerator();
+        Scanner kb = new Scanner(System.in);
+
+        System.out.print("Input count:");
+        doWorkFor(generator.createObjects(kb.nextInt()));
+    }
+
+    public static void main(String[] args)
+    {
+        run();
+    }
+}
+package org.csystem.util.generator.random;
+
+import org.csystem.math.geometry.Line;
+import org.csystem.math.geometry.Point;
+import org.csystem.util.array.ArrayUtil;
+import org.csystem.util.string.StringUtil;
+
+import java.util.Random;
+
+public class ObjectArrayGenerator {
+    private final Random m_random = new Random();
+
+    //String, Integer, Point, Line, int [], Boolean, Character
+    private Object createObject()
+    {
+        return switch (m_random.nextInt(7)) {
+            case 0 -> StringUtil.getRandomTextTR(m_random, m_random.nextInt(5, 16));
+            case 1 -> m_random.nextInt(-128, 127);
+            case 2 -> Point.ofCartesian(m_random.nextDouble(-100, 100), m_random.nextDouble(-100, 100));
+            case 3 -> new Line(m_random.nextDouble(-100, 100), m_random.nextDouble(-100, 100), m_random.nextDouble(-100, 100), m_random.nextInt(-100, 100));
+            case 4 -> m_random.nextBoolean();
+            case 5 -> (char)(m_random.nextInt(26) + (m_random.nextBoolean() ? 'A' : 'a'));
+            default -> ArrayUtil.getRandomArray(m_random, m_random.nextInt(5, 16), 0, 99);
+        };
+    }
+
+    public Object[] createObjects(int n)
+    {
+        Object [] objects = new Object[n];
+
+        for (int i = 0; i < n; ++i)
+            objects[i] = createObject();
+
+        return objects;
+    }
+}
+
+/*----------------------------------------------------------------------------------------------------------------------
+	Otomatik kutulma ve otomatik açma dolayısıyla sarmalayan sınıflar ile ilişki oldukları türler gibi işlemler
+	yapılabilmektedir. Aşağıdaki örnek durumu göstermek için yazılmıştır
+
+	Mordor
+-----------------------------------------------------------------------------------------------------------------------*/
+package org.csystem.app;
+
+class App {
+	public static void main(String [] args)
+	{
+		for (Integer i = 0; i < 10; ++i)
+			System.out.printf("%d ", i);
+
+		System.out.println();
+	}
+}
+
+/*----------------------------------------------------------------------------------------------------------------------
+	Anımsanacağı gibi sarmalayan sınıflar immutable'dır. Aşağıdaki örnekte ++ operatörü ile arka planda üretilen kod
+	ile birlikte aslında i'nin içerisindeki adresin 11 değerini tutan başka bir nesnenin referansı ile değilştirildiği
+	gösterilmektedir
+
+	MORGOT MORDOR 
+	
+		immutable yani Farklı nesneler.
+-----------------------------------------------------------------------------------------------------------------------*/
+package org.csystem.app;
+
+class App {
+	public static void main(String [] args)
+	{
+		Integer i = 10;
+		Integer temp = i;
+
+		i = i + 1; //i = Integer.valueOf(i.intValue() + 1);
+
+		System.out.println(i == temp ? "Aynı nesne" : "Farklı nesneler");
+	}
+}
+
+
+/*----------------------------------------------------------------------------------------------------------------------
+	final olarak bildirilmiş bir sınıftan türetme yapılamaz. Yani final ile sınıf türetmeye kapatılmıiş olur.
+-----------------------------------------------------------------------------------------------------------------------*/
+package org.csystem.app;
+
+class B extends A { //error
+	//...
+}
+
+final class A {
+	//...
+}
+
+/*----------------------------------------------------------------------------------------------------------------------
+	ctor'u private olan bir sınıftan türetme zaten sentaks olarak yapılamayacağından bir convention olarak sınıf final
+	bildirilir. Math sınıfı da final yapılmıştır. Ancak JavaSE'de tüm utility sınıflar için bu convention'a uyulmamıştır.
+	Ancak programcı tarafından uyulması tavsiye edilir
+
+	MORDOR MORDOR MORGOT MORGOT
+
+-----------------------------------------------------------------------------------------------------------------------*/
+
+/*----------------------------------------------------------
+	FILE			: ArrayUtil.java
+	AUTHOR			: Java-Nov-2022 Group
+	LAST UPDATE		: 24.06.2023
+
+	Utility class for array operations
+
+	Copyleft (c) 1993 C and System Programmers Association
+	All Rights Free
+------------------------------------------------------------*/
+package org.csystem.util.array;
+
+import java.util.Random;
+
+public final class ArrayUtil {
+    private ArrayUtil()
+    {
+    }
+
+    private static void bubbleSortAscending(int [] a)
+    {
+        for (int i = 0; i < a.length - 1; ++i)
+            for (int k = 0; k < a.length - 1 - i; ++k)
+                if (a[k + 1] < a[k])
+                    swap(a, k, k + 1);
+    }
+
+    private static void bubbleSortDescending(int [] a)
+    {
+        for (int i = 0; i < a.length - 1; ++i)
+            for (int k = 0; k < a.length - 1 - i; ++k)
+                if (a[k] < a[k + 1])
+                    swap(a, k, k + 1);
+    }
+
+    private static void selectionSortAscending(int [] a)
+    {
+        int min, minIndex;
+
+        for (int i = 0; i < a.length - 1; ++i) {
+            min = a[i];
+            minIndex = i;
+
+            for (int k = i + 1; k < a.length; ++k)
+                if (a[k] < min) {
+                    min = a[k];
+                    minIndex = k;
+                }
+
+            a[minIndex] = a[i];
+            a[i] = min;
+        }
+    }
+
+    private static void selectionSortDescending(int [] a)
+    {
+        int max, maxIndex;
+
+        for (int i = 0; i < a.length - 1; ++i) {
+            max = a[i];
+            maxIndex = i;
+
+            for (int k = i + 1; k < a.length; ++k)
+                if (max < a[k]) {
+                    max = a[k];
+                    maxIndex = k;
+                }
+
+            a[maxIndex] = a[i];
+            a[i] = max;
+        }
+    }
+
+
+
+
+    public static void addBy(int [][] a, int value)
+    {
+        for (int [] array : a)
+            addBy(array, value);
+    }
+
+    public static void addBy(int [] a, int value)
+    {
+        for (int i = 0; i < a.length; ++i)
+                a[i] += value;
+    }
+
+    public static void bubbleSort(int [] a)
+    {
+        bubbleSort(a, false);
+    }
+
+    public static void bubbleSort(int [] a, boolean descending)
+    {
+        if (descending)
+            bubbleSortDescending(a);
+        else
+            bubbleSortAscending(a);
+    }
+
+    public static void drawHistogram(int [] data, int n, char ch)
+    {
+        int maxVal = max(data);
+
+        for (int val : data) {
+            int count = val * n / maxVal;
+
+            while (count-- > 0)
+                System.out.print(ch);
+
+            System.out.println();
+        }
+    }
+
+    public static void fillRandomArray(Random random, int [] a, int min, int bound)
+    {
+        for (int i = 0; i < a.length; ++i)
+            a[i] = random.nextInt(min, bound);
+    }
+
+    public static int [] getHistogramData(int [] a, int n)
+    {
+        int [] counts = new int[n + 1];
+
+        for (int val : a)
+            ++counts[val];
+
+        return counts;
+    }
+
+    public static int [] getRandomArray(Random random, int count, int min, int bound)
+    {
+        int [] a = new int[count];
+
+        fillRandomArray(random, a, min, bound);
+
+        return a;
+    }
+
+    public static int max(int [] a)
+    {
+        int result = a[0];
+
+        for (int i = 1; i < a.length; ++i)
+            result = Math.max(result, a[i]);
+
+        return result;
+    }
+
+    public static int min(int [] a)
+    {
+        int result = a[0];
+
+        for (int i = 1; i < a.length; ++i)
+            result = Math.min(result, a[i]);
+
+        return result;
+    }
+
+    public static void multiplyBy(int [][] a, int value)
+    {
+        for (int i = 0; i < a.length; ++i)
+            for (int k = 0; k < a[i].length; ++k)
+                a[i][k] *= value;
+    }
+
+    public static void print(int [] a)
+    {
+        print(1, a);
+    }
+
+    public static void print(int n, int [] a)
+    {
+        String fmt = String.format("%%0%dd ", n);
+
+        for (int val : a)
+            System.out.printf(fmt, val);
+
+        System.out.println();
+    }
+
+    public static void print(int [][] a)
+    {
+        print(1, a);
+    }
+
+    public static void print(int n, int [][] a)
+    {
+        for (int [] array : a)
+            print(n, array);
+    }
+
+    public static void reverse(int [] a)
+    {
+        int left = 0;
+        int right = a.length - 1;
+
+        while (left < right)
+            swap(a, left++, right--);
+    }
+
+    public static void reverse(char [] a)
+    {
+        int left = 0;
+        int right = a.length - 1;
+
+        while (left < right)
+            swap(a, left++, right--);
+    }
+
+    public static void selectionSort(int [] a)
+    {
+        selectionSort(a, false);
+    }
+
+    public static void selectionSort(int [] a, boolean descending)
+    {
+        if (descending)
+            selectionSortDescending(a);
+        else
+            selectionSortAscending(a);
+    }
+
+    public static void subtractBy(int [][] a, int value)
+    {
+        addBy(a, -value);
+    }
+
+    public static int sum(int [] a)
+    {
+        int total = 0;
+
+        for (int val : a)
+            total += val;
+
+        return total;
+    }
+
+    public static long sumLong(int [] a)
+    {
+        long total = 0;
+
+        for (int val : a)
+            total += val;
+
+        return total;
+    }
+
+    public static void swap(int [] a, int i, int k)
+    {
+        int temp = a[i];
+
+        a[i] = a[k];
+        a[k] = temp;
+    }
+
+    public static void swap(char [] a, int i, int k)
+    {
+        char temp = a[i];
+
+        a[i] = a[k];
+        a[k] = temp;
+    }
+}
+
+/*----------------------------------------------------------
+	FILE			: MatrixUtil.java
+	AUTHOR			: Java-Nov-2022 Group
+	LAST UPDATE		: 24.06.2023
+
+	Utility class for matrix operations
+
+	Copyleft (c) 1993 C and System Programmers Association
+	All Rights Free
+------------------------------------------------------------*/
+package org.csystem.util.matrix;
+
+import org.csystem.util.array.ArrayUtil;
+
+import java.util.Random;
+
+public final class MatrixUtil {
+    private MatrixUtil()
+    {
+    }
+
+    public static int [][] addMatrices(int [][] a, int [][] b)
+    {
+        int row = a.length;
+        int col = a[0].length;
+        int [][] result = new int[row][col];
+
+        for (int i = 0; i < row; ++i)
+            for (int j = 0; j < col; ++j)
+                result[i][j] = a[i][j] + b[i][j];
+
+        return result;
+    }
+
+    public static void addMatrixWithValue(int [][] a, int value)
+    {
+        ArrayUtil.addBy(a, value);
+    }
+
+    public static void fillRandomMatrix(Random random, int [][] a, int min, int bound)
+    {
+        for (int[] array : a)
+            ArrayUtil.fillRandomArray(random, array, min, bound);
+    }
+
+    public static boolean isSquareMatrix(int [][] a)
+    {
+        return isMatrix(a) && a.length == a[0].length;
+    }
+
+    public static int [][] getRandomMatrix(Random random, int m, int n, int min, int bound)
+    {
+        int [][] a = new int[m][n];
+
+        fillRandomMatrix(random, a, min, bound);
+
+        return a;
+    }
+
+    public static int [][] getRandomSquareMatrix(Random random, int n, int min, int bound)
+    {
+        return getRandomMatrix(random, n, n, min, bound);
+    }
+
+    public static boolean isMatrix(int [][] a)
+    {
+        for (int i = 1; i < a.length; ++i)
+            if (a[0].length != a[i].length)
+                return false;
+
+        return true;
+    }
+
+    public static int [][] multiplyMatrices(int [][] a, int [][] b)
+    {
+        int row1 = a.length;
+        int col2 = b[0].length;
+        int row2 = b.length;
+        int [][] result = new int[row1][col2];
+
+        for (int i = 0; i < row1; ++i)
+            for (int j = 0; j < col2; ++j)
+                for (int k = 0; k < row2; ++k)
+                    result[i][j] += a[i][k] * b[k][j];
+
+        return result;
+    }
+
+    public static void multiplyMatrixWithValue(int [][] a, int value)
+    {
+        ArrayUtil.multiplyBy(a, value);
+    }
+
+    public static int [][] subtractMatrices(int [][] a, int [][] b)
+    {
+        int row = a.length;
+        int col = a[0].length;
+        int [][] result = new int[row][col];
+
+        for (int i = 0; i < row; ++i)
+            for (int j = 0; j < col; ++j)
+                result[i][j] = a[i][j] - b[i][j];
+
+        return result;
+    }
+
+    public static void subtractMatrixWithValue(int [][] a, int value)
+    {
+        addMatrixWithValue(a, -value);
+    }
+
+    public static int sumDiagonal(int [][] a)
+    {
+        int total = 0;
+
+        for (int i = 0; i < a.length; ++i)
+            total += a[i][i];
+
+        return total;
+    }
+
+    public static int [] [] transposed(int [][] a)
+    {
+        int [][] t = new int[a[0].length][a.length];
+
+        for (int i = 0; i < a.length; ++i)
+            for (int j = 0; j < a[i].length; ++j)
+                t[j][i] = a[i][j];
+
+        return t;
+    }
+}
+
+/*----------------------------------------------------------
+	FILE			: NumberUtil.java
+	AUTHOR			: Java-Nov-2022 Group
+	LAST UPDATE		: 24.06.2023
+
+	Utility class for numeric operations
+
+	Copyleft (c) 1993 C and System Programmers Association
+	All Rights Free
+------------------------------------------------------------*/
+package org.csystem.util.numeric;
+
+import static java.lang.Math.abs;
+import static java.lang.Math.log10;
+
+public final class NumberUtil {
+	private NumberUtil()
+	{
+	}
+
+	private static final String [] ONES = {"", "bir", "iki", "üç", "dört", "beş", "altı", "yedi", "sekiz", "dokuz"};
+	private static final String [] TENS = {"", "on", "yirmi", "otuz", "kırk", "elli", "altmış", "yetmiş", "seksen", "doksan"};
+
+	private static int [] getDigits(long val, int n)
+	{
+		int [] digits = new int[val == 0 ? 1 : (int)(Math.log10(Math.abs(val)) / n) + 1];
+		int powOfTen = (int)pow(10, n);
+
+		val = abs(val);
+
+		for (int i = digits.length - 1; i >= 0; digits[i] = (int)(val % powOfTen), val /= powOfTen, --i)
+			;
+
+		return digits;
+	}
+
+	private static String numToText3DigitsTR(int a, int b, int c)
+	{
+		String str = "";
+
+		if (a != 0) {
+			if (a != 1)
+				str += ONES[a];
+
+			str += "yüz";
+		}
+
+		return str  + TENS[b] + ONES[c];
+	}
+
+	private static String numToText3DigitsTR(int val)
+	{
+		if (val == 0)
+			return "sıfır";
+
+		String str = val < 0 ? "eksi" : "";
+
+		val = Math.abs(val);
+
+		int a = val / 100;
+		int b = val / 10 % 10;
+		int c = val % 10;
+
+		return str + numToText3DigitsTR(a, b, c);
+	}
+
+	public static boolean areFriends(int a, int b)
+	{
+		return sumFactors(a) == b && sumFactors(b) == a;
+	}
+
+	public static int calculateDigitalRoot(int a)
+	{
+		int root = abs(a);
+
+		while (root > 9)
+			root = sumDigits(root);
+
+		return root;
+	}
+
+	public static int calculateDigitsPowSum(int a)
+	{
+		int n = countDigits(a);
+
+		int total = 0;
+
+		while (a != 0) {
+			total += pow(a % 10, n);
+
+			a /= 10;
+		}
+
+		return total;
+
+	}
+
+	public static int countDigits(long a)
+	{
+		return a == 0 ? 1 : (int)log10(abs(a)) + 1;
+	}
+
+	public static int factorial(int n)
+	{
+		int result = 1;
+
+		for (int i = 2; i <= n; ++i)
+			result *= i;
+
+		return result;
+	}
+
+	public static int fibonacciNumber(int n)
+	{
+		if (n <= 2)
+			return n - 1;
+
+		int prev1 = 1, prev2 = 0, val = 0;
+
+		for (int i = 2; i < n; ++i) {
+			val = prev1 + prev2;
+			prev2 = prev1;
+			prev1 = val;
+		}
+
+		return val;
+	}
+
+	public static int [] getDigits(long val)
+	{
+		return getDigits(val, 1);
+	}
+
+	public static int [] getDigitsInTwos(long val)
+	{
+		return getDigits(val, 2);
+	}
+
+	public static int [] getDigitsInThrees(long val)
+	{
+		return getDigits(val, 3);
+	}
+
+	public static int getHardyRamanujanCount(int n)
+	{
+		int count = 0;
+
+		EXIT_LOOP:
+
+		for (int a = 1; a * a * a < n; ++a)
+			for (int b = a + 1; a * a * a + b * b * b <= n; ++b)
+				if (a * a * a + b * b * b == n) {
+					if (++count == 2)
+						break EXIT_LOOP;
+
+					++a;
+				}
+
+		return count;
+	}
+
+	public static int getPrime(int n)
+	{
+		int val = 2;
+		int count = 0;
+
+		for (;;) {
+			if (isPrime(val))
+				++count;
+
+			if (count == n)
+				return val;
+
+			++val;
+		}
+	}
+
+	public static int indexOfPrime(long a)
+	{
+		int i = 1;
+		long val = 2;
+
+		for (;;) {
+			if (val == a)
+				return i;
+
+			if (isPrime(val))
+				++i;
+
+			++val;
+		}
+	}
+
+	public static boolean isArmstrong(int a)
+	{
+		return a >= 0 && calculateDigitsPowSum(a) == a;
+	}
+
+	public static boolean isDecimalHarshad(int val)
+	{
+		return val > 0 && val % sumDigits(val) == 0;
+	}
+
+	public static boolean isEven(int a)
+	{
+		return a % 2 == 0;
+	}
+
+	public static boolean isFactorian(int n)
+	{
+		return n > 0 && sumFactorialDigits(n) == n;
+	}
+
+	public static boolean isHardyRamanujan(int n)
+	{
+		return n > 0 && getHardyRamanujanCount(n) == 2;
+	}
+
+	public static boolean isOdd(int a)
+	{
+		return !isEven(a);
+	}
+
+	public static boolean isPerfect(int val)
+	{
+		return sumFactors(val) == val;
+	}
+
+	public static boolean isPrime(long a)
+	{
+		if (a <= 1)
+			return false;
+
+		if (a % 2 == 0)
+			return a == 2;
+
+		if (a % 3 == 0)
+			return a == 3;
+
+		if (a % 5 == 0)
+			return a == 5;
+
+		if (a % 7 == 0)
+			return a == 7;
+
+		for (long i = 11; i * i <= a; i += 2)
+			if (a % i == 0)
+				return false;
+
+		return true;
+	}
+
+	public static boolean isPrimeX(long a)
+	{
+		boolean result;
+
+		for (long sum = a; (result = isPrime(sum)) && sum > 9; sum = sumDigits(sum))
+			;
+
+		return result;
+	}
+
+	public static boolean isSuperPrime(long a)
+	{
+		return isPrime(a) && isPrime(indexOfPrime(a));
+	}
+
+	public static int mid(int a, int b, int c)
+	{
+		if (a <= b && b <= c || c <= b && b <= a)
+			return b;
+
+		if (b <= a && a <= c || c <= a && a <= b)
+			return a;
+
+		return c;
+	}
+
+	public static int multiply(int a, int b)
+	{
+		return a * b;
+	}
+
+	public static int nextFibonacciNumber(int val)
+	{
+		if (val < 0)
+			return 0;
+
+		int prev1 = 1, prev2 = 0, next;
+
+		for (;;) {
+			next = prev1 + prev2;
+
+			if (next > val)
+				return next;
+
+			prev2 = prev1;
+			prev1 = next;
+		}
+	}
+
+	public static int pow(int a, int b)
+	{
+		int result = 1;
+
+		while (b-- > 0)
+			result *= a;
+
+		return result;
+	}
+
+	public static int reversed(int a)
+	{
+		int result = 0;
+
+		while (a != 0) {
+			result = result * 10 + a % 10;
+			a /= 10;
+		}
+
+		return result;
+	}
+
+	public static int sumDigits(long a)
+	{
+		int sum = 0;
+
+		while (a != 0) {
+			sum += a % 10;
+			a /= 10;
+		}
+
+		return abs(sum);
+
+	}
+
+	public static int sumFactorialDigits(int n)
+	{
+		int sum = 0;
+
+		while (n != 0) {
+			sum += factorial(n % 10);
+			n /= 10;
+		}
+
+		return sum;
+	}
+
+	public static long sumFactors(long val)
+	{
+		long result = 1;
+
+		for (long i = 2; i * i <= val; ++i)
+			if (val % i == 0)
+				result += (i == val / i) ? i : (i + val / i);
+
+		return result;
+	}
+}
+
+/*----------------------------------------------------------
+	FILE			: StringUtil.java
+	AUTHOR			: Java-Nov-2022 Group
+	LAST UPDATE		: 24.06.2023
+
+	Utility class for string operations
+
+	Copyleft (c) 1993 C and System Programmers Association
+	All Rights Free
+------------------------------------------------------------*/
+package org.csystem.util.string;
+
+import org.csystem.util.array.ArrayUtil;
+
+import java.util.Random;
+
+public final class StringUtil {
+	private static final String LETTERS_TR = "abcçdefgğhıijklmnoöprsştuüvyz";
+	private static final String LETTERS_EN = "abcdefghijklmnopqrstuwxvyz";
+	private static final String LETTERS_CAPITAL_TR = "ABCÇDEFGĞHIİJKLMNOÖPRSŞTUÜVYZ";
+	private static final String LETTERS_CAPITAL_EN = "ABCDEFGHIJKLMNOPQRSTUWXYZ";
+	private static final String LETTERS_ALL_TR = LETTERS_TR + LETTERS_CAPITAL_TR;
+	private static final String LETTERS_ALL_EN = LETTERS_EN + LETTERS_CAPITAL_EN;
+
+	private StringUtil()
+	{
+	}
+
+	public static String capitalize(String s)
+	{
+		return s.isEmpty() ? "" : Character.toUpperCase(s.charAt(0)) + s.substring(1).toLowerCase();
+	}
+
+	public static String changeCase(String s)
+	{
+		char [] c = s.toCharArray();
+
+		for (int i = 0; i < c.length; ++i)
+			c[i] = Character.isUpperCase(c[i]) ? Character.toLowerCase(c[i]) : Character.toUpperCase(c[i]);
+
+		return String.valueOf(c);
+	}
+
+	public static int countString(String s1, String s2)
+	{
+		int count = 0;
+
+		for (int index = -1; (index = s1.indexOf(s2, index + 1)) != -1; ++count)
+			;
+
+		return count;
+	}
+
+	public static int countStringIgnoreCase(String s1, String s2)
+	{
+		return countString(s1.toLowerCase(), s2.toLowerCase());
+	}
+
+	public static String getRandomText(Random r, int n, String text)
+	{
+		char [] c = new char[n];
+		int len = text.length();
+
+		for (int i = 0; i < n; ++i)
+			c[i] = text.charAt(r.nextInt(len));
+
+		return String.valueOf(c);
+	}
+
+	public static String getRandomTextEN(int n)
+	{
+		return getRandomTextEN(new Random(), n);
+	}
+
+	public static String getRandomTextEN(Random r, int n)
+	{
+		return getRandomText(r, n, LETTERS_ALL_EN);
+	}
+
+	public static String getRandomTextTR(int n)
+	{
+		return getRandomTextTR(new Random(), n);
+	}
+
+	public static String getRandomTextTR(Random r, int n)
+	{
+		return getRandomText(r, n, LETTERS_ALL_TR);
+	}
+
+	public static boolean isPalindrome(String s)
+	{
+		int left = 0;
+		int right = s.length() - 1;
+
+		while (left < right) {
+			char cLeft = Character.toLowerCase(s.charAt(left));
+
+			if (!Character.isLetter(cLeft)) {
+				++left;
+				continue;
+			}
+
+			char cRight = Character.toLowerCase(s.charAt(right));
+
+			if (!Character.isLetter(cRight)) {
+				--right;
+				continue;
+			}
+
+			if (cLeft != cRight)
+				return false;
+
+			++left;
+			--right;
+		}
+
+		return true;
+	}
+
+	public static boolean isPangram(String s, String alphabet)
+	{
+		int len = alphabet.length();
+
+		for (int i = 0; i < len; ++i)
+			if (!s.contains(alphabet.charAt(i) + ""))
+				return false;
+
+		return true;
+	}
+
+	public static boolean isPangramEN(String s)
+	{
+		return isPangram(s.toLowerCase(), LETTERS_EN);
+	}
+
+	public static boolean isPangramTR(String s)
+	{
+		return isPangram(s.toLowerCase(), LETTERS_TR);
+	}
+
+	public static String join(String [] str, String delimiter, boolean skipBlanks)
+	{
+		String result = "";
+
+		for (String s : str) {
+			if (skipBlanks && s.isBlank())
+				continue;
+
+			result += s + delimiter;
+		}
+
+		return result.substring(0, result.length() - delimiter.length());
+	}
+	public static String join(String [] str, String delimiter)
+	{
+		return join(str, delimiter, false);
+	}
+
+	public static String join(String [] str, char delimiter)
+	{
+		return join(str, String.valueOf(delimiter));
+	}
+
+	public static String join(String [] str, char delimiter, boolean skipBlanks)
+	{
+		return join(str, String.valueOf(delimiter), skipBlanks);
+	}
+
+	public static String padLeading(String s, int len)
+	{
+		return padLeading(s, len, ' ');
+	}
+
+	public static String padLeading(String s, int len, char ch)
+	{
+		int length = s.length();
+
+		return len <= length ? s : String.valueOf(ch).repeat(len - length) + s;
+	}
+
+	public static String padTrailing(String s, int len)
+	{
+		return padTrailing(s, len, ' ');
+	}
+
+	public static String padTrailing(String s, int len, char ch)
+	{
+		int length = s.length();
+
+		return len <= length ? s : s + String.valueOf(ch).repeat(len - length);
+	}
+
+	public static String reverse(String str)
+	{
+		char [] c = str.toCharArray();
+
+		ArrayUtil.reverse(c);
+
+		return String.valueOf(c);
+	}
+}
+
+
+
 /*----------------------------------------------------------------------------------------------------------------------
 	
+    Soru: final sınıf kavramı olmasaydı bir sınıfı türetmeye kapatıp nasıl nesne yaratılabilir duruma getirirdiniz?
+    Cevap: Aşağıdaki örneği inceleyiniz
 -----------------------------------------------------------------------------------------------------------------------*/
+package org.csystem.app;
+
+class App {
+	public static void main(String [] args)
+	{
+		A a = A.of(/*...*/);
+	}
+}
+
+class A {
+	private A()
+	{
+
+	}
+
+	public static A of(/*...*/)
+	{
+		return new A();
+	}
+}
+
+/*----------------------------------------------------------------------------------------------------------------------
+    25.06.2023  Arwen
+-----------------------------------------------------------------------------------------------------------------------*/
+
+
 /*----------------------------------------------------------------------------------------------------------------------
 	
 -----------------------------------------------------------------------------------------------------------------------*/
