@@ -34365,6 +34365,129 @@ class A {
     25.06.2023  Arwen
 -----------------------------------------------------------------------------------------------------------------------*/
 
+/*----------------------------------------------------------------------------------------------------------------------
+	Garbage Collector (GC): Aşağı seviyede, heap'de tahsis edilen nesnelere dinamik ömürlü nesneler denir. Bu nesnelerin
+	yok edilmesi Java'da "çöp toplayıcı (garbage collector)" denilen ve arka planda çalışan bir akış tarafından yapılır. GC,
+	artık kullanılmayan (garbage collected, eligible) nesneleri yok eder (free/delete). Burada 3 temel soru akla gelebilir:
+	Soru 1. Programcı bir nesneyi yok edebilir mi?
+	Soru 2. GC, bir nesne garbage collected olur olmaz nesneyi yok eder mi?
+	Soru 3. GC, bir nesneyi yok ecedeğini yani nesnenin garbage collected olduğunu nasıl anlar?
+
+	Cevap 1: Java'da programcı bir nesneyi yok edemez. Yani dinamik tahsis edilen bir alanı geri bırakamaz. Programcı akış 
+	içerisinde nesneyi garbage collected duruma getirecek kodu yazabilir.
+
+	Cevap 2: GC'nin ne zaman devreye gireceği standartlarda belitrilmemeiştir. Bu GC ile bilrikte, JVM ve JRE'yi yazanlara
+	bırakılmıştır (implementation defined). Yani hemen devreye gireceği garanti değildir. Programcı bu bilinçle ve GC'nin
+	etkinliğine güvenerek kod yazar.
+
+	Cevap 3: Bir nesnenin garbage collected olması o nesneyi gösteren hiç bir referansın kalmaması demektir. Yani nesnenin
+	adresinin hiç bir referans değişken içerisinde bulunmaması gerekir. Bir nesnenin hangi referanslar tarafından tutulduğu
+	ve/veya kaç tane referans tarafından tutulduğunun takibi için çeşitli algoritmalar kullanılmaktadır. Bu algoritmaların
+	nasıl olacağı da yazanlara bırakılmıştır. Biz burada "referans sayma (reference counting)" algoritması kullanılıyor
+	varsayımıyla açıklama yapacağız. Bu yöntemde her yaratılan nesne için bir referans sayacı tutulur. Bu sayaç nesne
+	içerisine de yerleştirilebilir. Referans sayacı, nesnenin adresi yeni bir referansa atandığında 1 artırılır, nesne bir 
+	referanstan kopartıldığında 1 azaltılır. Böylece sayaç sıfır değerine geldiğinde yani artık hiç bir referans tarafından 
+	adresi tutulmadığında artık o nesne garbage collected olur. Bu yönteme göre, GC devreye girdiğinde sayacı sıfır olan
+	tüm nesneleri yok eder. Program sonlandığında tüm nesneler yok edilir.
+
+	Mordor 
+-----------------------------------------------------------------------------------------------------------------------*/
+
+/*----------------------------------------------------------------------------------------------------------------------
+	Aşağıdaki örneği inceleyiniz
+-----------------------------------------------------------------------------------------------------------------------*/
+package org.csystem.app;
+
+class App {
+	public static void main(String [] args)
+	{
+		Sample s;
+
+		s = new Sample(); //rc1:1
+
+		{
+			Sample k = s; //rc1:2
+
+			Mample.foo(k); //rc1:3 -> rc1:4
+			//rc1:3 -> rc1:2
+		} //rc:1
+
+		Mample.foo(s); //rc1:2 -> rc1:3
+		//rc1:2 -> rc1:1
+
+		s = new Sample(); //rc2:1, rc1:0 (garbage collected)
+
+		//... (Programın snlanmadığını varsayınız
+	}
+}
+
+class Mample {
+	public static void foo(Sample s)
+	{
+		Sample k;
+
+		//... (Burada k veya s referansı başka bir referansa atanmıyor varsayınız)
+
+		k = s;
+
+		//... (Burada k veya s referansı başka bir referansa atanmıyor varsayınız)
+	}
+}
+class Sample {
+	//...
+}
+
+/*----------------------------------------------------------------------------------------------------------------------
+	Programcı isterse GC'nin o an devreye girmesini sağlayabilir. Bunun için System sınfının gc isimli static metodu veya
+	Runtime sınıfının gc metodu çağrılabilir. Ancak bu çoğunlukla, hatta neredeyse hiçbir zaman tercih edilmez. Programcı
+	genel olarak GC'ninn devreye girmesi konusunda etkinliğine güvenir. Çünkü, GC'nin gereksiz yere arka planda çalıştırılmasının da
+	programın performansını olumsuz olarak etkileyebileceği unutulmamalıdır
+
+	Mordor
+-----------------------------------------------------------------------------------------------------------------------*/
+package org.csystem.app;
+
+class App {
+	public static void main(String [] args)
+	{
+		Sample s;
+
+		s = new Sample(); //rc1:1
+
+		{
+			Sample k = s; //rc1:2
+
+			Mample.foo(k); //rc1:3 -> rc1:4
+			//rc1:3 -> rc1:2
+		} //rc:1
+
+		Mample.foo(s); //rc1:2 -> rc1:3
+		//rc1:2 -> rc1:1
+
+		s = new Sample(); //rc2:1, rc1:0 (garbage collected)
+
+		System.gc(); //Runtime.getRuntime().gc();
+		//... (Programın sonlanmadığını varsayınız)
+	}
+}
+
+class Mample {
+	public static void foo(Sample s)
+	{
+		Sample k;
+
+		//... (Burada k veya s referansı başka bir referansa atanmıyor varsayınız)
+
+		k = s;
+
+		//... (Burada k veya s referansı başka bir referansa atanmıyor varsayınız)
+	}
+}
+
+class Sample {
+	//...
+}
+
 
 /*----------------------------------------------------------------------------------------------------------------------
 
