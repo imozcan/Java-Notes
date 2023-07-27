@@ -14487,7 +14487,7 @@ class Point {
 		return Math.sqrt(Math.pow(x - a, 2) + Math.pow(y - b, 2));
 	}
 	
-	public double distance(Point other)
+	public double distance(Point other)		
 	{
 		return distance(other.x, other.y);
 	}
@@ -34487,6 +34487,366 @@ class Mample {
 class Sample {
 	//...
 }
+
+
+/*----------------------------------------------------------------------------------------------------------------------
+	26.06.2023 Arwen
+-----------------------------------------------------------------------------------------------------------------------*/
+/*----------------------------------------------------------------------------------------------------------------------
+	Anahtar Notlar: Bir nesnenin kullanılamaz durumda olup yok edilememesi durumuna "bellek sızıntısı (memory leak)"denir. 
+	Bazı prog. dillerinde dinamik tahsis edilen bellek alanlarının "free/delete" edilmesi programcının sorumluluğundadır. 
+	Bu tarz programlama dillerinde, programcı dinamik tahsis edilen alanları kullanımı bittikten sonra geri bırakmazsa, 
+	bu alanlar programın sonuna kadar yaşarlar. Memory leak oluşumundan dolayı zaman içerisinde bellekte yer kalmaması 
+	durumu oluşabilir, ya da çok fazla nesne yaratılması da yavaşlığa sebep olabilir. Java'da garbage collector olduğuna
+	göre memory leak oluşur mu? GC'nin bulunduğu ortamlarda memory leak programcının hatalı kodlar yazmasından dolayı 
+	oluşabilir. Örneğin, programcı bir nesnenin referansını static bir veri elemanında tutarsa ve artık bu static referans
+	kullanılmazsa burada o referansın gösterdiği nesne için en az bir tane referans adresini hep tutacağından bu nesne GC
+	tarafından yok edilemeyecektir. Bunun gibi çok fazla nesne olduğunda yukarıda anlatılan problemlerin çıkma olasılığı
+	artacaktır. 
+
+	Burada aslında mantıksal bir memory leak vardır. Yani aslında Java'da memory leak GC'den dolayı oluşmaz.
+
+	Mordor
+-----------------------------------------------------------------------------------------------------------------------*/
+
+/*----------------------------------------------------------------------------------------------------------------------
+	Aşağı seviyede non-static metot kavramı yoktur. Bundan dolayı non-static metotlar aşağı seviyede adeta static metot
+	olarak bulundurulurlar. Şüphesiz byte code'da o metodun non-static olduğuna dair bilgiler bulunur. Aşağı seviyede
+	alt program kavramı vardır. Bunlara genel olarak fonksiyon denir. Ancak aşağı seviyede sınıf, nesne gibi kavramlar
+	bulunmaz. Bu işlem non-static bir metodyun aşağı seviyedeki karşılığına ilgili sınıf türünden +1 tane referans
+	parametresi eklenerek yapılır. Bu referans parametresi metodun ait olduğu sınıf türündendir. Non-static metot içerisinde
+	erişilen non-static elemanlara bu parametre kullanılarak erişilir. Bu parmetrenin kaçıncı parametre olduğunun önemi
+	yoktur. non-static bir metot çağrısı da, metot çağrılırken kullanılan referansın metodun aşağı seviyedeki karşılığı
+	olan metoda argüman olarak geçirilmesiyle yapılır. Aslında ctor ara koda bir metot olarak yazılır. Bu metodun ismi
+	"init"'dir. init metoduna da aslında nesnenin adresi gizlice geçirilir.
+
+	Aşağıdaki örnekte non-static bir metodun bildirimi ve çağrılmasına ilişkin aşağı seviyeli kodların yaklaşık karşılıkları
+	gösterilmiştir.
+
+	Önemli( Mordor ): Bu kavram için kısaca şu şekilde söylenebilir: "non-static metotlara aşağı seviyede gizlice ait
+	olduğu sınıf türünden adres geçirilir"
+
+	Mordor Morgot
+-----------------------------------------------------------------------------------------------------------------------*/
+package org.csystem.app;
+
+class App {
+	public static void main(String [] args)
+	{
+		Sample s = new Sample();
+
+		s.setX(10);
+
+		//setX çağrısınıın aşağı seviyedeki yaklaşık karşılığı
+		Sample.setX(s, 10);
+		int val = s.getX();
+
+		//getX çağrısınıın aşağı seviyedeki yaklaşık karşılığı
+		val = Sample.getX(s);
+
+		//...
+	}
+}
+
+class Sample {
+	private int m_x;
+
+	public void setX(int x)
+	{
+		//...
+		m_x = x;
+	}
+
+	//setX metodunun aşağı seviyedeki yaklaşık karşılığı
+	public static void setX(final Sample s, int x)
+	{
+		//...
+		s.m_x = x;
+	}
+
+	public int getX()
+	{
+		return m_x;
+	}
+
+	//getX metodunun aşağı seviyedeki yaklaşık karşılığı
+	public static int getX(final Sample s)
+	{
+		return s.m_x;
+	}
+}
+
+/*----------------------------------------------------------------------------------------------------------------------
+	non-static metotlara aşağı seviyede gizlice geçirilen adrese metot içerisinde "this referansı (this reference)" ile 
+	erişilir. this referansı o metodun çağrılmasında kullanılan referans yani gizlice geçirilen adrese karşılık gelir.
+	Bu durumda metot çağrılırken this referansı nesnenin adresi olur. this referansının türü nedir? Hangi sınıfın 
+	non-static metodu içerisinde kullanılmışsa o sınıf türündendir. Bu kavram "non-static metotlara this geçirilir" 
+	şeklinde de söylenir. Bu anlamda ctor'lar da non-static metotlar olduklarından ctor'lara da this geçirilir.
+
+	Morgot Mordor
+
+	Yani non-static metodlarda this o nesnenin referansıdır. Sample s = new Sample(); için Sapmle türünden s, 
+	Sample k = new Sample(); için Sapmle türünden k referansıdır.
+-----------------------------------------------------------------------------------------------------------------------*/
+package org.csystem.app;
+
+class App {
+	public static void main(String [] args)
+	{
+		Sample s = new Sample();
+		Sample k = new Sample();
+
+		s.setX(10);
+		k.setX(20);
+
+		System.out.println(s.getX());
+		System.out.println(k.getX());
+	}
+}
+
+class Sample {
+	private int m_x;
+
+	public void setX(int x)
+	{
+		//...
+		this.m_x = x;
+	}
+
+	public int getX()
+	{
+		return this.m_x;
+	}
+}
+
+
+/*----------------------------------------------------------------------------------------------------------------------
+	this bir sabit ifadesidir. Yani this referansına atama yapılamaz
+
+	Mordor
+-----------------------------------------------------------------------------------------------------------------------*/
+package org.csystem.app;
+
+class App {
+	public static void main(String [] args)
+	{
+		Sample s = new Sample();
+		Sample k = new Sample();
+
+		s.setX(10);
+		k.setX(20);
+
+		System.out.println(s.getX());
+		System.out.println(k.getX());
+	}
+}
+
+class Sample {
+	private int m_x;
+
+	public void setX(int x)
+	{
+		//...
+		this.m_x = x;
+		this = new Sample(); //error
+	}
+
+	public int getX()
+	{
+		return this.m_x;
+	}
+}
+
+/*----------------------------------------------------------------------------------------------------------------------
+	this referansı ne zaman kullanılır? Aslında this referansının tasarıma göre zorunlu olduğu ya da olmadığı durumlar
+	vardır. Bazı programcılar zorunlu olmasa da okunabilirliği artırmak adına this referansını kullanabilirler. Biz zorunlu
+	durumlar dışında this referansını kullanmamayı tercih edeceğiz.
+
+	Mordor
+
+-----------------------------------------------------------------------------------------------------------------------*/
+
+/*----------------------------------------------------------------------------------------------------------------------
+	static metotlara this geçirilmez
+-----------------------------------------------------------------------------------------------------------------------*/
+package org.csystem.app;
+
+class Sample {
+	private static int m_x;
+
+	public static void setX(int x)
+	{
+		//...
+		this.m_x = x; //error;
+	}
+
+	public static int getX()
+	{
+		return this.m_x; //error
+	}
+}
+
+/*----------------------------------------------------------------------------------------------------------------------
+	Bir veri elemanı ismi ile aynı isimde bir parametre değişkeni ya da yerel değişken olması durumunda metot içerisinde
+	veri elemanına erişmek için this referansı kullanılmaldır. Aşağıdaki örneği this referansı kullanımını kaldırarak
+	çalıştırıp sonucu gözlemleyiniz
+
+	Mordor Morgot (Ders kaydına bakılabilir.)
+-----------------------------------------------------------------------------------------------------------------------*/
+package org.csystem.app;
+
+class App {
+	public static void main(String [] args)
+	{
+		Point p = new Point(100, 100);
+
+		System.out.printf("(%f, %f)%n", p.x, p.y);
+		System.out.printf("Distance:%f%n", p.distance(97, 104));
+	}
+}
+
+class Point {
+	public double x, y;	//Sınıfın Veri elemanları
+
+	//...
+	public Point(int x, int y) //parametre değişkenleri
+	{
+		this.x = x;
+		this.y = y;
+	}
+
+	public double distance(double x, double y)
+	{
+		return Math.sqrt(Math.pow(this.x - x, 2) + Math.pow(this.y - y, 2));
+	}
+}
+
+/*----------------------------------------------------------------------------------------------------------------------
+	Bir sınıfın metotlarının aynı referans (adres) üzerinde yani aynı nesne için, zincir biçiminde aşağıdaki gibi
+	çağrılabilmesi için implementasyonda this referansına geri dönülmelidir. Bu biçimdeki çağrılara "fluent", bu
+	biçimde yazılmıiş sınıflara ilişkin tasarım kalıbına ise "fluent pattern" denir. Bir sınıfın bu şekilde yazılıp
+	yazılmayacağı şüphesiz senaryoya bağlıdır.
+
+	Mordor -fluent Kavramı-
+
+	Ek Not: İmmutable nesneler yeni nesne referansına döndükleri için bu tarz zincir işlemler orada doğaldır fakat burada
+	aynı referans üzerinden işlem yapıldığı için this kullanılmadan yapılamaz.  Öncelikle buradaki metodların her birinin
+	MutableIntValue ya geri dönmesi gerekir.
+-----------------------------------------------------------------------------------------------------------------------*/
+package org.csystem.app;
+
+import org.csystem.wrapper.MutableIntValue;
+
+class App {
+	public static void main(String [] args)
+	{
+		MutableIntValue value = MutableIntValue.of(20);
+
+		int val = value.multiply(2).add(4).mod(3).subtract(1).getValue();
+
+		// Other parametreli metodlarını kullanımı için revize edilmiş hali
+
+		//MutableIntValue value1 =  MutableIntValue.of(50);	// farklı nesnenin referansını(value1) verdim
+		//int val = value.multiply(2).add(4).mod(3).subtract(1).add(value1).getValue();
+
+		System.out.printf("value = %d", val);
+	}
+}
+
+/*----------------------------------------------------------------
+	FILE		: MutableIntValue.java
+	AUTHOR		: Java-Nov-2022 Group
+	LAST UPDATE	: 26.06.2023
+
+	MutableIntValue class that wraps an int value
+
+	Copyleft (c) 1993 C and System Programmers Association
+	All Rights Free
+----------------------------------------------------------------*/
+package org.csystem.wrapper;
+
+public class MutableIntValue {
+    private int m_value;
+
+    private MutableIntValue(int value)
+    {
+        m_value = value;
+    }
+    public static MutableIntValue of(int value)
+    {
+        return new MutableIntValue(value);
+    }
+
+    public static MutableIntValue of()
+    {
+        return of(0);
+    }
+
+    public int getValue()
+    {
+        return m_value;
+    }
+
+    public MutableIntValue add(int value) //add'i kim çağırmışsa onun adresine dönüyor
+    {
+        m_value += value;
+
+        return this;	//add'i çağıran referansa geri dönüyoruz. Çağıran "MutableIntValue" türünden "value" referansı
+    }
+
+    public MutableIntValue add(MutableIntValue other)
+    {
+        return add(other.m_value);
+    }
+
+    public MutableIntValue subtract(int value)
+    {
+        return add(-value);
+    }
+
+    public MutableIntValue subtract(MutableIntValue other)
+    {
+        return subtract(other.m_value);
+    }
+
+    public MutableIntValue multiply(int value)
+    {
+        m_value *= value;
+
+        return this;
+    }
+
+    public MutableIntValue multiply(MutableIntValue other)
+    {
+        return multiply(other.m_value);
+    }
+
+    public MutableIntValue divide(int value)
+    {
+        m_value /= value;
+
+        return this;
+    }
+
+    public MutableIntValue divide(MutableIntValue other)
+    {
+        return divide(other.m_value);
+    }
+
+    public MutableIntValue mod(int value)
+    {
+        m_value %= value;
+
+        return this;
+    }
+
+    public MutableIntValue mod(MutableIntValue other)
+    {
+        return mod(other.m_value);
+    }
+    //...
+}
+
 
 
 /*----------------------------------------------------------------------------------------------------------------------
