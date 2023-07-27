@@ -34722,16 +34722,32 @@ class Point {
 }
 
 /*----------------------------------------------------------------------------------------------------------------------
+	Mordor Mordor Mordor
+
+	fluent Kavramı
+	non-static metodlarda, mutable sınıflarda fluent patternin kullanımı (Zincir şeklinde çağırma) this ile mümkün olabiliyor.
+	Mutable sınınf aynı nesnenin gösterdiği referansta bulunan veri elemanı üzerinde değişiklik yapıyoruz.
+	fluent pattern kullanımı seneryoya bağlı.
+
+	Sınıfın veri elemanının ismi ve parametre değişkeni ya da yerel değişken isimlerinin aynı olması durumunda sınıfın 
+	veri elemanının hangisi olduğunu this ile belirtiriz. Yoksa niteliklsiz isim arama kuralına göre metod içerisinde 
+	parametre değişkeni olarak zaten x i göreceği için x = x; te iki x te aynı olur ve paramtre değişkeni olan x'i yine
+	parametre değişkeni olan x'e ata gibi bir kod ortaya çıkar. (isim çakışır) Bu yüzden this.x ile o atanacak x'in sınıfın
+	veri elemanı olduğunu gösteriyoruz.
+	
+
+	Ek Not: İmmutable nesneler yeni nesne referansına döndükleri için bu tarz zincir işlemler orada doğaldır fakat burada
+	aynı referans üzerinden işlem yapıldığı için this kullanılmadan yapılamaz.  Öncelikle buradaki metodların her birinin
+	MutableIntValue ya geri dönmesi gerekir.
+-----------------------------------------------------------------------------------------------------------------------*/
+
+/*----------------------------------------------------------------------------------------------------------------------
 	Bir sınıfın metotlarının aynı referans (adres) üzerinde yani aynı nesne için, zincir biçiminde aşağıdaki gibi
 	çağrılabilmesi için implementasyonda this referansına geri dönülmelidir. Bu biçimdeki çağrılara "fluent", bu
 	biçimde yazılmıiş sınıflara ilişkin tasarım kalıbına ise "fluent pattern" denir. Bir sınıfın bu şekilde yazılıp
 	yazılmayacağı şüphesiz senaryoya bağlıdır.
 
-	Mordor -fluent Kavramı-
-
-	Ek Not: İmmutable nesneler yeni nesne referansına döndükleri için bu tarz zincir işlemler orada doğaldır fakat burada
-	aynı referans üzerinden işlem yapıldığı için this kullanılmadan yapılamaz.  Öncelikle buradaki metodların her birinin
-	MutableIntValue ya geri dönmesi gerekir.
+	Mordor
 -----------------------------------------------------------------------------------------------------------------------*/
 package org.csystem.app;
 
