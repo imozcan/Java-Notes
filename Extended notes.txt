@@ -3,13 +3,14 @@
     Ders Notunun üzerine tarafımca açıklamalar yapılmıştır. Not içerisinde yer alan kod parçalarının renklenmesi için
     dosyayı java dosyası olarak görüntüleyiniz.
 
-	Mordor kelimesini çok önemli başlıkların altına ekledim. Bu kelime bir nevi highlight görevi görmektedir. (ctrl + f )
-	Morgot kelimesi tekar edilmesi gereken yeri gösteriyor. Arwen kelimesi Ders başlangıç satırlarını göstermektedir.
+	Mordor kelimesi dikkat edilmesi gereke başlıkların altına eklenmiştir. Bu kelime bir nevi highlight görevi görmektedir.
+	Morgot kelimesi kişisel olarak tekar edilmesi gereken yeri gösteriyor. 
+	Arwen kelimesi ise ders başlangıç satırlarını göstermektedir.
 
 	Şüphesiz nottaki her bilgi baştan sona önemli ayrıntıları içermektedir, fakat notun her kısmını highlight etmek yerinde 
-	olmayacaktır. Kaldı ki notün benim için önemli kısımları sizin için önemli olmayabilir. Ben arada bir unutabileceğim 
-	noktalara, adım gibi bilmem gerektiğini düşündüğüm yerleri işaretliyorum. Bu yüzden siz Mordor ve Morgot kelimelerini
-	görmezden gelebilirsiniz. 
+	olmayacaktır. Kaldı ki notun benim için önemli kısımları sizin için önemli olmayabilir. Arada bir unutabileceğim 
+	noktalara, adım gibi bilmem gerektiğini düşündüğüm yerler vb. bölümleri işaretliyorum. Bu yüzden siz Mordor ve Morgot 
+	kelimelerini görmezden gelebilirsiniz. 
 
 																											Onur ÖZCAN
 -----------------------------------------------------------------------------------------------------------------------*/
