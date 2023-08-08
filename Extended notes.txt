@@ -35287,6 +35287,498 @@ public static int [] copyOf(int [] a, int newLength)
 
 
 /*----------------------------------------------------------------------------------------------------------------------
+	Dinamik büyüyen dizi (dynamic array) veri yapıları: Dinamik büyüyen dizi veri yapıları, büyütme işlemini içsel olarak
+	yapar. Bu veri yapıları genel olarak diziye eklenen eleman sayısı kadar büyütme yapmaz. Dizinin büyütülmesi gerektiği
+	durumda, büyütme işlemini biraz fazlaca yapar. İşte bu tarz veri yapılarında dizinin gerçek uzunluğuna "capacity" denir.
+	Dizide mantıksal olarak tutulan elemanların sayısına "size/count" denir. size hiç bir zaman capacity değerinden büyük
+	olamaz. Bu durumda capacity değeri "size" değerine eşit veya "size" değerinden büyük olabilir.
+
+	Anahtar Notlar: JavaSE'de birçok veri yapısı hazır olarak bulundurulmaktadır. Java'da bir veri yapısına genel olarak
+	"collection" terimi kullanılır. Bu anlamda "collections" dendiğinde veri yapılarına ilişkin sınıflar anlaşılır. Kursumuzda
+	dinamik büyüyen veri yapısını temsil eden sınıfları göreceğiz.
+
+	Aşağıdaki örneği inceleyiniz. Örnekteki detaylara değil yalnızca dinamik büyütülmesine odaklanınız.
+
+	Mordor
+-----------------------------------------------------------------------------------------------------------------------*/
+
+package org.csystem.app.game.war;
+
+import org.csystem.game.war.Alien;
+import org.csystem.game.war.Color;
+import org.csystem.util.string.StringUtil;
+import org.csystem.util.thread.ThreadUtil;
+
+import java.util.Arrays;
+import java.util.Random;
+
+public class DemoGameApp {
+    public static void run()
+    {
+        Random r = new Random();
+        Alien [] aliens = new Alien[10];
+        Color [] colors = Color.values();
+        int idx = 0;
+
+        while (true) {
+            Alien alien = new Alien()
+                    .setTitle(StringUtil.getRandomTextEN(r, r.nextInt(5, 11)))	//fluent
+                    .setColor(colors[r.nextInt(colors.length)]);
+
+            if (aliens.length == idx)
+                aliens = Arrays.copyOf(aliens, aliens.length * 2);
+
+            aliens[idx++] = alien;
+
+            ThreadUtil.sleep(1000);
+
+            System.out.println("-------------------------------------------------------");
+            System.out.printf("Capacity:%d, Size:%d%n", aliens.length, idx);
+            for (int i = 0; i < idx; ++i)
+                System.out.println(aliens[i].toString());
+            System.out.println("-------------------------------------------------------");
+        }
+    }
+
+    public static void main(String[] args)
+    {
+        run();
+    }
+}
+
+package org.csystem.game.war;
+
+public class Alien {
+    private String m_title = "";
+    private Color m_color = Color.BLACK;
+    //...
+
+    public String getTitle()
+    {
+        return m_title;
+    }
+
+    public Alien setTitle(String title)
+    {
+        //...
+        m_title = title;
+
+        return this;
+    }
+
+    public Color getColor()
+    {
+        return m_color;
+    }
+
+    public Alien setColor(Color color)
+    {
+        //...
+        m_color = color;
+
+        return this;
+    }
+
+    public String toString()
+    {
+        return String.format("[%s]%s", m_title, m_color.toString());
+    }
+}
+
+package org.csystem.game.war;
+
+public enum Color {
+    RED, GREEN, BLUE, BLACK, WHITE
+}
+
+/*----------------------------------------------------------------------------------------------------------------------
+	JavaSE'de dinamik büyüyen dizi veri yapısının temsil eden ve en çok kullanılan collection ArrayList sınıfıdır. Bu 
+	sınıf içsel olarak capacity değerini kullanır. capacity değerini büyütme politikası (growth policy) ArrayList sınıfını
+	yazanlara bırakılmıştır (implementation defined). Ancak amortize edilmiş sabit zamanlı maliyette (amortized constant 
+	time cost) çalışacağı garanti edilmiştir. ArrayList sınıfının capacity değerini veren bir metodu da yoktur. Tutulan 
+	eleman sayısına geri dönen size isimli bir metodu bulunmaktadır. JavaSE'de dinamik büyüyen dizi veri yapısını temsil 
+	eden Vector isimli bir sınıf da bulunmaktadır. ArrayList sınıfı, Vector sınıfından sonra JavaSE'ye eklenmiştir. Vector 
+	sınıfının capacity metodu bulunmaktadır. Bu sebeple örneklerimizde capacity bilgisi gerektiğinde Vector sınıfını
+	kullanacağız. Bu anlamda burada anlatılmayan bazı özellikleri ve capacity bilgisini vermesi dışından Vector sınıfı 
+	ArrayList sınıfı ile aynıdır ve pratikte gerekmedikçe Vector yerine ArrayList kullanımı tavsiye edilir. Bu tavsiye 
+	Vector sınıfının dokümantasyonunda da belirtilmiştir. Vector sınıfının gerekli olduğu durumlar burada ele alınmayacaktır.
+
+	Anahtar Notlar: ArrayList ve Vector sınıfları "generic" sınıflardır. Generic sınıflar generic değilmiş gibi
+	kullanılabilmektedir. Aslında bu tarz bir kullanım programlamada tavsiye edilmez. Ancak burda biz bu sınıflarırı generic
+	olarak kullanmayacağız. Bu sebeple IDE'nin static kod analizi yapan araçları bu kullanım için uyarı verebileceklerdir.
+	Generic konusuna kadar bu uyarıları dikkate almayacağız. Generic konusu ileride ele alınacaktır. Generic konusu
+	içerisinde ArrayList sınıfını büyük ölçüde yazacağız.
+
+	ArrayList ve Vector sınıfları içerisinde Object türden dizi tutulmaktadır.
+
+	Mordor Morgot
+-----------------------------------------------------------------------------------------------------------------------*/
+
+/*----------------------------------------------------------------------------------------------------------------------
+	ArrayList/Vector sınıfının default ctor'u capacity değeri 10 olacak şekilde nesne yaratılmasını sağlar. ArrayList/Vector
+	sınıfının size metodu ile tutulan eleman sayısı elde edilebilir. Vector sınıfının capacity metodu capacity değerine
+	geri döner
+-----------------------------------------------------------------------------------------------------------------------*/
+package org.csystem.app;
+
+import java.util.Vector;
+
+class App {
+	public static void main(String [] args)
+	{
+		Vector numbers = new Vector();
+
+		System.out.printf("Capacity:%d, Size:%d%n", numbers.capacity(), numbers.size());
+	}
+}
+
+
+/*----------------------------------------------------------------------------------------------------------------------
+	ArrayList/Vector sınıfının initialCapacity parametreli ctor'u vardır. Bu parmetre negatif olarak verilirse exception
+	oluşur
+
+	Mordor
+-----------------------------------------------------------------------------------------------------------------------*/
+package org.csystem.app;
+
+import java.util.Vector;
+
+class App {
+	public static void main(String [] args)
+	{
+		Vector numbers = new Vector(256);
+
+		System.out.printf("Capacity:%d, Size:%d%n", numbers.capacity(), numbers.size());
+	}
+}
+
+/*----------------------------------------------------------------------------------------------------------------------
+	ArrayList/Vector sınıfının tek parametreli add metodu sona ekleme (append) için kullanılır. Bu metot gerektiğinde
+	capacity değerini büyütür. Bu metot "amortized constant time cost" olarak çalışır. Vector sınıfının default büyütme
+	politikası var olan capacity değerinin 2 katına çıkartacak şekildedir. ArrayList/Vector sınıfının get metodu aldığı
+	index numarasına ilişkin elemanın referansına geri döner. get metoduna verilen indeks numarası [0, size) aralığında
+	olmalıdır. Aksi durumda exception oluşur. Capacity değeri içsel olarak tutulan dizinin uzunluğudur.
+
+	MORDOR MORGOT
+-----------------------------------------------------------------------------------------------------------------------*/
+package org.csystem.app;
+
+import java.util.Random;
+import java.util.Vector;
+
+class App {
+	public static void main(String [] args)
+	{
+		Vector numbers = new Vector();
+		Random r = new Random();
+
+		while (true) {
+			int val = r.nextInt(-20, 20);
+			System.out.printf("%d ", val);
+			numbers.add(val);
+			if (val == 0)
+				break;
+		}
+
+		System.out.println();
+		System.out.printf("Capacity:%d, Size:%d%n", numbers.capacity(), numbers.size());
+		int size = numbers.size();
+
+		for (int i = 0; i < size; ++i) {
+			int val = (int)numbers.get(i);
+
+			System.out.printf("%d ", val);
+		}
+
+		System.out.println();
+	}
+}
+
+/*----------------------------------------------------------------------------------------------------------------------
+	ArrayList/Vector sınıfı for-each döngü deyimi ile dolaşılabilir (iterable) bir sınıftır. Bu durumda her adımda tutulan
+	elemanlar sırasıyla elde edilir. Yani döngü size kadar döner.
+
+	MORDOR MORGOT 
+
+	ArrayList ve Vector sınıfları içerisinde Object türden dizi tutulmaktadır.
+
+-----------------------------------------------------------------------------------------------------------------------*/
+package org.csystem.app;
+
+import java.util.Random;
+import java.util.Vector;
+
+class App {
+	public static void main(String [] args)
+	{
+		Vector numbers = new Vector();
+		Random r = new Random();
+
+		while (true) {
+			int val = r.nextInt(-20, 20);
+			System.out.printf("%d ", val);
+			numbers.add(val);
+			if (val == 0)
+				break;
+		}
+
+		System.out.println();
+		System.out.printf("Capacity:%d, Size:%d%n", numbers.capacity(), numbers.size());
+
+		for (Object o : numbers) {
+			int val = (int)o;
+
+			System.out.printf("%d ", val);
+		}
+
+		System.out.println();
+	}
+}
+
+/*----------------------------------------------------------------------------------------------------------------------
+	ArrayList/Vector sınıfının indeks parametreli add metodu araya ekleme (insert) yapmak için kullanılır. Bu metot
+	O(n) karmaşıklıktadır. Bu durumda sürekli olarak araya ekleme yapılması gereken durumlarda dikkatli kullanılması
+	hatta kullanılmaması gerekebilir. Bu metot da capacity değerini gerektiğinde büyütmektedir
+
+	Mordor
+-----------------------------------------------------------------------------------------------------------------------*/
+package org.csystem.app;
+
+import java.util.Random;
+import java.util.Vector;
+
+class App {
+	public static void main(String [] args)
+	{
+		Vector numbers = new Vector();
+		Random r = new Random();
+
+		while (true) {
+			int val = r.nextInt(-20, 20);
+			System.out.printf("%d ", val);
+			numbers.add(0, val);	// index 0 verilerek her defasında başa ekleme yapılmış
+			if (val == 0)
+				break;
+		}
+
+		System.out.println();
+		System.out.printf("Capacity:%d, Size:%d%n", numbers.capacity(), numbers.size());
+
+		for (Object o : numbers) {
+			int val = (int)o;
+
+			System.out.printf("%d ", val);
+		}
+
+		System.out.println();
+	}
+}
+
+/*----------------------------------------------------------------------------------------------------------------------
+	Aşağıdaki örneği inceleyiniz. Örnekte capacity(**) değeri gerektiği için Vector kullanılmıştır.
+
+	Mordor
+-----------------------------------------------------------------------------------------------------------------------*/
+package org.csystem.app.game.war;
+
+import org.csystem.game.war.Alien;
+import org.csystem.game.war.Color;
+import org.csystem.util.string.StringUtil;
+import org.csystem.util.thread.ThreadUtil;
+
+import java.util.Random;
+import java.util.Vector;
+
+public class DemoGameApp {
+    public static void run()
+    {
+        Random r = new Random();
+        Vector aliens = new Vector();
+        Color [] colors = Color.values();
+
+        while (true) {
+            Alien alien = new Alien()
+                    .setTitle(StringUtil.getRandomTextEN(r, r.nextInt(5, 11)))
+                    .setColor(colors[r.nextInt(colors.length)]);
+
+            aliens.add(alien);
+
+            ThreadUtil.sleep(1000);
+
+            System.out.println("-------------------------------------------------------");
+            System.out.printf("Capacity:%d, Size:%d%n", aliens.capacity(), aliens.size());	//**
+            for (Object o : aliens)
+                System.out.println(((Alien)o).toString());
+            System.out.println("-------------------------------------------------------");
+        }
+    }
+
+    public static void main(String[] args)
+    {
+        run();
+    }
+}
+
+/*----------------------------------------------------------------------------------------------------------------------
+	Aşağıdaki örneği inceleyiniz
+
+	Mordor
+-----------------------------------------------------------------------------------------------------------------------*/
+
+package org.csystem.app.game.war;
+
+import org.csystem.game.war.Alien;
+import org.csystem.game.war.Color;
+import org.csystem.util.string.StringUtil;
+import org.csystem.util.thread.ThreadUtil;
+
+import java.util.ArrayList;
+import java.util.Random;
+
+public class DemoGameApp {
+    public static void run()
+    {
+        Random r = new Random();
+        ArrayList aliens = new ArrayList();
+        Color [] colors = Color.values();
+
+        while (true) {
+            Alien alien = new Alien()
+                    .setTitle(StringUtil.getRandomTextEN(r, r.nextInt(5, 11)))
+                    .setColor(colors[r.nextInt(colors.length)]);
+
+            aliens.add(alien);
+
+            ThreadUtil.sleep(1000);
+
+            System.out.println("-------------------------------------------------------");
+            System.out.printf("Size:%d%n", aliens.size());
+            for (Object o : aliens)
+                System.out.println(((Alien)o).toString());
+            System.out.println("-------------------------------------------------------");
+        }
+    }
+
+    public static void main(String[] args)
+    {
+        run();
+    }
+}
+
+package org.csystem.game.war;
+
+public class Alien {
+    private String m_title = "";
+    private Color m_color = Color.BLACK;
+    //...
+
+    public String getTitle()
+    {
+        return m_title;
+    }
+
+    public Alien setTitle(String title)
+    {
+        //...
+        m_title = title;
+
+        return this;
+    }
+
+    public Color getColor()
+    {
+        return m_color;
+    }
+
+    public Alien setColor(Color color)
+    {
+        //...
+        m_color = color;
+
+        return this;
+    }
+
+    public String toString()
+    {
+        return String.format("[%s]%s", m_title, m_color.toString());
+    }
+}
+
+package org.csystem.game.war;
+
+public enum Color {
+    RED, GREEN, BLUE, BLACK, WHITE
+}
+
+/*----------------------------------------------------------------------------------------------------------------------
+	ArrayList sınıfının isEmpty metodu ile size değerinin sıfır olup olmadığı test edilebilir
+
+	Mordor
+-----------------------------------------------------------------------------------------------------------------------*/
+package org.csystem.app;
+
+import java.util.ArrayList;
+import java.util.Scanner;
+
+class App {
+	public static void main(String [] args)
+	{
+		Scanner kb = new Scanner(System.in);
+		ArrayList names = new ArrayList();
+
+		while (true) {
+			System.out.print("İsim giriniz:");
+			String name = kb.nextLine();
+
+			if ("elma".equals(name))
+				break;
+
+			names.add(name);
+		}
+
+		if (!names.isEmpty())
+			for (Object o : names) {
+				String name = (String)o;
+
+				System.out.println(name);
+			}
+		else
+			System.out.println("Hiç isim girmediniz!...");
+	}
+}
+
+/*----------------------------------------------------------------------------------------------------------------------
+	ArrayList sınıfının toString metodu ile ArrayList'in elemanları [] içeerisinde virgülle ayrılacak şekilde bir String
+	elde edilebilir. Bu String'in elde edilme detayları ileride ele alınacaktır
+
+	Mordor Morgot
+-----------------------------------------------------------------------------------------------------------------------*/
+package org.csystem.app;
+
+import java.util.ArrayList;
+import java.util.Scanner;
+
+class App {
+	public static void main(String [] args)
+	{
+		Scanner kb = new Scanner(System.in);
+		ArrayList names = new ArrayList();
+
+		while (true) {
+			System.out.print("İsim giriniz:");
+			String name = kb.nextLine();
+
+			if ("elma".equals(name))
+				break;
+
+			names.add(name);
+		}
+
+		System.out.println(names.isEmpty() ? "Hiç isim girmediniz!..." : names.toString());
+	}
+}
+
+/*----------------------------------------------------------------------------------------------------------------------
 
 -----------------------------------------------------------------------------------------------------------------------*/
 
