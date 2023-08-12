@@ -36326,6 +36326,913 @@ public class StringList {
     //...
 }
 
+
+/*----------------------------------------------------------------------------------------------------------------------
+    08.07.2023 Arwen
+-----------------------------------------------------------------------------------------------------------------------*/
+
+/*----------------------------------------------------------------------------------------------------------------------
+	Polymorphism: Bu kavram programlamaya Biyoloji'den aktarılmıştır. Biyoloji'de polymorphism şu şekilde tanımlanabilir:
+	"Farklı doku ya da organların evrim süreci içerisinde temel işlevleri aynı kalmak koşuluyla, bu işlevleri yerine
+	getirme biçiminin değişebilmesidir". Örneğin görme davranışı birbirinden türemiş veya aynı sınıftan farklı koldan
+	türetilerek gelmiş canlılar arasında farklılık gösterebilmektedir. Ancak temel hedef ve görev görmektir.
+
+	NYPT'de polymorphism genel olarak ikiye ayrılabilir:
+	- Run Time Polymorphism (RTP)
+	- Compile Time Polymorphism (CTP)
+
+	Bu bölümdeki ele alacağımız RTP'dir. CTP generics isimli konu ile birlikte ele alınacaktır. Polymorphism dendiğinde
+	akla ilk olarak RTP gelir.
+
+	RTP için pek çok tanım ve betimleme yapılabilse de genel olarak aşağıdaki 3 tanıma indirgenebilir:
+	1. Biyolojik Tanım: Taban sınıfın bir fonksiyonun türemiş sınıfta yeniden implementasyonudur.
+	2. Yazılım Mühendisliği Tanımı: Türden bağımsız kod yazmaktır.
+	3. Aşağı Seviyeli Tanım: Önceden yazılmış kodların sonradan yazılmış kodları çağırabilmesidir.
+
+	Java'da RTP sanal metotlar (virtual methods) ile gerçekleştirilir. Java'da non-static olan ve final olmayan VEYA
+	abstract olan bir metot sanaldır. abstract metotlar ve final metotlar ileride ele alınacaktır.
+
+	Sanal bir metodun türemiş sınıf içerisinde geri dönüş değeri ve imzası aynı kalacak şekilde yazılmasına "override"
+	denir. override işleminde erişim belirleyicinin durumu ayrıca ele alınacaktır. Sanal bir metodubn türemiş sınıf
+	içerisinde override edilmesi zorunlu değildir.
+
+	MORDOR MORGOT*****
+
+	Sanal Metod: 	non-static olan final olmayan veya abstract olan metod sanaldır.
+
+	Override: 	Yeniden yazmak gibi düşünebiliriz
+
+	Sanal bir metodumuz var
+	Türemiş olan sınıf içerisinde bu sanal metodun geri dönüş değeri ve imzası(parametreleri) aynı kalacak şekilde yazılmasıdır.
+
+
+-----------------------------------------------------------------------------------------------------------------------*/
+package org.csystem.app;
+
+class B extends A {
+	public void foo(int a, int b) //override
+	{
+		System.out.println("B.foo, int, int");
+	}
+}
+
+class A {
+	public void foo(int a, int b) //virtual method
+	{
+		System.out.println("A.foo, int, int");
+	}
+
+	public void bar(int a) //virtual method
+	{
+		System.out.println("A.bar, int");
+	}
+}
+
+/*----------------------------------------------------------------------------------------------------------------------
+	Derleyici sanal bir metot çağrısı gördüğünde şu şekilde bir kod üretir: "Çalışma zamanında referansın dinamik türüne
+	bak, dinamik türe ilişkin sınıfta metot override erilmişse onu çağır, edilmemişse sırasıya taban sınıfa ve sırasıyla
+	dolaylı taban sınıflara bak ve ilk bulduğun metodu çağır". Aşağıdaki örnekte main metodunun içerisindeki kodlar
+	A hiyerarşisi açısından yalnızca A sınıfına bağlıdır (dependent). Yani derleme zamanında A sınıfından türetilmiş olan
+	sınıfların olması ya da bilmesi gerekmez. Bu durumda A hiyerarşisine yeni bir tür eklendiğinde ve Factory sınıfının
+	create metodu da bu türü de verecek şekilde düzenlendiğinde main metodu içerisindeki kodlarda değişiklik yapılması
+	gerekmez. Yani yeni tür de dinamik olarak dahil edilmiş olur. Bu anlamda, "aşağı seviyeli" tanım da gerçeklenmiş olur.
+	Yapılan işlemin zaten türden bağımsız olması dolayısıyla yazılım mühendisliği tanımı da gerçeklenmiş olur. override
+	işlemi de biyolojik tanımın gerçeklemmesi demektir. Örnekte tüm sınıflar ayrı kütüphanelerde olabilirdi değil mi?
+
+
+	Burada a nın dinamik türüne bakıyor. Bu dinamik tür Factory create metodundan random şekilde geliyor. O türe ilişkin
+	sınıfta override metod varsa onu çağırıyor yoksa taban sınıfa bakıyor orada da yoksa dolaylı taban sınıfa bakarak ilk
+	bulduğu yerde çağırıyor. Türden bağımsızlıkta class G extends A yapsak ve create metodunda random kısma o sınıfı (türü)
+	dahil etsek bu şekilde maindeki kodlara dokunmadan onu da çağırabiliriz.
+
+	Mesela E sınıfı geldiğini varsayarsak kendi metodu yok, dolayısıyla taban sınıfı olan foo ve tar ı çağırır. D de bulamasaydı da 
+	dolaylı taban sınıfına bakacaktı ve A nın bar ve tar ını ççağıracaktı.
+
+	Mordor Morgot Morgot Morgot
+
+
+-----------------------------------------------------------------------------------------------------------------------*/
+package org.csystem.app;
+
+import org.csystem.util.thread.ThreadUtil;
+
+import java.util.Random;
+
+class App {
+	public static void main(String [] args)
+	{
+		Factory factory = new Factory();
+
+		while (true) {
+			System.out.println("-------------------------------------------------");
+			A a = factory.create();
+
+			System.out.printf("Dynamic type:%s%n", a.getClass().getName());
+			a.foo(10, 20);
+			a.bar(20);
+			System.out.println("-------------------------------------------------");
+			ThreadUtil.sleep(1000);
+		}
+	}
+}
+
+class Factory {
+	private final Random m_random = new Random();
+
+	public A create()
+	{
+		return switch (m_random.nextInt(6)) {
+			case 0 -> new B();
+			case 1 -> new C();
+			case 2 -> new D();
+			case 3 -> new E();
+			case 4 -> new F();
+			default -> new A();
+		};
+	}
+}
+
+
+class F extends A {
+	public void foo(int a, int b) //override
+	{
+		System.out.println("F.foo, int, int");
+	}
+
+	public void bar(int a) //override
+	{
+		System.out.println("F.bar, int");
+	}
+}
+
+class E extends D {
+	//...
+}
+
+class D extends A {
+	public void foo(int a, int b) //override
+	{
+		System.out.println("D.foo, int, int");
+	}
+
+	public void bar(int a) //override
+	{
+		System.out.println("D.bar, int");
+	}
+}
+
+class C extends B {
+	public void foo(int a, int b) //override
+	{
+		System.out.println("C.foo, int, int");
+	}
+}
+
+class B extends A {
+	public void foo(int a, int b) //override
+	{
+		System.out.println("B.foo, int, int");
+	}
+}
+
+class A {
+	public void foo(int a, int b) //virtual method
+	{
+		System.out.println("A.foo, int, int");
+	}
+
+	public void bar(int a) //virtual method
+	{
+		System.out.println("A.bar, int");
+	}
+}
+
+/*----------------------------------------------------------------------------------------------------------------------
+	Bazen override edilen bir metodun içerisinde taban sınıfın ilgili metodunun da çağrılması gerekebilir. Bu işlem super
+	referansı ile yapılır. Bu aslında mantıksal olaak, eski davranışla beraber, davranışa yeni eklentilerin de yapılması
+	anlamına gelir. Şüphesiz bu durum senaryoya bağlıdır ve gerektiğinde dokümantasyonda belirtilir. Buna "augmentation" da
+	denilmektedir
+
+	Mordor Morgot 
+
+	augmentation: override ettiğimiz (yani taban sınıfın non-static ve finel olmayan veya abstract olan metodunu tekrar aynı 
+	imza ile türemiş sınıfta yazdığımız metodda) metodun türettiğimiz sınıfın (aynı)ilgili metodunu çağırmamıza denir.
+
+	Yani class D extends A  sınıfında 
+
+	override ettiğimiz foo(int a, int b) metodunun içerisinde super.foo(int a, int b) ile A sınıfının içerisindeki 
+	foo(int a, int b) metodunu çağırmaya augmentation denir.
+-----------------------------------------------------------------------------------------------------------------------*/
+package org.csystem.app;
+
+import org.csystem.util.thread.ThreadUtil;
+
+import java.util.Random;
+
+class App {
+	public static void main(String [] args)
+	{
+		Factory factory = new Factory();
+
+		while (true) {
+			System.out.println("-------------------------------------------------");
+			A a = factory.create();
+
+			System.out.printf("Dynamic type:%s%n", a.getClass().getName());
+			a.foo(10, 20);
+			a.bar(20);
+			System.out.println("-------------------------------------------------");
+			ThreadUtil.sleep(1000);
+		}
+	}
+}
+
+class Factory {
+	private final Random m_random = new Random();
+
+	public A create()
+	{
+		return switch (m_random.nextInt(6)) {
+			case 0 -> new B();
+			case 1 -> new C();
+			case 2 -> new D();
+			case 3 -> new E();
+			case 4 -> new F();
+			default -> new A();
+		};
+	}
+}
+
+
+class F extends A {
+	public void foo(int a, int b) //override
+	{
+		System.out.println("F.foo, int, int");
+	}
+
+	public void bar(int a) //override
+	{
+		System.out.println("F.bar, int");
+	}
+}
+
+class E extends D {
+	//...
+}
+
+class D extends A {
+	public void foo(int a, int b) //override
+	{
+		System.out.println("D.foo, int, int");
+		super.foo(a, b);
+	}
+
+	public void bar(int a) //override
+	{
+		System.out.println("D.bar, int");
+	}
+}
+
+class C extends B {
+	public void foo(int a, int b) //override
+	{
+		System.out.println("C.foo, int, int");
+		super.foo(a, b);
+	}
+}
+
+class B extends A {
+	public void foo(int a, int b) //override
+	{
+		System.out.println("B.foo, int, int");
+		super.foo(a, b);
+	}
+}
+
+class A {
+	public void foo(int a, int b) //virtual method
+	{
+		System.out.println("A.foo, int, int");
+	}
+
+	public void bar(int a) //virtual method
+	{
+		System.out.println("A.bar, int");
+	}
+}
+
+/*----------------------------------------------------------------------------------------------------------------------
+    RantalVehicleApp uygulamasında payTax metodunun türden bağımsız yazıldığını anımsayınız. Ayrıca örnekte yeni bir
+    vehicle sınıfı yani Vehicle sınıfından doğrudan ya da dolaylı olarak türetilmiş bir sınıf eklendiğinde payTax metodunda
+    RantalVehicleApp sınfında bir değişiklik yapılması gerekmediğine dikkat ediniz.
+
+	Mordor Mordor Mordor Morgot Morgot Morgot Morgot
+-----------------------------------------------------------------------------------------------------------------------*/
+
+package com.baturhansahin.app.rental;
+
+import com.alicankececi.rental.vehicle.Vehicle;
+import com.alicankececi.rental.vehicle.VehicleOperation;
+import com.emrekantarci.VehicleFactory;
+import org.csystem.util.thread.ThreadUtil;
+
+public class RentalVehicleDemoApp {
+    public static void run()
+    {
+        VehicleFactory factory = new VehicleFactory();
+        VehicleOperation vehicleOperation = new VehicleOperation();
+
+        while (true) {
+            Vehicle vehicle = factory.createVehicle();
+
+            vehicleOperation.payTax(vehicle);
+            ThreadUtil.sleep(2000);
+        }
+    }
+    public static void main(String[] args)
+    {
+        run();
+    }
+}
+
+package com.alicankececi.rental.vehicle;
+
+public class Vehicle {
+    private String m_id;
+    private String m_plate;
+    private String m_brand;
+    private String m_model;
+    private double m_cc;
+    private int m_year;
+
+    //...
+
+    public String getId()
+    {
+        return m_id;
+    }
+
+    public void setId(String id)
+    {
+        //...
+        m_id = id;
+    }
+
+    public String getPlate()
+    {
+        return m_plate;
+    }
+
+    public void setPlate(String plate)
+    {
+        //...
+        m_plate = plate;
+    }
+
+    public String getBrand()
+    {
+        return m_brand;
+    }
+
+    public void setBrand(String brand)
+    {
+        m_brand = brand;
+    }
+
+    public String getModel()
+    {
+        return m_model;
+    }
+
+    public void setModel(String model)
+    {
+        //...
+        m_model = model;
+    }
+
+    public double getCc()
+    {
+        return m_cc;
+    }
+
+    public void setCc(double cc)
+    {
+        m_cc = cc;
+    }
+
+    public int getYear()
+    {
+        return m_year;
+    }
+
+    public void setYear(int year)
+    {
+        m_year = year;
+    }
+
+    public double calculateTax()
+    {
+        return 0;
+    }
+}
+package com.alicankececi.rental.vehicle;
+
+public class VehicleOperation {
+    //...
+    public void payTax(Vehicle vehicle)
+    {
+        System.out.println("-----------------------------------------");
+        System.out.printf("Plate:%s%n", vehicle.getPlate());
+        System.out.printf("Year:%d%n", vehicle.getYear());
+        System.out.printf("Tax:%f%n", vehicle.calculateTax());
+        System.out.println("-----------------------------------------");
+    }
+}
+
+package com.boraserce.vehicle;
+
+import com.alicankececi.rental.vehicle.Vehicle;
+
+public class CommercialVehicle extends Vehicle {
+    protected boolean forPassenger;
+
+    //
+
+    public CommercialVehicle(boolean passenger)
+    {
+        forPassenger = passenger;
+    }
+
+    //...
+
+    public double calculateTax()
+    {
+        return 1000;
+    }
+}
+package com.emrekantarci;
+
+import com.alicankececi.rental.vehicle.*;
+import com.fatihkarabulut.vehicle.commercial.LightTruck;
+import com.fatihkarabulut.vehicle.commercial.Taxi;
+import com.fatihkarabulut.vehicle.commercial.Truck;
+import com.onurozcan.vehicle.Bus;
+import com.onurozcan.vehicle.Car;
+
+import java.util.Random;
+
+public class VehicleFactory {
+    private final Random m_random = new Random();
+
+    private Car createCar()
+    {
+        Car car = new Car();
+
+        car.setId("123456");
+        car.setModel("Focus");
+        car.setYear(2022);
+        car.setBrand("Ford");
+        car.setType("Sedan");
+        car.setPlate("34 XXX 1234");
+        car.setCc(1600);
+
+        return car;
+    }
+
+    private Truck createTruck()
+    {
+        Truck truck = new Truck();
+
+        truck.setId("1234567");
+        truck.setModel("XXX");
+        truck.setYear(2022);
+        truck.setBrand("Setra");
+        truck.setPlate("34 YYY 234");
+        truck.setCc(60000);
+        truck.setLength(20);
+        truck.setMaxCapacity(10);
+
+        return truck;
+    }
+
+    private LightTruck createLightTruck()
+    {
+        LightTruck truck = new LightTruck();
+
+        truck.setId("1234569");
+        truck.setModel("TTTT");
+        truck.setYear(2023);
+        truck.setBrand("M.A.N");
+        truck.setPlate("34 UUU 238");
+        truck.setCc(50000);
+        truck.setMaxCapacity(5);
+
+        return truck;
+    }
+    private Bus createBus()
+    {
+        Bus bus = new Bus();
+
+        bus.setId("1234565");
+        bus.setModel("Tourismo");
+        bus.setYear(2022);
+        bus.setBrand("Mercedes");
+        bus.setPlate("34 ZZZ 123");
+        bus.setCc(40000);
+        bus.setLength(13.3);
+        bus.setPassengerCount(40);
+
+        return bus;
+    }
+
+    private Taxi createTaxi()
+    {
+        Taxi taxi = new Taxi();
+
+        taxi.setId("12345658");
+        taxi.setModel("Linea");
+        taxi.setYear(2022);
+        taxi.setBrand("Fiat");
+        taxi.setPlate("34 TTT 12");
+        taxi.setCc(1600);
+        taxi.setCity("istanbul");
+
+        return taxi;
+    }
+
+    public Vehicle createVehicle()
+    {
+        return switch (m_random.nextInt(5)) {
+            case 0 -> createCar();
+            case 1 -> createBus();
+            case 2 -> createTaxi();
+            case 3 -> createLightTruck();
+            default -> createTruck();
+        };
+    }
+
+}
+
+package com.fatihkarabulut.vehicle.commercial;
+
+import com.boraserce.vehicle.CommercialVehicle;
+
+public class LightTruck extends CommercialVehicle {
+    private double m_maxCapacity;
+
+    //...
+
+    public LightTruck()
+    {
+        super(false);
+    }
+
+    public double getMaxCapacity()
+    {
+        return m_maxCapacity;
+    }
+
+    public void setMaxCapacity(double maxCapacity)
+    {
+        m_maxCapacity = maxCapacity;
+    }
+    public double calculateTax()
+    {
+        return super.calculateTax() + m_maxCapacity * 500;
+    }
+}
+package com.fatihkarabulut.vehicle.commercial;
+
+import com.boraserce.vehicle.CommercialVehicle;
+
+public class Taxi extends CommercialVehicle {
+    private String m_city;
+
+    //...
+
+    public Taxi()
+    {
+        super(true);
+    }
+
+    public String getCity()
+    {
+        return m_city;
+    }
+
+    public void setCity(String city)
+    {
+        m_city = city;
+    }
+
+    //...
+
+    public double calculateTax()
+    {
+        return super.calculateTax() + 1500;
+    }
+}
+package com.fatihkarabulut.vehicle.commercial;
+
+import com.boraserce.vehicle.CommercialVehicle;
+
+public class Truck extends CommercialVehicle {
+    private double m_length;
+    private double m_maxCapacity;
+
+    //...
+
+    public Truck()
+    {
+        super(false);
+    }
+
+    public double getLength()
+    {
+        return m_length;
+    }
+
+    public void setLength(double length)
+    {
+        m_length = length;
+    }
+
+    public double getMaxCapacity()
+    {
+        return m_maxCapacity;
+    }
+
+    public void setMaxCapacity(double maxCapacity)
+    {
+        m_maxCapacity = maxCapacity;
+    }
+    public double calculateTax()
+    {
+        return super.calculateTax() + m_maxCapacity * 1000;
+    }
+}
+package com.haticekubraulusoy.vehicle;
+
+import com.alicankececi.rental.vehicle.Vehicle;
+
+public class PersonalVehicle extends Vehicle {
+    protected int controlPeriod;
+
+    //...
+
+    public PersonalVehicle(int period)
+    {
+        controlPeriod = period;
+    }
+    //...
+}
+package com.onurozcan.vehicle;
+
+import com.boraserce.vehicle.CommercialVehicle;
+
+public class Bus extends CommercialVehicle {
+    private double m_length;
+    private int m_passengerCount;
+    //...
+
+    public Bus()
+    {
+        super(true);
+    }
+
+    public double getLength()
+    {
+        return m_length;
+    }
+
+    public void setLength(double length)
+    {
+        m_length = length;
+    }
+
+    public int getPassengerCount()
+    {
+        return m_passengerCount;
+    }
+
+    public void setPassengerCount(int passengerCount)
+    {
+        m_passengerCount = passengerCount;
+    }
+
+    public double calculateTax()
+    {
+        return m_passengerCount * 1000;
+    }
+}
+package com.onurozcan.vehicle;
+
+import com.haticekubraulusoy.vehicle.PersonalVehicle;
+
+public class Car extends PersonalVehicle {
+    private String m_type;
+    //...
+
+    public Car()
+    {
+        super(2);
+    }
+
+    public String getType()
+    {
+        return m_type;
+    }
+
+    public void setType(String type)
+    {
+        m_type = type;
+    }
+    //...
+
+    public double calculateTax()
+    {
+        return 2000;
+    }
+}
+
+/*----------------------------------------------------------------------------------------------------------------------
+	Object sınıfının toString metodu sanal br metottur. Bir nesye ilişkin yazı karşılığının anlamlı olması durumunda
+	sınıf için override edilir. Object sınıfının toString metodu nesneye ilişkin tekil (unique) bir bilgiye geri döner.
+	Bu bilginin detayı önemsizdir.
+
+	Morgot
+-----------------------------------------------------------------------------------------------------------------------*/
+package org.csystem.app;
+
+class App {
+	public static void main(String [] args)
+	{
+		Object os = new Sample();
+		Object om = new Mample();
+
+		String str1 = os.toString();
+		String str2 = om.toString();
+
+		System.out.println(str1);
+		System.out.println(str2);
+	}
+}
+
+class Sample {
+	//...
+}
+
+class Mample {
+	public String toString()	// Bunu override etti.
+	{
+
+		return "Mample";
+	}
+}
+
+/*----------------------------------------------------------------------------------------------------------------------
+	print ve println metotlarının Object parametreli overload'ları toString metodunu çağırarak ekrana basılack yazıyı
+	elde ederler.
+
+	Mordor Morgot
+	Bu iki sınıfı da biz yazdık fakat print ve println metotlarının Object parametreli overload larının toString metodunu 
+	çağırdığını bildiğimiz için sınıfları imlimente ederken metod isimlerini bilinçli belirledik. 
+-----------------------------------------------------------------------------------------------------------------------*/
+package org.csystem.app;
+
+import org.csystem.math.geometry.Circle;
+import org.csystem.math.geometry.MutablePoint;
+
+class App {
+	public static void main(String [] args)
+	{
+		MutablePoint p = MutablePoint.ofCartesian(100, 100);	//MutablePoint'in toString Metodu var
+		Circle c = new Circle(4.5);								//Circle'ın toString Metodu var
+
+		System.out.println(p);
+		System.out.println(c);
+	}
+}
+
+/*----------------------------------------------------------------------------------------------------------------------
+	printf ve String sınıfının format metotları s format karakterine karşılık gelen yazı için toString metodunu
+	çağırır.
+
+	Mordor Morgot 
+
+
+	Benzer bir durum burada da karşımıza çıkıyor Mordor printf e object parametresi verirken s formatı ile o sınıfın toString
+	metodunu çağırıyoruz.
+-----------------------------------------------------------------------------------------------------------------------*/
+package org.csystem.app;
+
+import org.csystem.math.geometry.Circle;
+import org.csystem.math.geometry.MutablePoint;
+
+class App {
+	public static void main(String [] args)
+	{
+		MutablePoint p = MutablePoint.ofCartesian(100, 100);
+		Circle c = new Circle(4.5);
+
+		System.out.printf("Point:%s%n", p);
+		System.out.printf("Circle:%s%n", c);
+	}
+}
+
+/*----------------------------------------------------------------------------------------------------------------------
+	Aşağıdaki örnekte auto boxing yapıldığına dikkat ediniz
+
+	Morgot
+-----------------------------------------------------------------------------------------------------------------------*/
+package org.csystem.app;
+
+class App {
+	public static void main(String [] args)
+	{
+		int a = 10;
+		double b = 3.4;
+
+		System.out.printf("a = %s, b = %s%n", a, b);
+	}
+}
+
+/*----------------------------------------------------------------------------------------------------------------------
+	Anımsanacağı gibi + operatörünün operandlarından biri String türündense diğer operandın String karşılığı elde edilerek
+	birleştirme yapılır. Aşağıdaki örnekte grade değeri için önce otomatik kurulama yapılır, sonra da toString metodu çağrılır
+
+	Morgot
+-----------------------------------------------------------------------------------------------------------------------*/
+package org.csystem.app;
+
+class App {
+	public static void main(String [] args)
+	{
+		java.util.Scanner kb = new java.util.Scanner(System.in);
+		System.out.print("Sınavdan aldığınız notları giriniz: (arasınav final)");
+		int midTermGrade = kb.nextInt();
+		int finalGrade = kb.nextInt();
+		double grade = 0.4 * midTermGrade + 0.6 * finalGrade;
+		String message = "Geçme notunuz:" + grade + (grade >= 50 ? " Geçti" : " Kaldı"); 
+		//String message = "Geçme notunuz:" + Double.valueOf(grade).toString() + (grade >= 50 ? " Geçti" : " Kaldı");
+
+		System.out.println(message);
+	}
+}
+
+/*----------------------------------------------------------------------------------------------------------------------
+	Anımsanacağı gibi + operatörünün operandlarından biri String türündense diğer operandın String karşılığı elde edilerek
+	birleştirme yapılır. Aşağıdaki örnekte referanslara ilişkin türler için toString metodu çağrılarak birleştirme
+	yapılır
+
+	Mordor
+-----------------------------------------------------------------------------------------------------------------------*/
+package org.csystem.app;
+
+import org.csystem.math.geometry.Circle;
+import org.csystem.math.geometry.MutablePoint;
+
+class App {
+	public static void main(String [] args)
+	{
+		MutablePoint p = MutablePoint.ofCartesian(100, 100);
+		Circle c = new Circle(-4.5);
+
+		System.out.println("Point:" + p); //System.out.println("Point:" + p.toString());
+		System.out.printf("Circle:" + c); //System.out.printf("Circle:" + c.toString());
+	}
+}
+
+/*----------------------------------------------------------------------------------------------------------------------
+	ArrayList sınıfının toString [] içerisindeki yazıları elde etmek için toString metodunu çağırır
+
+	Mordor
+-----------------------------------------------------------------------------------------------------------------------*/
+package org.csystem.app;
+
+import java.util.ArrayList;
+import java.util.Scanner;
+
+class App {
+	public static void main(String [] args)
+	{
+		Scanner kb = new Scanner(System.in);
+		ArrayList names = new ArrayList();
+
+		while (true) {
+			System.out.print("İsim giriniz:");
+			String name = kb.nextLine();
+
+			if ("elma".equals(name))
+				break;
+
+			names.add(name);
+		}
+
+		System.out.println(names.isEmpty() ? "Hiç isim girmediniz!..." : names.toString());
+	}
+}
+
 /*----------------------------------------------------------------------------------------------------------------------
 
 -----------------------------------------------------------------------------------------------------------------------*/
