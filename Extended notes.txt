@@ -37233,6 +37233,362 @@ class App {
 	}
 }
 
+
+/*----------------------------------------------------------------------------------------------------------------------
+	abstract sınıflar ve abstract metotlar: Bazı durumlarda bir sınıf bir kavramı soyut (abstract) olarak temsil eder. Bu
+	durumda sınıfın nesne olarak tek başına anlamı yoktur. Yani NYPT bakış açısıyla o sınıf türünden bir nesnesinin
+	yaratılmasının bir anlamı yoktur. Ancak soyut bir sınıftan doğrudan ya da dolaylı olarak türetilen bir nesnenin
+	tek başına yaratılmasının anlamı olabilir. Bu tarz sınıflara soyut sınıflar (abstract classes) denir. Soyut olmayan
+	sınıflara da somut sınıflar (concrete classes) denir. Bir sınıf içerisinde bazı sanal metotların gövdesinin anlamı
+	olmayabilir. Yani bu tarz bir metodun türemiş sınıfta override edildiğinde anlamı olur. Bu tarz metotlara soyut
+	metotlar (abstract methods) denir. Benzer şekilde gövdesi olan metotlara da somut metotlar (concrete methods) denir.
+	abstract class ve concrete terimleri NYPT anlamında genel terimlerdir ancak abstract methods ve concrete methods
+	terimleri programlama diline göre değişiklik gösterebilir. Java'da abstract methods ve concrete metod terimleri
+	kullanılır. Örneğin RentalVehicleDemoApp uygulamasında Vehicle, CommercialVehicle ve PersonalVehicle sınıfları
+	nesne olarak kendi başlarına anlamlı değildirler. Bu sınıflardan doğrudan ya da dolaylı olarak türetilmiş olan örneğin
+	Bus sınıfı kendi başına nesne olarak anlamlıdır. Bu durumda programcı böylesi tasarımlarda soyutlamayı tercih etmelidir.
+	Yine programcı abstract bir sınıf gördüğünde "somut bir sınıf için bu sınıftan türetme yapmam ve varsa (ki çoğu zaman
+	vardır) tüm abstract metotları override etmem gerekir" anlamalıdır.
+
+	abstract sınıfların abstract olma ve buna yönelik özellikleri dışında concrete br sınıftan farkı yoktur.
+
+
+
+	Mordor Morgot Morgot
+
+	Abstract metods - Soyut metodlardır
+
+	Kendi başına bir nesne olarak anlam ifade atmeyen metodlar abstact olarak bildirilmelidir. Bu metodlardan türetme
+	yapıldığında diğer sınıf için anlamlı hale gelir. Yani bir sınıf var plaka, model, cc, tax gibi verileri tutuyor. 
+	Bu sınıf kendi başına anlamlı değil ama biz bus sınıfını bu sınıftan türetirsek bu bilgiler türemiş bus sınıfının 
+	nesnesinde anlam kazanıyor. biz bu sınıfı bus ta türettiğimizde bu sınıfın metodlarını aynı imza ile override ederek
+	o sınıfın abstarac metodlarını anlamlı hale getiriyoruz.
+
+	override: yani taban sınıfın non-static ve final olmayan veya abstract olan metodunu tekrar aynı imza ile türemiş
+	sınıfta yazmımıdır.
+
+	Sanal Metod: non-static olan final olmayan veya abstract olan metod sanaldır.
+
+-----------------------------------------------------------------------------------------------------------------------*/
+
+/*----------------------------------------------------------------------------------------------------------------------
+	Bir sınıf abstract olarak bildirildiğinde soyut bir sınıf olur, ya da tersine soyut bir sınıf bildirimi için abstract
+	anahtar sözcüğü kullanılır
+-----------------------------------------------------------------------------------------------------------------------*/
+package org.csystem.app;
+
+abstract class A {
+	//...
+}
+
+/*----------------------------------------------------------------------------------------------------------------------
+	Bir sınıfın abstract metotları olabilir. abstract metotlara gövde yazılmaz. Noktalı virgül ile bildirim sonlandırılır.
+	abstract bir metoda gövde yazımı error oluşturur. abstract metotlar da abstract anahtar sözcüğü ile bildirilirler.
+	abstract metotlar da sanaldır. En az bir tane abstract metodu olan bir sınıf abstract olarak bildirilmelidir. Aksi
+	durumda error oluşur. Tersine bir sınıfın hiç abstract metodu olmasa bile abstract olarak bilirilebilir. abstract
+	sınıfların abstract olmayan metotları da bulunabilir
+
+
+	Mordor
+
+	abstract metotlara gövde yazılmaz. en az 1 Abstarac metodu olan sınıf abstract olarak bildirilmek zorundadır.
+-----------------------------------------------------------------------------------------------------------------------*/
+package org.csystem.app;
+
+abstract class D {
+	//...
+}
+
+abstract class C {
+	public abstract void foo(int a) //error
+	{
+
+	}
+}
+
+class B { //error	//çünkü abstract metodu var. sınıfta abstract olarak bildirilmeli
+	public abstract void foo(int a);
+
+	public void bar()
+	{
+		//...
+	}
+}
+
+abstract class A {
+	public abstract void foo(int a);
+
+	public void bar()
+	{
+		//...
+	}
+}
+
+/*----------------------------------------------------------------------------------------------------------------------
+	abstract sınıf türünden nesne new operatörü ile yaratılamaz
+
+	Mordor Morgot
+-----------------------------------------------------------------------------------------------------------------------*/
+package org.csystem.app;
+
+abstract class A {
+	public void foo()
+	{
+		A x = new A(); //error
+	}
+}
+/*----------------------------------------------------------------------------------------------------------------------
+	enum sınıflar abstract olarak bldirilemez
+
+	Mordor
+-----------------------------------------------------------------------------------------------------------------------*/
+package org.csystem.app;
+
+abstract enum Color {RED, GREEN, BLUE} //error
+/*----------------------------------------------------------------------------------------------------------------------
+	abstract sınıftan türetilmiş olan bir sınıf, taban sınıfının en az bir metodunu override etmezse abstract olarak
+	bildirilmelidir. Sınıf içerisinde hiç abstract metot kalmadıysa bu durumda sınıf concrete olabilir. Aşağıdaki sınıfları
+	inceleyiniz
+
+	Mordor
+
+	***	Abstract sınıftan türemiş sınıf türediği abstract sınıfın tüm metodlarını override etmek zorundadir. etmezse türemiş 
+	sınıfta. abstract olarak bildirilmelir. 
+
+	A abstract sınıf ve foo, bar metodları var. A dan türettiğimiz B sınıfı sadece foo yu override ettiği için ya  türemiş b de
+	abstract olarak bildirilmeli ya da error. ama A dan türeyen D foo ve bar ı override ettiği için abstract olarak bildirilmesi
+	gerekmez.
+
+-----------------------------------------------------------------------------------------------------------------------*/
+package org.csystem.app;
+
+class E extends C {
+	public void bar()
+	{
+		//...
+	}
+}
+
+class D extends A {
+	public void foo()
+	{
+		//...
+	}
+
+	public void bar()
+	{
+		//...
+	}
+}
+abstract class C extends A {
+	public void foo()
+	{
+		//...
+	}
+}
+
+class B extends A { //error
+	public void foo()
+	{
+		//...
+	}
+}
+
+abstract class A {
+	public abstract void foo();
+	public abstract void bar();
+}
+
+/*----------------------------------------------------------------------------------------------------------------------
+    abstract sınıf türünden bir referansın taban sınıf referansı olarak kullanımı anlamlıdır. Bu durumda RTP abstract
+    sınıflar ile de yapılabilir. Zaten temel hedef de budur
+-----------------------------------------------------------------------------------------------------------------------*/
+
+/*----------------------------------------------------------------------------------------------------------------------
+	abstract sınıfların ctor'ları olabilir. abstract sınıfların ctor'larının public yapılması aslında anlamsızdır. Sentaks
+	ve semantik açıdan public ctor bir problem oluşturmaz ancak okunabilirlik/algılanabilirlik açısından public yerine
+	protected yapılması daha iyi bir tekniktir. private ve no-modifier ctor'lar duruma göre anlamlı olabilir
+
+	Mordor 
+
+	Abstract sınıfların ctorları protected yapılmalıdır. super sentaksı ile abstract classın ctoru türemiş sınıf ctorunda 
+	da çağrılabilir.
+
+
+	Anlamsız çünkü dışarıdan çağrılması gibi bir durum söz konusu değil !!!!
+-----------------------------------------------------------------------------------------------------------------------*/
+package org.csystem.app;
+
+class App {
+	public static void main(String [] args)
+	{
+		B x = new B();
+		B y = new B(40);
+
+		//...
+	}
+}
+
+class B extends A {
+	public B()
+	{
+		System.out.println("I am a default ctor of B");
+	}
+
+	public B(int a)
+	{
+		super(a);
+		System.out.println("I am a ctor of B with parameter type: int");
+	}
+	public void foo()
+	{
+		//...
+	}
+	public  void bar()
+	{
+		//...
+	}
+}
+abstract class A {
+	protected A()
+	{
+		System.out.println("I am a default ctor of A");
+	}
+
+	protected A(int a)
+	{
+		System.out.println("I am a ctor of A with parameter type: int");
+	}
+
+	public abstract void foo();
+	public abstract void bar();
+}
+
+/*----------------------------------------------------------------------------------------------------------------------
+	abstract bir sınıf final olamaz ya da final bir sınıf abstract olamaz. Yani bir sınıf hem abstract hem de final olarak
+	bildirilemez
+
+	Mordor
+-----------------------------------------------------------------------------------------------------------------------*/
+package org.csystem.app;
+
+abstract final class A {
+	//...
+}
+
+
+/*----------------------------------------------------------------------------------------------------------------------
+    RentalVehicleDemoApp uygulamasında Vehicle sınıfının calculateTax metodunun abstract yapılması ve dolayısıyla
+    Vehicle sınıfının da abstract yapılması tasarım açısından daha uygundur
+
+	Mordor Morgot
+-----------------------------------------------------------------------------------------------------------------------*/
+package com.alicankececi.rental.vehicle;
+
+public abstract class Vehicle {
+    private String m_id;
+    private String m_plate;
+    private String m_brand;
+    private String m_model;
+    private double m_cc;
+    private int m_year;
+
+    //...
+
+    public String getId()
+    {
+        return m_id;
+    }
+
+    public void setId(String id)
+    {
+        //...
+        m_id = id;
+    }
+
+    public String getPlate()
+    {
+        return m_plate;
+    }
+
+    public void setPlate(String plate)
+    {
+        //...
+        m_plate = plate;
+    }
+
+    public String getBrand()
+    {
+        return m_brand;
+    }
+
+    public void setBrand(String brand)
+    {
+        m_brand = brand;
+    }
+
+    public String getModel()
+    {
+        return m_model;
+    }
+
+    public void setModel(String model)
+    {
+        //...
+        m_model = model;
+    }
+
+    public double getCc()
+    {
+        return m_cc;
+    }
+
+    public void setCc(double cc)
+    {
+        m_cc = cc;
+    }
+
+    public int getYear()
+    {
+        return m_year;
+    }
+
+    public void setYear(int year)
+    {
+        m_year = year;
+    }
+
+    public abstract double calculateTax();
+
+}
+
+package com.haticekubraulusoy.vehicle;
+
+import com.alicankececi.rental.vehicle.Vehicle;
+
+// Vehicle abstract olduğu için  PersonalVehicle'yi de abstract yaptık 37355. Satıra git (***)
+public abstract class PersonalVehicle extends Vehicle {	
+    protected int controlPeriod;
+    //...
+
+    public PersonalVehicle(int period)
+    {
+        controlPeriod = period;
+    }
+    //...
+}
+
+/*----------------------------------------------------------------------------------------------------------------------
+	static ve abstract metot bildirimi geçersizdir
+
+	Mordor 
+-----------------------------------------------------------------------------------------------------------------------*/
+package org.csystem.app;
+
+abstract class A {
+	public static abstract void foo();
+}
+
 /*----------------------------------------------------------------------------------------------------------------------
 
 -----------------------------------------------------------------------------------------------------------------------*/
