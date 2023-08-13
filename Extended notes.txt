@@ -37589,6 +37589,338 @@ abstract class A {
 	public static abstract void foo();
 }
 
+
+/*----------------------------------------------------------------------------------------------------------------------
+    09.07.2023 Arwen
+-----------------------------------------------------------------------------------------------------------------------*/
+
+/*----------------------------------------------------------------------------------------------------------------------
+	non-static bir metot final olarak bildirilirse türemiş sınıfta override edilemez. Bir metot override edilip
+	final yapıldığında artık o sınıftan itibaren o metodun sanallığı kapatılmış olur
+
+	Mordor Mordor 
+
+	non-static bir metot final olarak bildirilirse türemiş sınıfta override edilemez. 
+	Override ettiğimiz metodu final olarak bildirirsekte sanallığı o sınıftan itibaren kapatmış oluruz. 
+	Sınıf ve metodları incele
+-----------------------------------------------------------------------------------------------------------------------*/
+package org.csystem.app;
+
+class D extends C {
+	public void bar(int a) //error
+	{
+
+	}
+}
+class C extends A {
+	public final void bar(int a)
+	{
+		System.out.println("C.bar, int");
+	}
+}
+class B extends A {
+	public void foo(int a, int b) //error
+	{
+
+	}
+}
+
+class A {
+	public final void foo(int a, int b)
+	{
+		System.out.println("A.foo, int, int");
+	}
+
+	public void bar(int a)
+	{
+		System.out.println("A.bar, int");
+	}
+}
+
+/*----------------------------------------------------------------------------------------------------------------------
+	Arayüzler (Interfaces): Arayüzler de sınıf ve enum sınıflar gibi bir UDT'dir. Bir arayüz interface anahtar sözcüğü
+	ile bildirilir. Arayüz isimlerini okunabilirlik açısından "I" ile başlatacağız. Ancak JavaSE'de bulunan standart
+	arayüzlerde bu şekilde bir convention kullanılmamıştır. Arayüzler daha çok abstract sınıflara benzese de farklı pek çok
+	özelliği de bulunmaktadır.
+
+	Arayüzlere, zaman içerisinde özellikle Java 8 ile birlikte bi çok önemli özellik de eklenmiştir. Bunlar konu içerisinde
+	ele alınacaktır
+
+	Mordor Morgot
+-----------------------------------------------------------------------------------------------------------------------*/
+
+/*----------------------------------------------------------------------------------------------------------------------
+	Bir interface içerisinde veri elemanları olabilir. Bu veri elemanları, yazılsa da yazılmasa da public static ve
+	final olarak bildirilmiş olur. Biz bir veri elemanı için public static ve final yazmayacağız. Veri elemanlarına
+	ilk değer verme (initialization) zorunludur. Arayüzlerin non-static veri elemanları olamaz. Bu anlamda arayüzler
+	türünden nesne hiç bir şekilde yaratılmaz. Arayüzlerin veri elemanları public dışında başka bir erişim belirleyiciye
+	sahip olamaz. Arayüz içerisinde final olmayan veri elemanı da bildirilemez. Özellikle Java 5 ile birlikte arayüz
+	içerisinde veri elemanı bildirimi neredeyse hiç gerekmemektedir. Bu sebeple kullanımı oldukça kısıtlıdır
+
+	Mordor 
+
+	interface içerisinde veri elemanları  public static ve final dır. Yazmak zorunlu değil.
+	Veri  elemanlarına initialization zorunludur.
+	non-static veri elemanlanı olamaz. Bu yüzden arayüzler türünden nesne yaratılmaz.
+	Arayüzlerin veri elemanları public olmalıdır.
+	Arayüzlerin veri elemanları final olmalıdır.
+-----------------------------------------------------------------------------------------------------------------------*/
+package org.csystem.app;
+
+class App {
+	public static void main(String [] args)
+	{
+		System.out.println(IX.VAL);
+		IX.VAL = 34; //error 			VAL final yani değeri değiştirilemez.
+	}
+}
+
+
+interface IX {
+	int VAL = 10;
+}
+
+/*----------------------------------------------------------------------------------------------------------------------
+	interface içerisinde gövdesiz metotlat olabilir. Bu metotlar yazılsa da yazılmasa da public ve abstract olarak
+	bildirilmiş olur. Arayüzlerde abstract metotlar public dışında bir erişim belirleyiciye sahip olamazlar. Biz arayüz
+	içerisindeki abstract metotlar için public abstract yazmayacağız.
+
+	Mordor 
+	interface içerisinde bulunan gövdesiz metodlar yazılmasa da public ve abstract'tır
+
+-----------------------------------------------------------------------------------------------------------------------*/
+package org.csystem.app;
+
+interface IX {
+	void foo();
+	int bar(int a, double b);
+}
+
+/*----------------------------------------------------------------------------------------------------------------------
+	Hiç abstract metodu olmayan arayüzlere "işaretleme arayüzleri (marker interfaces)" denir. Genel olarak işaretleme
+	arayüzlerinin hiç bir elemanı olmaz yani içerisi boş bırakılır. Java 5 ile birlikte yeni bir marker interface
+	ihtiyacı neredeyse olmamaktadır. Bununla birlikte, Java 5 öncesinde JavaSE'de bulunan ve halen yoğun olarak kullanılan
+	bazı işaretleme arayüzleri mevcuttur
+
+	Morgot !!!
+-----------------------------------------------------------------------------------------------------------------------*/
+package org.csystem.app;
+
+interface IX {
+	void foo();
+	int bar(int a, double b);
+}
+
+/*----------------------------------------------------------------------------------------------------------------------
+	Java 8 ile birlikte interface içerisinde gövdeli yani abstract olmayan non-static metotlar yazılabilmektedir. Bu metotlar
+	default anahtar sözcüğü ile bildirilirler ve bunlara genel olarak "default method" denir. Default metotlar da sanaldır.
+	Yazılsa da yazlmasa da default metotlar public'dir. Yine Java 8 ile birlikte interface içerisinde static metotllar da
+	bildirilebilmektedir. Şüphesiz static metotların gövdeleri olmalıdır. Java 9 ile birlikte private non-static ve static
+	metotlar da interface içerisinde bildirilebilmektedir. Bu anlamda Java 9'dan itibaren arayüz içerisindeki static bir
+	metot ya public ya da private olabilir. non-static bir metot ise ya default public ya da private olabilir. Interface
+	içerisinde protected ve friendly elemanlar bildirilemez.
+
+
+	Mordor Morgot Mordor
+
+	interface'te gövdeli yani abstract olmayan non-static metotlar default anahtar sözcüğü ile yazılabilir ve metodlar public'tir.
+	interface içerisinde static metotllar da bildirilebilir ve metot ya public ya da private bildirilir.
+	private non-static ve static metotlar da interface içerisinde bildirilebilir.
+
+	Interface içerisinde protected ve friendly elemanlar bildirilemez.
+
+-----------------------------------------------------------------------------------------------------------------------*/
+package org.csystem.app;
+
+class App {
+	public static void main(String [] args)
+	{
+		IX.bar();
+	}
+}
+
+interface IX {
+	void foo();									// abstract, yani gövdesiz metod
+
+	default void bar(int a) //Since Java 8		// interface içinde default ile non-static metod 
+	{
+		//...
+	}
+
+	private static void car()
+	{
+		//...
+	}
+
+	static void bar() //Since Java 8
+	{
+		//...
+	}
+
+	private void tar()
+	{
+		//...
+	}
+
+}
+
+/*----------------------------------------------------------------------------------------------------------------------
+	Java 8 ile birlikte belirli koşullar altında arayüzler kullanım anlamında genişletilmiştir. Buna göre içerisinde
+	bir ve yalnız bir tane abstract metodu olan bir arayüz fonksiyonel (functional) olarak kullanılabilmektedir. Bu
+	anlamda bu arayüzlere "functional interfaces" denir. Fonksiyonel arayüzler ile fonksiyonel programlama Java'da
+	daha kolay ve daha gelişmiş bir biçimde yapılabilmektedir. Burada fonksiyonel arayüzler ve fonksiyonel programlamaya
+	ilişkin detaylar anlatılmayacaktır. Aşağıda örnek olarak verilmiştir. Bu örnekte sadece böyle bir şeyin varlığına
+	odaklanınız. Fonksiyonel programlama ve dolayısıyla fonksiyonel arayüzlerin de kullanımı başka bir takım konuların da
+	bilinmesini gerektiğinden "Java ile Uygulama Geliştirme I" kursunda detaylandırılmaktadır
+-----------------------------------------------------------------------------------------------------------------------*/
+package org.csystem.app;
+
+import org.csystem.util.array.ArrayUtil;
+import org.csystem.util.numeric.NumberUtil;
+
+import java.util.Arrays;
+import java.util.Random;
+import java.util.stream.IntStream;
+
+class App {
+	public static void main(String [] args)
+	{
+		Random r = new Random();
+		int [] a = IntStream.generate(() -> r.nextInt(100)).filter(NumberUtil::isPrime).limit(10).toArray();
+
+		ArrayUtil.print(2, a);
+		Arrays.stream(a).forEach(val -> System.out.printf("%d ", val));
+		System.out.println();
+	}
+}
+
+/*----------------------------------------------------------------------------------------------------------------------
+	interface türünden bir nesne yaratılmaz. Programcı tarafından da yaratılamaz. Bu anlamda interface nesne özelliği
+	göstermez
+
+	Mordor
+-----------------------------------------------------------------------------------------------------------------------*/
+package org.csystem.app;
+
+class App {
+	public static void main(String [] args)
+	{
+		IX ix = new IX(); //error
+	}
+}
+
+interface IX {
+	//...
+}
+
+/*----------------------------------------------------------------------------------------------------------------------
+	interface bildiriminde abstract anahtar sözcüğü yazılabilir. Ancak zorunlu değildir. Biz yazmamayı tercih edeceğiz
+-----------------------------------------------------------------------------------------------------------------------*/
+package org.csystem.app;
+
+abstract interface IX {
+	//...
+}
+
+/*----------------------------------------------------------------------------------------------------------------------
+	Bir sınıf bir arayüzü implements anahtar sözcüğü ile destekler (implementation)
+
+	Mordor 
+
+	implements'i türetme gibi düşünebilirim. Bir interface i o sınıf desteklerse o interface in abstract metodlarını override
+	etmem yanı kullanmam gerekir. gibi düşünebilirim
+-----------------------------------------------------------------------------------------------------------------------*/
+package org.csystem.app;
+
+class A implements IX {
+	//...
+}
+
+interface IX {
+	//...
+}
+
+/*----------------------------------------------------------------------------------------------------------------------
+	Bir sınıf birden fazla arayüzü destekleyebilir. Bu durumda hangi arayüzün listede önce yazıldığının bir önemi yoktur
+-----------------------------------------------------------------------------------------------------------------------*/
+package org.csystem.app;
+
+class A implements IX, IY {
+	//...
+}
+
+interface IX {
+	//...
+}
+
+interface IY {
+	//...
+}
+
+/*----------------------------------------------------------------------------------------------------------------------
+	Bir sınıf başka bir sınıftan türetilip istediği kadar arayüzü destekleyebilir. Bu durumda extends'in implements'den
+	önce yazılması zorunludur
+
+	Mordor Mordor 
+-----------------------------------------------------------------------------------------------------------------------*/
+package org.csystem.app;
+
+class App {
+	public static void main(String [] args)
+	{
+
+	}
+}
+
+class A extends B implements IX, IY {
+	//...
+}
+
+class B {
+	//...
+}
+interface IX {
+	//...
+}
+
+interface IY {
+	//...
+}
+
+/*----------------------------------------------------------------------------------------------------------------------
+	Bir sınıf bir arayüzü desteklliyorsa o arayüzün en az bir tane abstract metodunu bile override etmezse sınıf da
+	abstract olarak bildirilmelidir. Aksi durumda error oluşur.
+
+	Mordor Morgot
+	o interface i destekliyorsa tüm abstract metodlarını override etmeli ya da o sınıfta abstract olarak bildirilmelidir.
+-----------------------------------------------------------------------------------------------------------------------*/
+package org.csystem.app;
+
+class App {
+	public static void main(String [] args)
+	{
+
+	}
+}
+
+class C implements IX  { //error
+
+}
+abstract class B implements IX {
+	//...
+}
+class A implements IX {
+	public void foo()
+	{
+		//...
+	}
+}
+
+interface IX {
+	//..
+	void foo();
+}
+
 /*----------------------------------------------------------------------------------------------------------------------
 
 -----------------------------------------------------------------------------------------------------------------------*/
