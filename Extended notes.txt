@@ -37596,7 +37596,7 @@ abstract class A {
 
 /*----------------------------------------------------------------------------------------------------------------------
 	non-static bir metot final olarak bildirilirse türemiş sınıfta override edilemez. Bir metot override edilip
-	final yapıldığında artık o sınıftan itibaren o metodun sanallığı kapatılmış olur
+	final yapıldığında artık o sınıftan itibaren o metodun sanallığı kapatılmış olur.
 
 	Mordor Mordor 
 
@@ -37659,9 +37659,9 @@ class A {
 
 	Mordor 
 
-	interface içerisinde veri elemanları  public static ve final dır. Yazmak zorunlu değil.
-	Veri  elemanlarına initialization zorunludur.
-	non-static veri elemanlanı olamaz. Bu yüzden arayüzler türünden nesne yaratılmaz.
+	interface içerisinde veri elemanları public static ve final dır. Yazmak zorunlu değil.
+	Veri elemanlarına initialization zorunludur.
+	non-static veri elemanlanı olamaz.(Nesne özelliği göstermez) Bu yüzden arayüzler türünden nesne yaratılmaz.
 	Arayüzlerin veri elemanları public olmalıdır.
 	Arayüzlerin veri elemanları final olmalıdır.
 -----------------------------------------------------------------------------------------------------------------------*/
