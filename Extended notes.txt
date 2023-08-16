@@ -29963,7 +29963,7 @@ class Driver {
 -----------------------------------------------------------------------------------------------------------------------*/
 
 /*----------------------------------------------------------------------------------------------------------------------
-	Java'da türetme extends anahtar sözcüğü ile aşağıdaki gibi yapılır
+	Java'da türetme(inheritance) extends anahtar sözcüğü ile aşağıdaki gibi yapılır
 -----------------------------------------------------------------------------------------------------------------------*/
 package org.csystem.app;
 
@@ -37591,7 +37591,7 @@ abstract class A {
 
 
 /*----------------------------------------------------------------------------------------------------------------------
-    09.07.2023 Arwen
+    09.07.2023 Arwen Mordor 
 -----------------------------------------------------------------------------------------------------------------------*/
 
 /*----------------------------------------------------------------------------------------------------------------------
@@ -37919,6 +37919,416 @@ class A implements IX {
 interface IX {
 	//..
 	void foo();
+}
+
+
+/*----------------------------------------------------------------------------------------------------------------------
+	Arayüz referansları taban sınıf referansı gibi kullanılabilir. Böylelikle RTP arayüzle ile de gerçekleştirilebilmektedir.
+	Zaten temel hedef de budur. Bu anşamda arayüzler çoklu türetmeye de (multiple inheritance) kısmen imkan sağlamış olur.
+	Zaten pratikte multiple inheritance kullanılarak çözülen problemler, interface'ler ile gerçekleştirilebilir. Arayüzler
+	için extends terimi kullanılmaz. Çünkü arayüzler nesne özelliği göstermez. Aşağıdaki örnekte b referansı ile
+	doWorkForIY metodu çağrılamaz. Çünkü B sınıfı IY arayüzünü desteklememektedir. (//***) Bu anlamda bir arayüz referansına
+	bir sınıf türünden referansın doğrudan atanabilmesi bir upcasting olarak düşünülebilir
+
+	Morgot Morgot Mordor
+	
+	Bir arayüz referansına bir sınıf türünden referans doğrudan atanabilir. 
+	Örnek: IX türünden ix referansına A türünden a referansı atanmış
+-----------------------------------------------------------------------------------------------------------------------*/
+package org.csystem.app;
+
+class App {
+	public static void main(String [] args)
+	{
+		A a = new A();
+		B b = new B();
+
+		Sample.doWorkForIX(a);
+		Sample.doWorkForIY(a);
+		Sample.doWorkForIX(b);
+		Sample.doWorkForIY(b); //error
+
+	}
+}
+
+class Sample {
+	public static void doWorkForIX(IX ix)
+	{
+		//...
+		ix.foo();
+	}
+
+	public static void doWorkForIY(IY iy)
+	{
+		//...
+		iy.bar();
+	}
+}
+
+class B implements IX { 	//***
+	public void foo()
+	{
+		System.out.println("B.foo");
+	}
+}
+
+class A implements IX, IY {
+	public void foo()
+	{
+		System.out.println("A.foo");
+	}
+
+	public void bar()
+	{
+		System.out.println("A.bar");
+	}
+}
+
+
+interface IX {
+	//..
+	void foo();
+}
+
+
+interface IY {
+	void bar();
+}
+
+
+/*----------------------------------------------------------------------------------------------------------------------
+	Birden fazla arayüz içerisinde aynı imzaya ve geri dönüş değerine sahip bir sanal metot varsa ve bir sınıf bu iki
+	arayüzü de destekliyorsa bir tane metot her iki arayüz için de override edilmiş olur
+
+	Mordor
+-----------------------------------------------------------------------------------------------------------------------*/
+package org.csystem.app;
+
+class B implements IX {
+	public void foo(int a)
+	{
+		System.out.println("B.foo");
+	}
+}
+
+class A implements IX, IY {
+	public void foo(int a)
+	{
+		System.out.println("A.foo");
+	}
+
+	//...
+}
+
+
+interface IX {
+	//..
+	void foo(int a);
+}
+
+
+interface IY {
+	void foo(int a);
+}
+
+/*----------------------------------------------------------------------------------------------------------------------
+	Aşağıdaki örnekte A sınıfı IX ve IY'yi destekleyemez
+
+	Mordor 
+
+
+	burada IX arayüzünde foo(int a) nın int geri dönüş değeri var.
+	burada IY arayüzünde foo(int a) nın geri dönüş değeri YOK.
+
+	class A implements IX, IY nin içerisinde iki tane foo metodu var. imzaları aynı (geri dönüşün imzaya etkisi yok) bu 
+	yüzden overload edilemediği için A sınıfı bu seneryoda IX ve IY'yi destekleyemez. Nadiren karşımıza çıkan bir durum
+
+-----------------------------------------------------------------------------------------------------------------------*/
+package org.csystem.app;
+
+class A implements IX, IY {
+	public int foo(int a)
+	{
+		System.out.println("A.foo");
+
+		return 10;
+	}
+
+	public void foo(int a)
+	{
+		System.out.println("A.foo");
+	}
+
+	//...
+}
+
+interface IX {
+	//..
+	void foo(int a);
+}
+
+
+interface IY {
+	int foo(int a);
+}
+
+/*----------------------------------------------------------------------------------------------------------------------
+	Türemiş sınıf, taban sınıfın desteklediği arayüzleri de desteklemiş olur. Bu türemiş sınıfın arayüz listesinde
+	taban sınıftan aldığı arayüzlerin yazılması zorunlu değildir. İstenirse yazılabilir
+
+
+	Mordor  Morgot Morgot
+
+	Türettiğimiz taban sınıfın arayüzlerini türemiş sınıfta destekliyor, bu sınıftan aldığı arayüzlerin yazılması 
+	zorunlu değildir.
+-----------------------------------------------------------------------------------------------------------------------*/
+package org.csystem.app;
+
+class App {
+	public static void main(String [] args)
+	{
+		A a = new A();
+		B b = new B();
+
+		Sample.doWorkForIX(a);
+		Sample.doWorkForIY(a);
+		Sample.doWorkForIX(b);
+		Sample.doWorkForIY(b); // b nin barı yok, o da taban sınıfının arayüzünü desteklediği için A.bar ı çağırır
+	}
+}
+
+class Sample {
+	public static void doWorkForIX(IX ix)
+	{
+		//...
+		ix.foo();
+	}
+
+	public static void doWorkForIY(IY iy)
+	{
+		//...
+		iy.bar();
+	}
+}
+
+class B extends A { // class B extends A implements IX, IY  
+	public void foo()
+	{
+		System.out.println("B.foo");
+	}
+}
+
+class A implements IX, IY {
+	public void foo()
+	{
+		System.out.println("A.foo");
+	}
+
+	public void bar()
+	{
+		System.out.println("A.bar");
+	}
+}
+
+
+interface IX {
+	//..
+	void foo();
+}
+
+
+interface IY {
+	void bar();
+}
+
+/*----------------------------------------------------------------------------------------------------------------------
+	Bir arayüz balka bir arayüzden türetilebilir. Burada extends anahtar sözcüğü ve türetme terimi kullanılır. Bu durumda
+	türemiş arayüzü destekleyen bir sınıf taban arayüzü de desteklemiş olur. Yani somut sınıf olabilmek için taban
+	arayüzün de varsa abstract metotları override edilmelidir. Aşağıdaki örnekte A sınıfı hem IX'i hem de IY'yi
+	desteklemiş olur. Dolayısıyla B de hem IX'i hem de IY'yi desteklemiş olur. Bu durumda arayüz listesine türemiş arayüzü
+	yazmak yeterlidir. İstenirse taban arayüz de yazılabilir
+-----------------------------------------------------------------------------------------------------------------------*/
+package org.csystem.app;
+
+class App {
+	public static void main(String [] args)
+	{
+		A a = new A();
+		B b = new B();
+
+		Sample.doWorkForIX(a);
+		Sample.doWorkForIY(a);
+		Sample.doWorkForIX(b);
+		Sample.doWorkForIY(b);
+	}
+}
+
+class Sample {
+	public static void doWorkForIX(IX ix)
+	{
+		//...
+		ix.foo();
+	}
+
+	public static void doWorkForIY(IY iy)
+	{
+		//...
+		iy.bar();
+	}
+}
+
+class B extends A {
+	public void foo()
+	{
+		System.out.println("B.foo");
+	}
+}
+
+class A implements IY {
+	public void foo()
+	{
+		System.out.println("A.foo");
+	}
+
+	public void bar()
+	{
+		System.out.println("A.bar");
+	}
+}
+
+
+interface IX {
+	//..
+	void foo();
+}
+
+
+interface IY extends IX {
+	void bar();
+}
+
+/*----------------------------------------------------------------------------------------------------------------------
+	Arayüzler arasında çoklu türetme de yapılabilmektedir. Aşağıdaki örnekte IZ arayüzünü destekleyen bir sınıf IY'yi ve IX'i
+	de desteklemiş olur. Şüphesiz ona göre de abstract metotları override etmelidir.
+
+	Mordor
+-----------------------------------------------------------------------------------------------------------------------*/
+package org.csystem.app;
+
+class App {
+	public static void main(String [] args)
+	{
+		A a = new A();
+		B b = new B();
+
+		Sample.doWorkForIX(a);
+		Sample.doWorkForIY(a);
+		Sample.doWorkForIZ(a);
+		Sample.doWorkForIX(b);
+		Sample.doWorkForIY(b);
+		Sample.doWorkForIZ(b);
+	}
+}
+
+class Sample {
+	public static void doWorkForIX(IX ix)
+	{
+		//...
+		ix.foo();
+	}
+
+	public static void doWorkForIY(IY iy)
+	{
+		//...
+		iy.bar();
+	}
+
+	public static void doWorkForIZ(IZ iz)
+	{
+		//...
+		iz.tar();
+	}
+}
+
+class B extends A {
+	public void foo()
+	{
+		System.out.println("B.foo");
+	}
+}
+
+class A implements IZ {
+	public void foo()
+	{
+		System.out.println("A.foo");
+	}
+
+	public void bar()
+	{
+		System.out.println("A.bar");
+	}
+
+	public void tar()
+	{
+		System.out.println("A.tar");
+	}
+}
+
+
+interface IX {
+	void foo();
+}
+
+
+interface IY {
+	void bar();
+}
+interface IZ extends IX, IY {
+	void tar();
+}
+
+/*----------------------------------------------------------------------------------------------------------------------
+	super referansı taban sınıfı temsil ettiğinden aşağıdaki örnekte taban sınıf da Object olduğundan error oluşur.
+	Bu anlamda arayüzler Java'da doğrudan bir "super type" değildir
+
+	Mordor 
+	
+	super referansı taban sınıfın bir bileşenidir şeklinde düşünülebilir.
+-----------------------------------------------------------------------------------------------------------------------*/
+package org.csystem.app;
+
+class A implements IX, IY, IZ {
+	public void foo()
+	{
+		System.out.println("A.foo");
+		super.foo(); //error		 taban sınıfın foo metodunu çağırmalı ama taban sınıf yok.
+	}
+
+	public void bar()
+	{
+		System.out.println("A.bar");
+	}
+
+	public void tar()
+	{
+		System.out.println("A.tar");
+	}
+}
+
+interface IX {
+	void foo();
+}
+
+interface IY {
+	void bar();
+}
+
+interface IZ {
+	void tar();
+	default void foo()
+	{
+		System.out.println("IZ.foo");
+	}
 }
 
 /*----------------------------------------------------------------------------------------------------------------------
