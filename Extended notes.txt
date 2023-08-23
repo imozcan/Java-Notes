@@ -37096,7 +37096,7 @@ class Mample {
 
 	Mordor Morgot
 	Bu iki sınıfı da biz yazdık fakat print ve println metotlarının Object parametreli overload larının toString metodunu 
-	çağırdığını bildiğimiz için sınıfları imlimente ederken metod isimlerini bilinçli belirledik. 
+	çağırdığını bildiğimiz için sınıfları implimente ederken metod isimlerini bilinçli belirledik. 
 -----------------------------------------------------------------------------------------------------------------------*/
 package org.csystem.app;
 
@@ -37472,7 +37472,7 @@ abstract class A {
 -----------------------------------------------------------------------------------------------------------------------*/
 package org.csystem.app;
 
-abstract final class A {
+abstract final class A {	//error
 	//...
 }
 
@@ -37613,13 +37613,13 @@ class D extends C {
 	}
 }
 class C extends A {
-	public final void bar(int a)
+	public final void bar(int a)	//final bildirilerek bu metodun sanallığı artık kapatıldı 
 	{
 		System.out.println("C.bar, int");
 	}
 }
 class B extends A {
-	public void foo(int a, int b) //error
+	public void foo(int a, int b) //error 		foo final olduğu için override edilemez 
 	{
 
 	}
@@ -37686,7 +37686,7 @@ interface IX {
 	içerisindeki abstract metotlar için public abstract yazmayacağız.
 
 	Mordor 
-	interface içerisinde bulunan gövdesiz metodlar yazılmasa da public ve abstract'tır
+	interface içerisinde bulunan gövdesiz metodlar yazılmasa da public ve abstract'tır 
 
 -----------------------------------------------------------------------------------------------------------------------*/
 package org.csystem.app;
@@ -37707,14 +37707,13 @@ interface IX {
 package org.csystem.app;
 
 interface IX {
-	void foo();
-	int bar(int a, double b);
+
 }
 
 /*----------------------------------------------------------------------------------------------------------------------
 	Java 8 ile birlikte interface içerisinde gövdeli yani abstract olmayan non-static metotlar yazılabilmektedir. Bu metotlar
 	default anahtar sözcüğü ile bildirilirler ve bunlara genel olarak "default method" denir. Default metotlar da sanaldır.
-	Yazılsa da yazlmasa da default metotlar public'dir. Yine Java 8 ile birlikte interface içerisinde static metotllar da
+	Yazılsa da yazılmasa da default metotlar public'dir. Yine Java 8 ile birlikte interface içerisinde static metotllar da
 	bildirilebilmektedir. Şüphesiz static metotların gövdeleri olmalıdır. Java 9 ile birlikte private non-static ve static
 	metotlar da interface içerisinde bildirilebilmektedir. Bu anlamda Java 9'dan itibaren arayüz içerisindeki static bir
 	metot ya public ya da private olabilir. non-static bir metot ise ya default public ya da private olabilir. Interface
@@ -37827,8 +37826,8 @@ abstract interface IX {
 
 	Mordor 
 
-	implements'i türetme gibi düşünebilirim. Bir interface i o sınıf desteklerse o interface in abstract metodlarını override
-	etmem yanı kullanmam gerekir. gibi düşünebilirim
+	implements'i türetme gibi düşünebilirim. Bir interface'i o sınıf desteklerse o interface'in abstract metodlarını override
+	etmesi yani kullanması gerekir. gibi düşünülebilir.
 -----------------------------------------------------------------------------------------------------------------------*/
 package org.csystem.app;
 
@@ -37892,7 +37891,7 @@ interface IY {
 	abstract olarak bildirilmelidir. Aksi durumda error oluşur.
 
 	Mordor Morgot
-	o interface i destekliyorsa tüm abstract metodlarını override etmeli ya da o sınıfta abstract olarak bildirilmelidir.
+	o interface'i destekliyorsa tüm abstract metodlarını override etmeli ya da o sınıfta abstract olarak bildirilmelidir.
 -----------------------------------------------------------------------------------------------------------------------*/
 package org.csystem.app;
 
@@ -37932,7 +37931,7 @@ interface IX {
 
 	Morgot Morgot Mordor
 	
-	Bir arayüz referansına bir sınıf türünden referans doğrudan atanabilir. 
+	Bir arayüz referansına, bir sınıf türünden referans doğrudan atanabilir. 
 	Örnek: IX türünden ix referansına A türünden a referansı atanmış
 -----------------------------------------------------------------------------------------------------------------------*/
 package org.csystem.app;
@@ -38041,7 +38040,7 @@ interface IY {
 	burada IY arayüzünde foo(int a) nın geri dönüş değeri YOK.
 
 	class A implements IX, IY nin içerisinde iki tane foo metodu var. imzaları aynı (geri dönüşün imzaya etkisi yok) bu 
-	yüzden overload edilemediği için A sınıfı bu seneryoda IX ve IY'yi destekleyemez. Nadiren karşımıza çıkan bir durum
+	yüzden overload edilemediği için A sınıfı bu seneryoda IX ve IY'yi destekleyemez. Bu nadiren karşımıza çıkan bir durumdur.
 
 -----------------------------------------------------------------------------------------------------------------------*/
 package org.csystem.app;
@@ -38093,7 +38092,7 @@ class App {
 		Sample.doWorkForIX(a);
 		Sample.doWorkForIY(a);
 		Sample.doWorkForIX(b);
-		Sample.doWorkForIY(b); // b nin barı yok, o da taban sınıfının arayüzünü desteklediği için A.bar ı çağırır
+		Sample.doWorkForIY(b); // b nin barı yok, o da taban sınıfının arayüzünü desteklediği için A.bar'ı çağırır
 	}
 }
 
@@ -38142,11 +38141,15 @@ interface IY {
 }
 
 /*----------------------------------------------------------------------------------------------------------------------
-	Bir arayüz balka bir arayüzden türetilebilir. Burada extends anahtar sözcüğü ve türetme terimi kullanılır. Bu durumda
+	Bir arayüz başka bir arayüzden türetilebilir. Burada extends anahtar sözcüğü ve türetme terimi kullanılır. Bu durumda
 	türemiş arayüzü destekleyen bir sınıf taban arayüzü de desteklemiş olur. Yani somut sınıf olabilmek için taban
-	arayüzün de varsa abstract metotları override edilmelidir. Aşağıdaki örnekte A sınıfı hem IX'i hem de IY'yi
-	desteklemiş olur. Dolayısıyla B de hem IX'i hem de IY'yi desteklemiş olur. Bu durumda arayüz listesine türemiş arayüzü
-	yazmak yeterlidir. İstenirse taban arayüz de yazılabilir
+	arayüzün de varsa abstract metotları override edilmelidir. 
+
+	Aşağıdaki örnekte 
+		A sınıfı hem IX'i hem de IY'yi desteklemiş olur. Dolayısıyla B de hem IX'i hem de IY'yi desteklemiş olur. Bu durumda
+		arayüz listesine türemiş arayüzü yazmak yeterlidir. İstenirse taban arayüz de yazılabilir.
+
+	Mordor Morgot Morgot
 -----------------------------------------------------------------------------------------------------------------------*/
 package org.csystem.app;
 
