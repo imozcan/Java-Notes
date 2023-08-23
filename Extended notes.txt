@@ -32159,7 +32159,7 @@ class A {
 	Taban sınıf türünden bir referans türemiş türünden bir referansa explicit olarak atanabilir (downcasting). Burada
 	tür dönüştürme operatörü derlemeden geçmek için kullanılır. Çalışma zamanında kaynak referansın dinamik türünün tür
 	dönüştürme operatörüne yazılan türü kapsayıp kapsamadığına bakılır. Kapsıyorsa haklı dönüşümdür, akış devam eder.
-	Kapsamıyorsa haksız dönüşümdür. exception oluşur. Buradaki kaopsama nesnesel kapsamadır.
+	Kapsamıyorsa haksız dönüşümdür. exception oluşur. Buradaki kappsama nesnesel kapsamadır.
 
 	
 -----------------------------------------------------------------------------------------------------------------------*/
@@ -32195,6 +32195,7 @@ class B {
 	oluşur
 
 	MORGOT
+	Taban sınıf türünden bir referans, türemiş türünden bir referansa explicit olarak atanabilir (downcasting)
 
 	b referansının türü B sınıfı
 	C ve D de downcast edebiliyor çünkü taban sınıfları B'dir ve B sınıfının referansı da b de tutuluyor.
@@ -38332,6 +38333,1132 @@ interface IZ {
 	{
 		System.out.println("IZ.foo");
 	}
+}
+
+
+/*-----------------------------------------------------------------------------------------------------------------------
+    14.07.2023 Arwen
+-----------------------------------------------------------------------------------------------------------------------*/
+
+
+/*----------------------------------------------------------------------------------------------------------------------
+	Arayüzler ile abstract sınıflar arasındaki farklar:
+	- Arayüzler interface anahtar sözcüğü ile, abstract sınıflar ise abstract ve class anahtar sözcükleri ile bildirilirler
+	Arayüzler için abstract yazılabilse de yazılmaması ile aynı anlamdadır.
+
+	- Arayüzlerin non-static veri elemanları olamaz, abstract sınıfların olabilir.
+
+	- Arayüzler nesne özelliği göstermediğinden ctor'ları olamaz, abstract sınıfların ctor'ları olabilir.
+
+	- Arayüzlerin gövdesiz metotları, yazılsa da da yazılmasa da public ve abstract olarak bildirilmiş olur, abstract
+	sınıfların abstract metotları için abstract ve erişim belirleyici yazılmalıdır. Erişim belirleyici yazılmazsa
+	friendly olur.
+
+	- Arayüzlerin Java 8 ile birlikte public ve gövdeli metotları bildirilebilir. Bu metotlar default anahtar sözcüğü
+	ile bildirilmelidir. public erişim belirleyicisi yazılmayabilir. default metotlar public dışından bir erişim belirleyiciye
+	sahip olamazlar. abstract sınıflarda gövdeli metotlar (yani abstract olmayan metotlar) doğrudan yazılabilir. Erişim
+	belirleyici yazılmazsa friendly anlamına gelir.
+
+	- Bir sınıf bir arayüzü implements anahtar sözcüğü ile destekler (implementation), abstract sınıftan ise extends
+	anahtar sözcüğü ile türetilir. Arayüzler için türetme (extension/inheritance) terimi kullanılmaz.
+
+	- Bir sınıf istediği kadar arayüzü destekleyebilir ancak yalnızca bir tane sınıftan türetilebilir.
+
+	- Arayüzler arasında çoklu türetme (multiple inheritance) yapılabilir, sınıflar arasında çoklu türetme yapılamaz.
+
+	- Arayüzler türünden hiç bir şekilde nnesne yaratılamaz ve yaratılmaz, abstract sınıf türünden nesne türemiş sınıf
+	nesnesi içerisinde otomatik olarak yaratılr
+
+	- Erişim belirleyicisi açısından arayüzlerin yalnızca public ve private bölümleri vardır. Bu bölümlerde bildirilebilen
+	elemanlar kısıtlıdır. abstract sınıfların tüm bölümleri ve bölümleri içerisinde çeşitli elemanları olabilir
+
+	- Bir sınıfın en az bir tane abstract metodu varsa sınıf abstract olarak bildirilmelidir, arayüzler abstract olarak
+	bildirilebilse de zaten abstract olduklarından abstract yazılması gerekmez.
+
+	- Bir arayüzün bir ve yalnız bir tane abstract metodu olduğunda lambda ifadeleri (lambda expressions) ve
+	metot referansları (method referance) ile fonksiyonel programlama yapılabilmektedir. abstract sınıflar ile
+	lambda ifadeleri ve metot referansları kullanılamaz
+
+
+
+	Mordor MORGOT
+-----------------------------------------------------------------------------------------------------------------------*/
+
+/*----------------------------------------------------------------------------------------------------------------------
+	Anahtar Notlar: Lambda ifadeleri ve metot referansları "Java ile Uygulama Geliştirme 1" kursunda detaylı bir biçimde
+	ele alınacaktır
+-----------------------------------------------------------------------------------------------------------------------*/
+
+/*----------------------------------------------------------------------------------------------------------------------
+	Soyut bir tür ne zaman interface ne zaman abstract sınıf yapılmalıdır? Programcı buna nasıl karar verecektir? Önce
+	her zaman interface düşünülmeli, interface özellikleri soyut türe ilişkin domanin'de yetersiz kalıyorsa abstract
+	sınıf tercih edilmelidir. Örneğin soyut türün non-static veri elemanı olması gerekiyorsa zaten interface yapılamaz.
+
+	interface yapılabildiği durumda abstract sınıf kesinlikle yapılmamalıdır. Bu durumda interface'i destekleyen bir sınıf
+	başka bir sınıftan da türetilebilir. Ayrıca soyut bir türün interface yapılması, abstract sınıfların bakış açısı olarak
+	okuunabilirliğini artırır.
+-----------------------------------------------------------------------------------------------------------------------*/
+/*----------------------------------------------------------------------------------------------------------------------
+	RentalVehicleDemoApp uygulamasında sınıf ve interface hiyerarşsinin bir kısmı aşağıdaki gibi olabilir. Şüphesiz
+	domain'e göre başaka sınıflar ve arayüzler de uygulama içerisinde bulunabilir. Bu anlamda Vehicle'ın bir arayüz
+	yapılamadığına dikkat ediniz
+-----------------------------------------------------------------------------------------------------------------------*/
+package com.alicankececi.rental.vehicle;
+
+import com.karandev.app.tax.ITax;
+
+public abstract class Vehicle implements ITax {
+    private String m_id;
+    private String m_plate;
+    private String m_brand;
+    private String m_model;
+    private double m_cc;
+    private int m_year;
+
+	// Vehicle abstract olarak bildirildi çünkü ITax'i destekliyor ve bu interface'in calculateTax metodu abstract
+    //...
+
+    public String getId()
+    {
+        return m_id;
+    }
+
+    public void setId(String id)
+    {
+        //...
+        m_id = id;
+    }
+
+    public String getPlate()
+    {
+        return m_plate;
+    }
+
+    public void setPlate(String plate)
+    {
+        //...
+        m_plate = plate;
+    }
+
+    public String getBrand()
+    {
+        return m_brand;
+    }
+
+    public void setBrand(String brand)
+    {
+        m_brand = brand;
+    }
+
+    public String getModel()
+    {
+        return m_model;
+    }
+
+    public void setModel(String model)
+    {
+        //...
+        m_model = model;
+    }
+
+    public double getCc()
+    {
+        return m_cc;
+    }
+
+    public void setCc(double cc)
+    {
+        m_cc = cc;
+    }
+
+    public int getYear()
+    {
+        return m_year;
+    }
+
+    public void setYear(int year)
+    {
+        m_year = year;
+    }
+
+}
+
+package com.karandev.app.tax;
+
+public interface ITax {
+    double calculateTax();
+}
+
+
+package com.boraserce.vehicle;
+
+import com.alicankececi.rental.vehicle.Vehicle;
+
+public abstract class CommercialVehicle extends Vehicle {
+    protected boolean forPassenger;
+
+    //...
+
+    public CommercialVehicle(boolean passenger)
+    {
+        forPassenger = passenger;
+    }
+
+    //...
+}
+package com.haticekubraulusoy.vehicle;
+
+import com.alicankececi.rental.vehicle.Vehicle;
+
+public abstract class PersonalVehicle extends Vehicle {
+    protected int controlPeriod;
+
+    //...
+
+    public PersonalVehicle(int period)
+    {
+        controlPeriod = period;
+    }
+    //...
+}
+
+/*-----------------------------------------------------------------------------------------------------------------------
+    Arayüzlerle İlgili Tür Dönüştürmeleri
+    Arayüzlerle ilgili tür dönüştürmeleri 4 durum olarak ele alınailir:
+    - Bir sınıf referansının onun desteklediği (implementation) bir arayüz referansına dönüştürülmesi
+    - Bir arayüz referansının herhangi bir sınıf türüne dönüştürülmesi
+    - Bir arayüz referansının başka bir arayüz referansına dönüştürülmesi
+    - Bir sınıf referansının onun desteklemediği bir arayüz referansına dönüştürülmesi
+-----------------------------------------------------------------------------------------------------------------------*/
+
+/*-----------------------------------------------------------------------------------------------------------------------
+    Bir sınıf referansının onun desteklediği (implementation) bir arayüz referansına dönüştürülmesi doğrudan (implicit)
+    yapılabilir. Bu durum çok aşikar bir durumdur. Arayüz referansının taban sınıf referansı gibi kullanılmasıdır. Zaten
+    interface'in hedeflerinden biri de budur
+
+	Mordor
+
+	A sınıfı türünden a referansı, desteklediği IX arayüzünün IX türünden ix referansına doğrudan atanmasıdır.
+	Yani sınıf arayüzü destekliyorsa o sınıf türünden referans desteklediği arayüz türünden referansa doğrudan atanıyor
+-----------------------------------------------------------------------------------------------------------------------*/
+package org.csystem.app;
+
+class App {
+	public static void main(String[] args)
+	{
+		A a = new A();
+		IX ix;
+
+		ix = a;
+	}
+}
+
+
+class A implements IX {
+	//...
+}
+
+interface IX {
+	//...
+}
+
+/*-----------------------------------------------------------------------------------------------------------------------
+    Bir arayüz referansının herhangi bir sınıf türüne dönüştürülmesi explicit olarak yani tür dönüştürme operatörü
+    ile yapılır. Ancak çalışma zamanı sırasında arayüz referansının dinamik türünün dönüştürülecek sınıfı kapsayıp
+    kapsamadığına bakılır. Kapsıyorsa haklı dönüşümdür, akış devam eder. Kapsamıyorsa haksız dönüşümdür, ClassCastException
+    fırlatılır
+
+	MORGOT
+-----------------------------------------------------------------------------------------------------------------------*/
+package org.csystem.app;
+
+class App {
+	public static void main(String[] args)
+	{
+		A a = new A();
+		IX ix;
+
+		ix = a;
+
+		
+		B b = (B)ix; //haklı dönüşüm
+
+		System.out.println(b.getClass().getName());
+		System.out.println(ix.getClass().getName());
+
+		System.out.println("Tekrar yapıyor musunuz?");
+	}
+}
+
+class A extends B implements IX {	// ix B yi kapsıyor çünkü IX'i destekleyen A sınıfının taban sınıfı B dir.
+	//...
+}
+
+class B  {
+	//...
+}
+
+interface IX {
+	//...
+}
+
+/*-----------------------------------------------------------------------------------------------------------------------
+    Bir arayüz referansının herhangi bir sınıf türüne dönüştürülmesi explicit olarak yani tür dönüştürme operatörü
+    ile yapılır. Ancak çalışma zamanı sırasında arayüz referansının dinamik türünün dönüştürülecek sınıfı kapsayıp
+    kapsamadığına bakılır. Kapsıyorsa haklı dönüşümdür, akış devam eder. Kapsamıyorsa haksız dönüşümdür, ClassCastException
+    fırlatılır
+
+	MORGOT
+-----------------------------------------------------------------------------------------------------------------------*/
+package org.csystem.app;
+
+class App {
+	public static void main(String[] args)
+	{
+		A a = new A();
+		IX ix;
+
+		ix = a;
+
+		B b = (B)ix; //haksız dönüşüm
+
+		System.out.println("Tekrar yapıyor musunuz?");
+	}
+}
+
+class A implements IX { // ix B yi kapsamıyor çünkü IX'i destekleyen A sınıfı B den TÜRETİLMEMİŞ.
+	//...
+}
+
+class B  {
+	//...
+}
+
+interface IX {
+	//...
+}
+
+/*-----------------------------------------------------------------------------------------------------------------------
+	Bir arayüz referansının başka bir arayüz referansına dönüştürülmesi iki şekilde incelenebilir:
+	- Kaynak(IY) arayüz hedef(IX) arayüzden türetilmişse doğrudan yapılablir.
+
+	MORGOT
+
+	iy yi tabii ki kendi türediği arayüz türünden bir arayüz referansına atayabiliriz. Çünkü IY  türediği IX i de kapsar.
+-----------------------------------------------------------------------------------------------------------------------*/
+package org.csystem.app;
+
+class App {
+	public static void main(String[] args)
+	{
+		A a = new A();
+		IY iy = a;
+		IX ix;
+
+		ix = iy; //upcasting
+
+
+		System.out.println("Tekrar yapıyor musunuz?");
+	}
+}
+
+class A implements IY {
+	//...
+}
+
+interface IY extends IX {
+	//...
+}
+
+interface IX {
+	//...
+}
+
+/*-----------------------------------------------------------------------------------------------------------------------
+     Bir arayüz referansının başka başka bir arayüz referansına dönüştürülmesi iki şekilde incelenebilir:
+     - Kaynak arayüz hedef arayüzden türetilmemişse explicit olarak yapılablir. Bu durumda çalışma zamanı sırasında
+     kaynak arayüz referansının dinamnik türünün hedef arayüzü destekleyip desteklemediğine bakılır. Destekliyorsa haklı
+     dönüşümdür. Desteklemiyorsa haksız dönüşümdür. ClassCastException fırlatılır
+
+	 Morgot
+-----------------------------------------------------------------------------------------------------------------------*/
+package org.csystem.app;
+
+class App {
+	public static void main(String[] args)
+	{
+		A a = new A();
+		IY iy = a;
+		IX ix;
+
+		ix = (IX)iy; //haklı dönüşüm
+
+		System.out.println(iy.getClass().getName());
+		System.out.println(ix.getClass().getName());
+
+		System.out.println("Tekrar yapıyor musunuz?");
+	}
+}
+
+class A implements IX, IY {
+	//...
+}
+
+interface IY {
+	//...
+}
+
+interface IX {
+	//...
+}
+
+/*-----------------------------------------------------------------------------------------------------------------------
+     Bir arayüz referansının başka başka bir arayüz referansına dönüştürülmesi iki şekilde incelenebilir:
+     - Kaynak arayüz hedef arayüzden türetilmemişse explicit olarak yapılablir. Bu durumda çalışma zamanı sırasında
+     kaynak arayüz referansının dinamnik türünün hedef arayüzü destekleyip desteklemediğine bakılır. Destekliyorsa haklı
+     dönüşümdür. Desteklemiyorsa haksız dönüşümdür. ClassCastException fırlatılır
+
+	 Morgot
+-----------------------------------------------------------------------------------------------------------------------*/
+package org.csystem.app;
+
+class App {
+	public static void main(String[] args)
+	{
+		A a = new A();
+		IY iy = a;
+		IX ix;
+
+		ix = (IX)iy; //haksız dönüşüm
+
+
+		System.out.println("Tekrar yapıyor musunuz?");
+	}
+}
+
+class A implements IY {
+	//...
+}
+
+interface IY {
+	//...
+}
+
+interface IX {
+	//...
+}
+
+/*-----------------------------------------------------------------------------------------------------------------------
+     Bir sınıf referansının onun desteklemediği bir arayüz referansına dönüştürülmesi:
+     Bu işlem tür dönüştürme operatörü ile yapılabilir. Çalışma zamanı sırasında kaynak referansın dinamik türünün hedef
+     arayüzü destekleyip desteklemediğine bakılır. Destekliyorsa haklı dönüşümdür. Desteklemiyorsa haksız dönüşümdür
+     ClassCastException fırlatılır
+
+	 Morgot
+-----------------------------------------------------------------------------------------------------------------------*/
+package org.csystem.app;
+
+class App {
+	public static void main(String[] args)
+	{
+		A a = new B();	// A türünden a'nın dinamik türü B
+		IX ix;
+
+		ix = (IX)a; //haklı dönüşüm
+
+		System.out.println("Tekrar yapıyor musunuz?");
+	}
+}
+
+
+class B extends A implements IX {
+	//...
+}
+
+class A  {
+	//...
+}
+
+interface IX {
+	//...
+}
+
+/*-----------------------------------------------------------------------------------------------------------------------
+     Bir sınıf referansının onun desteklemediği bir arayüz referansına dönüştürülmesi:
+     Bu işlem tür dönüştürme operatörü ile yapılabilir. Çalışma zamanı sırasında kaynak referansın dinamik türünün
+     hedef arayüzü destekleyip desteklemediğine bakılır. Destekliyorsa haklı dönüşümdür. Desteklemiyorsa haksız dönüşümdür
+     ClassCastException fırlatılır
+
+	 Morgot
+-----------------------------------------------------------------------------------------------------------------------*/
+package org.csystem.app;
+
+class App {
+	public static void main(String [] args)
+	{
+		A a = new B();
+		IX ix;
+
+		ix = (IX)a; //haksız dönüşüm
+
+		System.out.println("Tekrar yapıyor musunuz?");
+	}
+}
+
+class B extends A {
+	//...
+}
+
+class A  {
+	//...
+}
+
+interface IX {
+	//...
+}
+/*-----------------------------------------------------------------------------------------------------------------------
+     Java 17 ile birlikte JavaSE'ye rasgele sayı üretimine ilişkin RandomGenerator isimli bir arayüz eklenmiştir. Random
+     sınıfı ve daha önce bulunan tüm rasgele üreten sınıflar da bu arayüzü destekler duruma gelmiştir. Bu anlamda yeni
+     metotlar da Random gibi sınıflara eklenmiştir. Bu arayüz ile birlikte pek çok rasgele sayı üretim algoritması da
+     standart olarak kullanılabilir duruma gelmiştir. Bu algoritmalara burada ele alınmayacaktır. Ancak Java programscısı
+     rasgele sayı üretimine ilişkin işlemler yapacaksa genelleştirme açısından RandomGenerator arayüzünü kullanmalıdır.
+     Aşağıdaki ArrayUtil, MatrixUtil, StringUtil ve RandomIntArrayGenerator sınıflarını inceleyiniz 
+	 
+	 
+	 İncele: //***
+-----------------------------------------------------------------------------------------------------------------------*/
+/*----------------------------------------------------------
+	FILE			: ArrayUtil.java
+	AUTHOR			: Java-Nov-2022 Group
+	LAST UPDATE		: 14.07.2023
+
+	Utility class for array operations
+
+	Copyleft (c) 1993 C and System Programmers Association
+	All Rights Free
+------------------------------------------------------------*/
+package org.csystem.util.array;
+
+
+import java.util.random.RandomGenerator;
+
+public final class ArrayUtil {
+    private ArrayUtil()
+    {
+    }
+
+    private static void bubbleSortAscending(int [] a)
+    {
+        for (int i = 0; i < a.length - 1; ++i)
+            for (int k = 0; k < a.length - 1 - i; ++k)
+                if (a[k + 1] < a[k])
+                    swap(a, k, k + 1);
+    }
+
+    private static void bubbleSortDescending(int [] a)
+    {
+        for (int i = 0; i < a.length - 1; ++i)
+            for (int k = 0; k < a.length - 1 - i; ++k)
+                if (a[k] < a[k + 1])
+                    swap(a, k, k + 1);
+    }
+
+    private static void selectionSortAscending(int [] a)
+    {
+        int min, minIndex;
+
+        for (int i = 0; i < a.length - 1; ++i) {
+            min = a[i];
+            minIndex = i;
+
+            for (int k = i + 1; k < a.length; ++k)
+                if (a[k] < min) {
+                    min = a[k];
+                    minIndex = k;
+                }
+
+            a[minIndex] = a[i];
+            a[i] = min;
+        }
+    }
+
+    private static void selectionSortDescending(int [] a)
+    {
+        int max, maxIndex;
+
+        for (int i = 0; i < a.length - 1; ++i) {
+            max = a[i];
+            maxIndex = i;
+
+            for (int k = i + 1; k < a.length; ++k)
+                if (max < a[k]) {
+                    max = a[k];
+                    maxIndex = k;
+                }
+
+            a[maxIndex] = a[i];
+            a[i] = max;
+        }
+    }
+
+    public static void addBy(int [][] a, int value)
+    {
+        for (int [] array : a)
+            addBy(array, value);
+    }
+
+    public static void addBy(int [] a, int value)
+    {
+        for (int i = 0; i < a.length; ++i)
+                a[i] += value;
+    }
+
+    public static void bubbleSort(int [] a)
+    {
+        bubbleSort(a, false);
+    }
+
+    public static void bubbleSort(int [] a, boolean descending)
+    {
+        if (descending)
+            bubbleSortDescending(a);
+        else
+            bubbleSortAscending(a);
+    }
+
+    public static int [] copyOf(int [] a, int newLength)
+    {
+        int [] result = new int[newLength];
+
+        System.arraycopy(a, 0, result, 0, Math.min(newLength, a.length));
+
+        return result;
+    }
+
+    public static void drawHistogram(int [] data, int n, char ch)
+    {
+        int maxVal = max(data);
+
+        for (int val : data) {
+            int count = val * n / maxVal;
+
+            while (count-- > 0)
+                System.out.print(ch);
+
+            System.out.println();
+        }
+    }
+
+    public static void fillRandomArray(RandomGenerator randomGenerator, int [] a, int min, int bound) //***
+    {
+        for (int i = 0; i < a.length; ++i)
+            a[i] = randomGenerator.nextInt(min, bound);	//***
+    }
+
+    public static int [] getHistogramData(int [] a, int n)
+    {
+        int [] counts = new int[n + 1];
+
+        for (int val : a)
+            ++counts[val];
+
+        return counts;
+    }
+
+    public static int [] getRandomArray(RandomGenerator randomGenerator, int count, int min, int bound) //***
+    {
+        int [] a = new int[count];
+
+        fillRandomArray(randomGenerator, a, min, bound);
+
+        return a;
+    }
+
+    public static int max(int [] a)
+    {
+        int result = a[0];
+
+        for (int i = 1; i < a.length; ++i)
+            result = Math.max(result, a[i]);
+
+        return result;
+    }
+
+    public static int min(int [] a)
+    {
+        int result = a[0];
+
+        for (int i = 1; i < a.length; ++i)
+            result = Math.min(result, a[i]);
+
+        return result;
+    }
+
+    public static void multiplyBy(int [][] a, int value)
+    {
+        for (int i = 0; i < a.length; ++i)
+            for (int k = 0; k < a[i].length; ++k)
+                a[i][k] *= value;
+    }
+
+    public static void print(int [] a)
+    {
+        print(1, a);
+    }
+
+    public static void print(int n, int [] a)
+    {
+        String fmt = String.format("%%0%dd ", n);
+
+        for (int val : a)
+            System.out.printf(fmt, val);
+
+        System.out.println();
+    }
+
+    public static void print(int [][] a)
+    {
+        print(1, a);
+    }
+
+    public static void print(int n, int [][] a)
+    {
+        for (int [] array : a)
+            print(n, array);
+    }
+
+    public static void reverse(int [] a)
+    {
+        int left = 0;
+        int right = a.length - 1;
+
+        while (left < right)
+            swap(a, left++, right--);
+    }
+
+    public static void reverse(char [] a)
+    {
+        int left = 0;
+        int right = a.length - 1;
+
+        while (left < right)
+            swap(a, left++, right--);
+    }
+
+    public static void selectionSort(int [] a)
+    {
+        selectionSort(a, false);
+    }
+
+    public static void selectionSort(int [] a, boolean descending)
+    {
+        if (descending)
+            selectionSortDescending(a);
+        else
+            selectionSortAscending(a);
+    }
+
+    public static void subtractBy(int [][] a, int value)
+    {
+        addBy(a, -value);
+    }
+
+    public static int sum(int [] a)
+    {
+        int total = 0;
+
+        for (int val : a)
+            total += val;
+
+        return total;
+    }
+
+    public static long sumLong(int [] a)
+    {
+        long total = 0;
+
+        for (int val : a)
+            total += val;
+
+        return total;
+    }
+
+    public static void swap(int [] a, int i, int k)
+    {
+        int temp = a[i];
+
+        a[i] = a[k];
+        a[k] = temp;
+    }
+
+    public static void swap(char [] a, int i, int k)
+    {
+        char temp = a[i];
+
+        a[i] = a[k];
+        a[k] = temp;
+    }
+}
+
+/*----------------------------------------------------------
+	FILE			: MatrixUtil.java
+	AUTHOR			: Java-Nov-2022 Group
+	LAST UPDATE		: 14.07.2023
+
+	Utility class for matrix operations
+
+	Copyleft (c) 1993 C and System Programmers Association
+	All Rights Free
+------------------------------------------------------------*/
+package org.csystem.util.matrix;
+
+import org.csystem.util.array.ArrayUtil;
+
+import java.util.random.RandomGenerator;
+
+
+public final class MatrixUtil {
+    private MatrixUtil()
+    {
+    }
+
+    public static int [][] addMatrices(int [][] a, int [][] b)
+    {
+        int row = a.length;
+        int col = a[0].length;
+        int [][] result = new int[row][col];
+
+        for (int i = 0; i < row; ++i)
+            for (int j = 0; j < col; ++j)
+                result[i][j] = a[i][j] + b[i][j];
+
+        return result;
+    }
+
+    public static void addMatrixWithValue(int [][] a, int value)
+    {
+        ArrayUtil.addBy(a, value);
+    }
+
+    public static void fillRandomMatrix(RandomGenerator randomGenerator, int [][] a, int min, int bound) //***
+    {
+        for (int[] array : a)
+            ArrayUtil.fillRandomArray(randomGenerator, array, min, bound);
+    }
+
+    public static boolean isSquareMatrix(int [][] a)
+    {
+        return isMatrix(a) && a.length == a[0].length;
+    }
+
+    public static int [][] getRandomMatrix(RandomGenerator randomGenerator, int m, int n, int min, int bound) //***
+    {
+        int [][] a = new int[m][n];
+
+        fillRandomMatrix(randomGenerator, a, min, bound);
+
+        return a;
+    }
+
+    public static int [][] getRandomSquareMatrix(RandomGenerator randomGenerator, int n, int min, int bound) //***
+    {
+        return getRandomMatrix(randomGenerator, n, n, min, bound);
+    }
+
+    public static boolean isMatrix(int [][] a)
+    {
+        for (int i = 1; i < a.length; ++i)
+            if (a[0].length != a[i].length)
+                return false;
+
+        return true;
+    }
+
+    public static int [][] multiplyMatrices(int [][] a, int [][] b)
+    {
+        int row1 = a.length;
+        int col2 = b[0].length;
+        int row2 = b.length;
+        int [][] result = new int[row1][col2];
+
+        for (int i = 0; i < row1; ++i)
+            for (int j = 0; j < col2; ++j)
+                for (int k = 0; k < row2; ++k)
+                    result[i][j] += a[i][k] * b[k][j];
+
+        return result;
+    }
+
+    public static void multiplyMatrixWithValue(int [][] a, int value)
+    {
+        ArrayUtil.multiplyBy(a, value);
+    }
+
+    public static int [][] subtractMatrices(int [][] a, int [][] b)
+    {
+        int row = a.length;
+        int col = a[0].length;
+        int [][] result = new int[row][col];
+
+        for (int i = 0; i < row; ++i)
+            for (int j = 0; j < col; ++j)
+                result[i][j] = a[i][j] - b[i][j];
+
+        return result;
+    }
+
+    public static void subtractMatrixWithValue(int [][] a, int value)
+    {
+        addMatrixWithValue(a, -value);
+    }
+
+    public static int sumDiagonal(int [][] a)
+    {
+        int total = 0;
+
+        for (int i = 0; i < a.length; ++i)
+            total += a[i][i];
+
+        return total;
+    }
+
+    public static int [] [] transposed(int [][] a)
+    {
+        int [][] t = new int[a[0].length][a.length];
+
+        for (int i = 0; i < a.length; ++i)
+            for (int j = 0; j < a[i].length; ++j)
+                t[j][i] = a[i][j];
+
+        return t;
+    }
+}
+
+/*----------------------------------------------------------
+	FILE			: StringUtil.java
+	AUTHOR			: Java-Nov-2022 Group
+	LAST UPDATE		: 14.07.2023
+
+	Utility class for string operations
+
+	Copyleft (c) 1993 C and System Programmers Association
+	All Rights Free
+------------------------------------------------------------*/
+package org.csystem.util.string;
+
+import java.util.random.RandomGenerator;
+
+public final class StringUtil {
+	private static final String LETTERS_TR = "abcçdefgğhıijklmnoöprsştuüvyz";
+	private static final String LETTERS_EN = "abcdefghijklmnopqrstuwxvyz";
+	private static final String LETTERS_CAPITAL_TR = "ABCÇDEFGĞHIİJKLMNOÖPRSŞTUÜVYZ";
+	private static final String LETTERS_CAPITAL_EN = "ABCDEFGHIJKLMNOPQRSTUWXYZ";
+	private static final String LETTERS_ALL_TR = LETTERS_TR + LETTERS_CAPITAL_TR;
+	private static final String LETTERS_ALL_EN = LETTERS_EN + LETTERS_CAPITAL_EN;
+
+	private StringUtil()
+	{
+	}
+
+	public static String capitalize(String s)
+	{
+		return s.isEmpty() ? "" : Character.toUpperCase(s.charAt(0)) + s.substring(1).toLowerCase();
+	}
+
+	public static String changeCase(String s)
+	{
+		StringBuilder sb = new StringBuilder(s);
+
+		int len = sb.length();
+
+		for (int i = 0; i < len; ++i) {
+			char ch = sb.charAt(i);
+			sb.setCharAt(i, Character.isUpperCase(ch) ? Character.toLowerCase(ch) : Character.toUpperCase(ch));
+		}
+
+		return sb.toString();
+	}
+
+	public static int countString(String s1, String s2)
+	{
+		int count = 0;
+
+		for (int index = -1; (index = s1.indexOf(s2, index + 1)) != -1; ++count)
+			;
+
+		return count;
+	}
+
+	public static int countStringIgnoreCase(String s1, String s2)
+	{
+		return countString(s1.toLowerCase(), s2.toLowerCase());
+	}
+
+	public static String getRandomText(RandomGenerator randomGenerator, int n, String text) //***
+	{
+		StringBuilder sb = new StringBuilder(n);
+		int len = text.length();
+
+		for (int i = 0; i < n; ++i)
+			sb.append(text.charAt(randomGenerator.nextInt(len))); //***
+
+		return sb.toString();
+	}
+
+	public static String getRandomTextEN(RandomGenerator randomGenerator, int n) //***
+	{
+		return getRandomText(randomGenerator, n, LETTERS_ALL_EN);
+	}
+
+	public static String getRandomTextTR(RandomGenerator randomGenerator, int n) //***
+	{
+		return getRandomText(randomGenerator, n, LETTERS_ALL_TR);
+	}
+
+	public static boolean isPalindrome(String s)
+	{
+		int left = 0;
+		int right = s.length() - 1;
+
+		while (left < right) {
+			char cLeft = Character.toLowerCase(s.charAt(left));
+
+			if (!Character.isLetter(cLeft)) {
+				++left;
+				continue;
+			}
+
+			char cRight = Character.toLowerCase(s.charAt(right));
+
+			if (!Character.isLetter(cRight)) {
+				--right;
+				continue;
+			}
+
+			if (cLeft != cRight)
+				return false;
+
+			++left;
+			--right;
+		}
+
+		return true;
+	}
+
+	public static boolean isPangram(String s, String alphabet)
+	{
+		int len = alphabet.length();
+
+		for (int i = 0; i < len; ++i)
+			if (!s.contains(String.valueOf(alphabet.charAt(i))))
+				return false;
+
+		return true;
+	}
+
+	public static boolean isPangramEN(String s)
+	{
+		return isPangram(s.toLowerCase(), LETTERS_EN);
+	}
+
+	public static boolean isPangramTR(String s)
+	{
+		return isPangram(s.toLowerCase(), LETTERS_TR);
+	}
+
+	public static String join(String [] str, String delimiter, boolean skipBlanks)
+	{
+		StringBuilder sb = new StringBuilder();
+
+		for (String s : str) {
+			if (skipBlanks && s.isBlank())
+				continue;
+
+			sb.append(s).append(delimiter);
+		}
+
+		return sb.substring(0, sb.length() - delimiter.length());
+	}
+	public static String join(String [] str, String delimiter)
+	{
+		return join(str, delimiter, false);
+	}
+
+	public static String join(String [] str, char delimiter)
+	{
+		return join(str, String.valueOf(delimiter));
+	}
+
+	public static String join(String [] str, char delimiter, boolean skipBlanks)
+	{
+		return join(str, String.valueOf(delimiter), skipBlanks);
+	}
+
+	public static String padLeading(String s, int len)
+	{
+		return padLeading(s, len, ' ');
+	}
+
+	public static String padLeading(String s, int len, char ch)
+	{
+		int length = s.length();
+
+		return len <= length ? s : String.valueOf(ch).repeat(len - length) + s;
+	}
+
+	public static String padTrailing(String s, int len)
+	{
+		return padTrailing(s, len, ' ');
+	}
+
+	public static String padTrailing(String s, int len, char ch)
+	{
+		int length = s.length();
+
+		return len <= length ? s : s + String.valueOf(ch).repeat(len - length);
+	}
+
+	public static String reverse(String str)
+	{
+		return new StringBuilder(str).reverse().toString();
+	}
+}
+
+/*----------------------------------------------------------
+	FILE			: RandomIntArrayGenerator.java
+	AUTHOR			: Java-Nov-2022 Group
+	LAST UPDATE		: 14.07.2023
+
+	RandomIntArrayGenerator class that creates a randomly
+	generated array once per object
+
+	Copyleft (c) 1993 C and System Programmers Association
+	All Rights Free
+------------------------------------------------------------*/
+package org.csystem.util.generator.random;
+
+import org.csystem.util.array.ArrayUtil;
+
+import java.util.Random;
+import java.util.random.RandomGenerator;
+
+public class RandomIntArrayGenerator {
+    private final int [] m_numbers;
+
+    public RandomIntArrayGenerator(RandomGenerator randomGenerator, int count, int min, int bound) //***
+    {
+        m_numbers = ArrayUtil.getRandomArray(randomGenerator, count, min, bound);
+    }
+
+    public int count()
+    {
+        return m_numbers.length;
+    }
+
+    public int get(int i)
+    {
+        return m_numbers[i];
+    }
 }
 
 /*----------------------------------------------------------------------------------------------------------------------
