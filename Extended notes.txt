@@ -39461,6 +39461,887 @@ public class RandomIntArrayGenerator {
     }
 }
 
+
+/*----------------------------------------------------------------------------------------------------------------------
+    15.07.2023 	MORDOR (Ders kaydı tekrar izlenmeli)
+-----------------------------------------------------------------------------------------------------------------------*/
+
+/*-----------------------------------------------------------------------------------------------------------------------
+     Exception İşlemleri:
+     Exception terimi programlamada genel olarak çalışma zamanında oluşan hatalı durumlara denir. Ancak bazı durumlarda
+     exception hata durumlarına ilişkin olmayabilir. Exception fırlatıldığında (throw) programın nasıl devam edeceğinin
+     belirlenmesine "exception handling" denir. Örneğin, bir navigasyon programında, lokasyon bilgisi bir GPS sensöründen
+     alınırken örneğin GPS uydusuna ulaşılamayan bir lokasyonda veri alınamadığından dolayı bir exception oluşabilir. Bu
+     durumda programcı uygulamanın nasıl devam edeceğini exception handling ile belirler.
+
+     Java'da exception işlemleri için şu anahtar sözcükler kullanılır: throw, try, catch, finally, throws
+
+	Bir exception throw deyimi ile gönderilir. throw deyiminin genel biçimi şu şekildedir:
+		throw <referans>;
+	throw anajhtar sözcüğü ile bir referans kullanılır. Yani temel türler fırlatılamaz. Buradaki referansın türünün
+	Throwable sınıfından doğrudan ya da dolaylı olarak türetilmiş bir sınıf türünden olması gerekir. Aksi durumda error
+	oluşur. Bu anlamda Throwable sınıfından doğrudan ya da dolaylı olarak türetilmiş olan sınıflara "exception classes"
+	da denilmektedir.
+
+	Bir exception fırlatıldığında akış exception'ın fırlatıldığı metottan çıkar. Bir exception yakalanamaz ise bu durumda
+	exception'ın fırlatıldığı akış (thread) sonlanır.
+
+    Akış exception bakımından ele alınacaksa (handle) try deyiminin try bloğu içerisinde yazılmalıdır. try, catch bloğu
+    ya da blokları VEYA catch bloğu ya da blokları ile birlikte finally bloğu VEYA tek başına finally bloğu ile birlikte
+    tek bir deyimdir. Yalnız başına olamaz ve try bloğu ile takip eden bloklar arasında herhangi bir deyim yazılamaz.
+
+    catch bloğunun parantezi içerisinde bildirilen değişkene "catch parametre değişkeni" denir. Bu parametre catch bloğunda
+    mutlaka bulunmalıdır. catch parametresinin türünün de bir exception sınıf türünden olması zorunludur.
+
+    Exception oluştuğunda akış try bloğundan bir daha geri dönmemek üzere (non-resumptive) catch bloklarına sıçrar (jump).
+    catch blokları yukarıdan aşağıya doğru teker teker kontrol edilir. Uygun catch bloğu bulunursa o catch bloğu çalıştırılır.
+    Uygun catch bloğu fırlatılan exception nesnesinin referansının (adresinin)  implicit olarak dönüşebileceği türden catch
+    parametresine sahip ilk bloktur. Exception yakalanırsa yani uygun catch bloğu bulunursa ilgili blok çalıştırılır ve
+    akış diğer catch blokları atlanarak devam eder. Eğer exception hiç yakalanamazsa akış "abnormal" bir biçimde sonlanır.
+    try bloğu exception oluşmadan sonlanırsa tüm catch blokları atlanarak akış devam eder.
+
+
+	Mordor Morgot
+
+	Exception fırlatıldığında programın nasıl devam edeceğinin belirlenmesi exception handling dir.
+	throw <referans>;	genel biçimdir. Burada referans föndereceği için temel türler fırlatılamaz. 
+	Throwable sınıfından doğrudan ya da dolaylı olarak türetilmiş sınıf referansları ile exeption fırlatılır. 
+	Bu sınıflara da exeption classes denir.
+	exception handling yapılacaksa try değiminin bloğu içinde yazılır.
+	try blogu catch buluğu ya da bloklarıyla birlikte finally bloğu dahil tek bir deyimdir.
+	try catch blokları arasına deyim yazılamaz.
+	catch'in catch parametre değişkeni olmak zorundadir ve bu parametrenin türünün de bir exception sınıf türünden olması zorunludur.
+	Exception oluştuğunda akış try bloğundan bir daha geri dönmemek üzere (non-resumptive) catch bloklarına sıçrar (jump).
+	catch blokları yukarıdan aşağıya doğru teker teker kontrol edilir. Uygun catch bloğu bulunursa o catch bloğu çalıştırılır.
+	uygun catch blogu fırlatılan exception nesnesinin referansının doğrudan dönüşebileceği ilk bloktur
+	Exception yakalanırsa ilgili blok çalıştırılır ve akış diğer catch blokları atlanarak devam eder.
+	Eğer exception hiç yakalanamazsa akış "abnormal" bir biçimde sonlanır. try bloğu exception oluşmadan sonlanırsa 
+	tüm catch blokları atlanarak akış devam eder.
+
+-----------------------------------------------------------------------------------------------------------------------*/
+
+
+/*-----------------------------------------------------------------------------------------------------------------------
+    Aşağıdaki örnekte throw deyimi ile kullanılan referanslara ilişkin sınıflar Throwable'dan doğrudan ya da dolaylı
+    olarak türetilmediğinden error oluşur
+-----------------------------------------------------------------------------------------------------------------------*/
+package org.csystem.app;
+
+class MathUtil {
+	public static double log(double val)
+	{
+		if (val < 0) {
+			IndeterminateException ex = new IndeterminateException();
+
+			throw ex; //error
+		}
+
+		if (val == 0) {
+			UndefinedException ex = new UndefinedException();
+
+			throw ex; //error
+		}
+
+		return Math.log(val);
+	}
+}
+
+class IndeterminateException {
+	//...
+}
+
+class UndefinedException {
+	//...
+}
+
+
+/*-----------------------------------------------------------------------------------------------------------------------
+	Aşağıdaki örneği çeşitli değerler ile çalıştırıp sonuçları gözlemleyiniz. Burada catch bloklarından bir tanesi
+	olmasaydı, ilgili exception fırlatıldığında yakalanamacağından dolayı akış abnormal olarak sonlanacaktır. Yani bir
+	exception'ın handle edilebilmesi için kesinlikle bir try bloğu içerisinde olması VE fırlatıldığında yakalayabilecek
+	bir catch bloğunun da bulunması gerekir.
+
+	Mordor Morgot
+
+	Exception sınıflarımız var bu sınıflar Throwable dan doğrudan ya da dolaylı olarak türetilmiş. excetion handling 
+	yapacaksak try blogunda kodumuzu yazıyoruz. Devamında catch bloklarını da yazıyoruz catch bloklarının parametrelerı 
+	fırlatılacak olan nesne referansına göre hangi catch blogunun uygun olacağını belirtiyor. 
+
+
+	try blogunda MathUtil.log(val); çağrıldı. Yakalanacak değerler girildiği varsayımı altında log metodunda geçilen 
+	val'e göre IndeterminateException veya UndefinedException fırlatıldı. Bu iki sınıf türünden bir tanasının referansı ile
+	uygun catch blogu çağrıldı 
+	
+	tryda MathUtil.log(0);	
+	log metodunda val == 0 sa throw new UndefinedException(); nesnesi türünden bir referans fırlatıldı ve catch parametresi
+	UndefinedException olan blok yakalandı blok çalıştırıldı ve akış sonlandı.
+-----------------------------------------------------------------------------------------------------------------------*/
+package org.csystem.app;
+
+import java.util.InputMismatchException;
+import java.util.Scanner;
+
+class App {
+	public static void main(String[] args)
+	{
+		Scanner kb = new Scanner(System.in);
+
+		try {
+			System.out.print("Bir sayı giriniz:");
+			double val = kb.nextDouble();
+			double result = MathUtil.log(val);
+
+			System.out.printf("log(%f) = %f%n", val, result);
+		}
+		catch (IndeterminateException ignore) {
+			//...
+			System.out.println("Belirsiz!...");
+		}
+		catch (UndefinedException ignore) {
+			//...
+			System.out.println("Tanımsız!...");
+		}
+		catch (InputMismatchException ignore) {
+			System.out.println("Geçersiz giriş!...");
+		}
+
+		System.out.println("Tekrar yapıyor musunuz?");
+	}
+}
+
+class MathUtil {
+	public static double log(double val)
+	{
+		if (val < 0)
+			throw new IndeterminateException();
+
+		if (val == 0)
+			throw new UndefinedException();
+
+		return Math.log(val);
+	}
+}
+
+class IndeterminateException extends RuntimeException {
+	//...
+}
+
+class UndefinedException extends RuntimeException {
+	//...
+}
+
+/*-----------------------------------------------------------------------------------------------------------------------
+	Programcı isterse türemiş sınıf catch bloğunu da yazarak o tür için ayrı bir işlem de yapabilir
+
+	Morgot
+-----------------------------------------------------------------------------------------------------------------------*/
+package org.csystem.app;
+
+import java.util.InputMismatchException;
+import java.util.Scanner;
+
+class App {
+	public static void main(String[] args)
+	{
+		Scanner kb = new Scanner(System.in);
+
+		try {
+			System.out.print("Bir sayı giriniz:");
+			double val = kb.nextDouble();
+			double result = MathUtil.log(val);
+
+			System.out.printf("log(%f) = %f%n", val, result);
+		}
+		catch (IndeterminateException ignore) {
+			System.out.println("Belirsiz!...");
+		}
+		catch (MathException ignore) {
+			//...
+			System.out.println("Logaritma için geçersiz değer!...");
+		}
+		catch (InputMismatchException ignore) {
+			System.out.println("Geçersiz giriş!...");
+		}
+
+		System.out.println("Tekrar yapıyor musunuz?");
+	}
+}
+
+class MathUtil {
+	public static double log(double val)
+	{
+		if (val < 0)
+			throw new IndeterminateException();
+
+		if (val == 0)
+			throw new UndefinedException();
+
+		return Math.log(val);
+	}
+}
+
+class IndeterminateException extends MathException {
+	//...
+}
+
+class UndefinedException extends MathException {
+	//...
+}
+
+class MathException extends RuntimeException {
+	//...
+}
+
+/*-----------------------------------------------------------------------------------------------------------------------
+	Taban sınıf parametreli catch bloğu o taban sınıftan türetilmiş parametreli catch bloğundan sonra yazılmalıdır. Aksi
+	durumda error oluşur
+
+	Mordor
+
+	MathException taban sınıf olduğu için catch (MathException ignore) blogu catch (IndeterminateException ignore) dan 
+	sonra yazılmalıdır.
+
+	türemiş sınıfı üste yazarak daha spesifik bir catch yazımış oluyoruz o spesifik catch te yakalanmazsa daha genel taban
+	sınıfta yakalanabilir. özelden genele gibi bir durum 
+-----------------------------------------------------------------------------------------------------------------------*/
+package org.csystem.app;
+
+import java.util.InputMismatchException;
+import java.util.Scanner;
+
+class App {
+	public static void main(String[] args)
+	{
+		Scanner kb = new Scanner(System.in);
+
+		try {
+			System.out.print("Bir sayı giriniz:");
+			double val = kb.nextDouble();
+			double result = MathUtil.log(val);
+
+			System.out.printf("log(%f) = %f%n", val, result);
+		}
+		catch (MathException ignore) {
+			//...
+			System.out.println("Logaritma için geçersiz değer!...");
+		}
+		catch (IndeterminateException ignore) { //error: unreachable code
+			System.out.println("Belirsiz!...");
+		}
+		catch (InputMismatchException ignore) {
+			System.out.println("Geçersiz giriş!...");
+		}
+
+		System.out.println("Tekrar yapıyor musunuz?");
+	}
+}
+
+class MathUtil {
+	public static double log(double val)
+	{
+		if (val < 0)
+			throw new IndeterminateException();
+
+		if (val == 0)
+			throw new UndefinedException();
+
+		return Math.log(val);
+	}
+}
+
+class IndeterminateException extends MathException {
+	//...
+}
+
+class UndefinedException extends MathException {
+	//...
+}
+
+class MathException extends RuntimeException {
+	//...
+}
+
+/*-----------------------------------------------------------------------------------------------------------------------
+	Throwable parametreli catch bloğu ile tüm exception'lar yakalanabilir. Bu durumda Throwable parametreli catch bloğunun
+	tüm diğer catch bloklarından sonra yazılması gerekir
+
+	Mordor Morgot
+
+	Tüm exceptionlar yakalanıyor bunu en üste yazarsak returnden sonra deyim yazmak gibi saçma bir şey olur 
+-----------------------------------------------------------------------------------------------------------------------*/
+package org.csystem.app;
+
+import java.util.Scanner;
+
+class App {
+	public static void main(String[] args)
+	{
+		Scanner kb = new Scanner(System.in);
+
+		try {
+			System.out.print("Bir sayı giriniz:");
+			double val = kb.nextDouble();
+			double result = MathUtil.log(val);
+
+			System.out.printf("log(%f) = %f%n", val, result);
+		}
+		catch (Throwable ignore) {
+			//...
+			System.out.println("Geçersiz değer!...");
+		}
+
+		System.out.println("Tekrar yapıyor musunuz?");
+	}
+}
+
+class MathUtil {
+	public static double log(double val)
+	{
+		if (val < 0)
+			throw new IndeterminateException();
+
+		if (val == 0)
+			throw new UndefinedException();
+
+		return Math.log(val);
+	}
+}
+
+class IndeterminateException extends MathException {
+	//...
+}
+
+class UndefinedException extends MathException {
+	//...
+}
+
+class MathException extends RuntimeException {
+	//...
+}
+
+/*-----------------------------------------------------------------------------------------------------------------------
+	Aşağıdaki örneği inceleyiniz
+
+	0 tanımsız dışındaki tüm exeptionları Throwable yakalayacak 
+-----------------------------------------------------------------------------------------------------------------------*/
+package org.csystem.app;
+
+import java.util.Scanner;
+
+class App {
+	public static void main(String[] args)
+	{
+		Scanner kb = new Scanner(System.in);
+
+		try {
+			System.out.print("Bir sayı giriniz:");
+			double val = kb.nextDouble();
+			double result = MathUtil.log(val);
+
+			System.out.printf("log(%f) = %f%n", val, result);
+		}
+		catch (UndefinedException ignore) {
+			//...
+			System.out.println("Tanımsız!...");
+		}
+		catch (Throwable ignore) {
+			//...
+			System.out.println("Geçersiz değer!...");
+		}
+
+		System.out.println("Tekrar yapıyor musunuz?");
+	}
+}
+
+class MathUtil {
+	public static double log(double val)
+	{
+		if (val < 0)
+			throw new IndeterminateException();
+
+		if (val == 0)
+			throw new UndefinedException();
+
+		return Math.log(val);
+	}
+}
+
+class IndeterminateException extends MathException {
+	//...
+}
+
+class UndefinedException extends MathException {
+	//...
+}
+
+class MathException extends RuntimeException {
+	//...
+}
+
+/*-----------------------------------------------------------------------------------------------------------------------
+	Bir try bloğu içerisinde bir exception yakalanamazsa yani uygun catch bloğu bulunamazsa o try bloğunu kapsayan
+	catch bloklarına bakılır. Bu işlem uygun catch bloğu bulununcaya veya bulunamayıncaya kadar devam eder. Bulunursa
+	uygun catch bloğu çalıştırılır. Bulunamazsa akış sonlanır. Eğer exception bir try bloğu içerisinde yakalanmışsa kapsayan
+	try bloklarına bakılmaz. Aşağıdaki örneği çeşitli değerler ile çalıştırıp sonuçları gözlemleyiniz.
+
+	MORGOT MORGOT ?????????
+-----------------------------------------------------------------------------------------------------------------------*/
+package org.csystem.app;
+
+import java.util.Scanner;
+
+class App {
+	public static void main(String[] args)
+	{
+		Scanner kb = new Scanner(System.in);
+
+		try {
+			Application.run();
+		}
+		catch (IndeterminateException ignore) {
+			//...
+			System.out.println("Main: Belirsiz!...");		// -1 de //* yakalanıyor ve run sonlanmadan burada yakalanıp handle ediliyor 
+		}
+
+		System.out.println("Tekrar yapıyor musunuz?");
+	}
+}
+
+class Application {
+	public static void run()
+	{
+		Scanner kb = new Scanner(System.in);
+
+		try {
+			System.out.print("Bir sayı giriniz:");
+			double val = kb.nextDouble();
+			double result = MathUtil.log(val);
+
+			System.out.printf("log(%f) = %f%n", val, result);
+		}
+		catch (UndefinedException ignore) {
+			//...
+			System.out.println("run: Tanımsız!...");	// 0 da //** yakalnıyor ve burası handle edildikten sonra  run sonlanıyor 
+		}
+
+		System.out.println("run sonlanıyor!...");
+	}
+}
+class MathUtil {
+	public static double log(double val)
+	{
+		if (val < 0)
+			throw new IndeterminateException();	//*
+
+		if (val == 0)
+			throw new UndefinedException();	//**
+
+		return Math.log(val);
+	}
+}
+
+class IndeterminateException extends RuntimeException {
+	//...
+}
+
+class UndefinedException extends RuntimeException {
+	//...
+}
+
+/*-----------------------------------------------------------------------------------------------------------------------
+	Aşağıdaki örneği inceleyiniz
+-----------------------------------------------------------------------------------------------------------------------*/
+package org.csystem.app;
+
+import java.util.InputMismatchException;
+import java.util.Scanner;
+
+class App {
+	public static void main(String[] args)
+	{
+		Scanner kb = new Scanner(System.in);
+
+		try {
+			Application.run();
+		}
+		catch (IndeterminateException ignore) {
+			//...
+			System.out.println("Main: Belirsiz!...");
+		}
+
+		System.out.println("Tekrar yapıyor musunuz?");
+	}
+}
+
+class Application {
+	public static void run()
+	{
+		Scanner kb = new Scanner(System.in);
+
+		try {
+			System.out.print("Bir sayı giriniz:");
+			double val = kb.nextDouble();
+			double result = MathUtil.log(val);
+
+			System.out.printf("log(%f) = %f%n", val, result);
+		}
+		catch (UndefinedException ignore) {
+			//...
+			System.out.println("run: Tanımsız!...");
+		}
+		catch (InputMismatchException ignore) {
+			System.out.println("Geçersiz değer!...");
+		}
+
+		System.out.println("run sonlanıyor!...");
+	}
+}
+class MathUtil {
+	public static double log(double val)
+	{
+		if (val < 0)
+			throw new IndeterminateException();
+
+		if (val == 0)
+			throw new UndefinedException();
+
+		return Math.log(val);
+	}
+}
+
+class IndeterminateException extends RuntimeException {
+	//...
+}
+
+class UndefinedException extends RuntimeException {
+	//...
+}
+
+/*-----------------------------------------------------------------------------------------------------------------------
+	Aşağıdaki örnekte run metodu fırlatılan UndefinedException' yakalamış, gerekenleri yapmış ve aynı nesnenin referansını
+	yeniden fırlatmıştır. Bu işleme "rethrow" denir. Örnekte run metodu müşteri kodlar açısından UndefinedException
+	da fırlatabilir durumdadır. Bu da run metodunun dokümantasyonuna yazılır. Ancak rethrow yaptığı belirtilmeyebilir. run
+	metodunu yazan programcı açısından UndefinedException hem handle edilmiş hem de aynı exception nesnesi müşteri koda
+	fırlatılmış olur
+
+	Morgot
+-----------------------------------------------------------------------------------------------------------------------*/
+package org.csystem.app;
+
+import java.util.InputMismatchException;
+import java.util.Scanner;
+
+class App {
+	public static void main(String[] args)
+	{
+		Scanner kb = new Scanner(System.in);
+
+		try {
+			Application.run();
+		}
+		catch (IndeterminateException ignore) {
+			//...
+			System.out.println("Main: Belirsiz!...");
+		}
+
+		catch (UndefinedException ignore) {
+			System.out.println("Main: Tanımsız!...");
+		}
+
+		System.out.println("Tekrar yapıyor musunuz?");
+	}
+}
+
+class Application {
+	public static void run()
+	{
+		Scanner kb = new Scanner(System.in);
+
+		try {
+			System.out.print("Bir sayı giriniz:");
+			double val = kb.nextDouble();
+			double result = MathUtil.log(val);
+
+			System.out.printf("log(%f) = %f%n", val, result);
+		}
+		catch (UndefinedException ex) {
+			//...
+			System.out.println("run: Tanımsız!...");
+			throw ex;												//rethrow
+		}
+		catch (InputMismatchException ignore) {
+			System.out.println("Geçersiz değer!...");
+		}
+
+		System.out.println("run sonlanıyor!...");
+	}
+}
+class MathUtil {
+	public static double log(double val)
+	{
+		if (val < 0)
+			throw new IndeterminateException();
+
+		if (val == 0)
+			throw new UndefinedException();
+
+		return Math.log(val);
+	}
+}
+
+class IndeterminateException extends RuntimeException {
+	//...
+}
+
+class UndefinedException extends RuntimeException {
+	//...
+}
+
+/*-----------------------------------------------------------------------------------------------------------------------
+	finally bloğu akış try bloğundan nasıl çıkarsa çıksın ilgili işlemler yapıldıktan sonra çalıştırılan bloktur. try bloğu
+	normal sonlandıktan sonra, try bloğunda exception oluşur ve uygun catch bulunursa uygun catch bloğu çalıştırıldıktan
+	sonra, uygun catch bloğu bulunamazsa kasayan catch bloğuna bakmadan önce finally bloğu çalıştırılır. Aşağıdaki örneği
+	çeşitli değerler ile çalıştırıp sonuçları gözlemleyiniz
+
+	Mordor Morgot
+-----------------------------------------------------------------------------------------------------------------------*/
+package org.csystem.app;
+
+import java.util.Scanner;
+
+class App {
+	public static void main(String[] args)
+	{
+		Scanner kb = new Scanner(System.in);
+
+		try {
+			Application.run();
+		}
+		catch (IndeterminateException ignore) {
+			//...
+			System.out.println("Belirsiz!...");
+		}
+		finally {
+			System.out.println("Main finally");
+		}
+
+		System.out.println("Tekrar yapıyor musunuz?");
+	}
+}
+
+class Application {
+	public static void run()
+	{
+		Scanner kb = new Scanner(System.in);
+
+		try {
+			System.out.print("Bir sayı giriniz:");
+			double val = kb.nextDouble();
+			double result = MathUtil.log(val);
+
+			System.out.printf("log(%f) = %f%n", val, result);
+		}
+		catch (UndefinedException ex) {
+			//...
+			System.out.println("run: Tanımsız!...");
+		}
+		finally {
+			System.out.println("run: finally");
+		}
+		System.out.println("run sonlanıyor!...");
+	}
+}
+class MathUtil {
+	public static double log(double val)
+	{
+		if (val < 0)
+			throw new IndeterminateException();
+
+		if (val == 0)
+			throw new UndefinedException();
+
+		return Math.log(val);
+	}
+}
+
+class IndeterminateException extends RuntimeException {
+	//...
+}
+
+class UndefinedException extends RuntimeException {
+	//...
+}
+
+
+/*-----------------------------------------------------------------------------------------------------------------------
+	try-finally yani catch bloksuz try deyimi ile exception yakalanmadan ve aynı zamanda exception fırlatılsa da
+	fırlatılmasa da yapılacak ortak işlemlere yönelik kodlar yazılabilir. Aşağıdaki örneği çeşitli değerler ile
+	çalıştırıp sonuçları gözlemleyiniz
+
+	Mordor Morgot
+-----------------------------------------------------------------------------------------------------------------------*/
+package org.csystem.app;
+
+import java.util.InputMismatchException;
+import java.util.Scanner;
+
+class App {
+	public static void main(String[] args)
+	{
+		Scanner kb = new Scanner(System.in);
+
+		try {
+			Application.run();
+		}
+		catch (IndeterminateException ignore) {
+			//...
+			System.out.println("Belirsiz!...");
+		}
+		catch (UndefinedException ignore) {
+			//...
+			System.out.println("Tanımsız!...");
+		}
+		catch (InputMismatchException ignore) {
+			System.out.println("Geçersiz değer!...");
+		}
+		finally {
+			System.out.println("finally");
+		}
+
+		System.out.println("Tekrar yapıyor musunuz?");
+	}
+}
+
+class Application {
+	public static void run()
+	{
+		Scanner kb = new Scanner(System.in);
+
+		try {
+			System.out.print("Bir sayı giriniz:");
+			double val = kb.nextDouble();
+			double result = MathUtil.log(val);
+
+			System.out.printf("log(%f) = %f%n", val, result);
+		}
+		finally {
+			System.out.println("run: finally");
+		}
+
+		System.out.println("run sonlanıyor!...");
+	}
+}
+class MathUtil {
+	public static double log(double val)
+	{
+		if (val < 0)
+			throw new IndeterminateException();
+
+		if (val == 0)
+			throw new UndefinedException();
+
+		return Math.log(val);
+	}
+}
+
+class IndeterminateException extends RuntimeException {
+	//...
+}
+
+class UndefinedException extends RuntimeException {
+	//...
+}
+
+
+/*-----------------------------------------------------------------------------------------------------------------------
+	Aşağıdaki örnekte return edilmeden önce try yazısı eklenmiş olur. return işleminden sonra finally bloğu çalıştırıldığından
+	finally yazısı da eklenmiş olur
+
+	Mordor
+
+	println basmadan öne tüm işlemler gerçekleşmiş olmalı bu yüzden finally blogu da çalışır ve sb ye finally karakterleri de
+	eklenmiş olur.
+-----------------------------------------------------------------------------------------------------------------------*/
+package org.csystem.app;
+
+class App {
+	public static void main(String[] args)
+	{
+		System.out.println(Sample.foo("foo")); //footryfinally
+	}
+}
+
+class Sample {
+	public static StringBuilder foo(String str)
+	{
+		StringBuilder sb = new StringBuilder(str);
+
+		try {
+			return sb.append("try");
+		}
+		finally {
+			sb.append("finally");
+		}
+	}
+}
+
+/*-----------------------------------------------------------------------------------------------------------------------
+	Aşağıdaki örneği inceleyiniz
+
+
+	Sanırım burada toString metodu sb nin stringini döndüğü ve string immutable olduğu için footry a  finally karakterleri eklenmez
+-----------------------------------------------------------------------------------------------------------------------*/
+package org.csystem.app;
+
+class App {
+	public static void main(String[] args)
+	{
+		System.out.println(Sample.foo("foo")); //footry
+	}
+}
+
+class Sample {
+	public static String foo(String str)
+	{
+		StringBuilder sb = new StringBuilder(str);
+
+		try {
+			return sb.append("try").toString();
+		}
+		finally {
+			sb.append("finally");
+		}
+	}
+}
+
+/*-----------------------------------------------------------------------------------------------------------------------
+	Aşağıdaki örneği inceleyiniz
+
+	Sanırım burada toString metodu sb nin stringini döndüğü ve string immutable olduğu için footry a  finally karakterleri eklenmez
+-----------------------------------------------------------------------------------------------------------------------*/
+package org.csystem.app;
+
+class App {
+	public static void main(String[] args)
+	{
+		System.out.println(Sample.foo("foo")); //footry
+	}
+}
+
+class Sample {
+	public static String foo(String str)
+	{
+		String result = str;
+
+		try {
+			return result += "try";
+		}
+		finally {
+			result += "finally";
+		}
+	}
+}
+
 /*----------------------------------------------------------------------------------------------------------------------
 
 -----------------------------------------------------------------------------------------------------------------------*/
