@@ -40342,6 +40342,450 @@ class Sample {
 	}
 }
 
+
+/*----------------------------------------------------------------------------------------------------------------------
+    16.07.2023 Arwen
+-----------------------------------------------------------------------------------------------------------------------*/
+/*----------------------------------------------------------------------------------------------------------------------
+    Console sınıfı
+    Açıklama: Bu sınıfa eklenen writeXXX metotlarının nasıl yazıldığı şu an için önemsizdir. writeXXX metotlarının
+    yalnızca kullanımına odaklanınız
+
+	Mordor Morgot
+-----------------------------------------------------------------------------------------------------------------------*/
+package org.csystem.util.console.test;
+
+import org.csystem.util.console.Console;
+
+public class ReadIntTest {
+    public static void run()
+    {
+        int a = Console.readInt("Birinci sayıyı giriniz:", "Hatalı değer girdiniz!...");
+        int b = Console.readInt("İkinci sayıyı giriniz:", "Hatalı değer girdiniz!...");
+
+        Console.writeLine("%d * %d = %d", a, b, a * b);
+    }
+
+    public static void main(String[] args)
+    {
+        run();
+    }
+}
+
+
+package org.csystem.util.console.test;
+
+import org.csystem.util.console.Console;
+
+public class ReadDoubleTest {
+    public static void run()
+    {
+        double a = Console.readDouble("Birinci sayıyı giriniz:", "Hatalı değer girdiniz!...");
+        double b = Console.readDouble("İkinci sayıyı giriniz:", "Hatalı değer girdiniz!...");
+
+        Console.writeLine("%f * %f = %f", a, b, a * b);
+
+    }
+
+    public static void main(String[] args)
+    {
+        run();
+    }
+}
+
+package org.csystem.util.console.test;
+
+import org.csystem.util.console.Console;
+
+public class ReadLongTest {
+    public static void run()
+    {
+        long a = Console.readLong("Birinci sayıyı giriniz:", "Hatalı değer girdiniz!...");
+        long b = Console.readLong("İkinci sayıyı giriniz:", "Hatalı değer girdiniz!...");
+
+        Console.writeLine("%d * %d = %d", a, b, a * b);
+    }
+
+    public static void main(String[] args)
+    {
+        run();
+    }
+}
+
+package org.csystem.util.console.test;
+
+import org.csystem.util.console.Console;
+
+public class ReadCharTest {
+    public static void run()
+    {
+        char c = Console.readChar("Bir karakter giriniz:", "Tek bir karakter girmelisiniz!...");
+
+        Console.writeLine("c = %c", c);
+    }
+
+    public static void main(String[] args)
+    {
+        run();
+    }
+}
+
+/*----------------------------------------------------------
+	FILE			: Console.java
+	AUTHOR			: Java-Nov-2022 Group
+	LAST UPDATE		: 16.07.2023
+
+	Utility class for standard input and standard output operations
+
+	Copyleft (c) 1993 C and System Programmers Association
+	All Rights Free
+------------------------------------------------------------*/
+package org.csystem.util.console;
+
+import java.util.Scanner;
+
+public final class Console {
+    private static final Scanner KB = new Scanner(System.in);
+
+    private Console()
+    {
+    }
+
+    public static int readInt()
+    {
+        return readInt("");
+    }
+
+    public static int readInt(String message)
+    {
+        return readInt(message, "");
+    }
+
+    public static int readInt(String message, String errorMessage)
+    {
+        while (true) {
+            try {
+                System.out.print(message);
+
+                return Integer.parseInt(KB.nextLine());
+            }
+            catch (NumberFormatException ignore) {
+                System.out.print(errorMessage);
+            }
+        }
+    }
+
+    public static double readDouble()
+    {
+        return readDouble("");
+    }
+
+    public static double readDouble(String message)
+    {
+        return readDouble(message, "");
+    }
+
+    public static double readDouble(String message, String errorMessage)
+    {
+
+		/*
+			Burada sonsuz döngüye girdik, öncelikle mesajı bastık sonra genel olması için parse metodunu return ettik 
+			burada hata oluşursa catch te exception yakalanacak hata mesajı fırlatılacak sonsuz döngü olduğu için tekrar
+			sayı istenecek doğru değer girildiğinde de return edecek döngüden çıkılacak KB yi de private static final
+			olarak belirledik. private çünkü sınıf dışından erişilmesine gerek yok, final çünkü değiştirilmesine gerek
+			yok dısarıdan almıyoruz. static çünkü nesneye değil sınıfa özel
+		*/
+        while (true) {	//***
+            try {
+                System.out.print(message);
+
+                return Double.parseDouble(KB.nextLine());
+            }
+            catch (NumberFormatException ignore) {	//NumberFormatException çünkü hatalı değer de parse metodu bu exception'ı fırlatıyor
+                System.out.print(errorMessage);
+            }
+        }
+    }
+
+    public static long readLong()
+    {
+        return readLong("");
+    }
+
+    public static long readLong(String message)
+    {
+        return readLong(message, "");
+    }
+
+    public static long readLong(String message, String errorMessage)
+    {
+        while (true) {
+            try {
+                System.out.print(message);
+
+                return Long.parseLong(KB.nextLine());
+            }
+            catch (NumberFormatException ignore) {
+                System.out.print(errorMessage);
+            }
+        }
+    }
+
+    public static String readString()
+    {
+        return readString("");
+    }
+
+    public static String readString(String message)
+    {
+        write(message);
+        return KB.nextLine();
+    }
+
+    public static char readChar()
+    {
+        return readChar("");
+    }
+
+    public static char readChar(String message)
+    {
+        return readChar(message, "");
+    }
+
+    public static char readChar(String message, String errorMessage)
+    {
+        String str;
+
+        while ((str = readString(message)).length() != 1)
+            write(errorMessage);
+
+        return str.charAt(0);
+    }
+
+    public static void write(Object arg)
+    {
+        write("%s", arg);
+    }
+
+    public static void write(String format, Object...args)
+    {
+        System.out.printf(format, args);
+    }
+
+    public static void writeLine()
+    {
+        System.out.println();
+    }
+
+    public static void writeLine(String format, Object...args)
+    {
+        write(format + "\n", args);
+    }
+    //...
+}
+
+/*-----------------------------------------------------------------------------------------------------------------------
+	Sınıf, bir araya geldiklerinde bir tür oluşturan bileşik bir veri yapısı olarak kullanıldığına göre, exception
+	sınıfları da aynı amaçla exception'a ilişkin bilgiler tutulacak şekilde kullanılabilir. Bu exception yakalandığında
+	bu bilgilere erişilebilir. Throwable sınıfında exception işlemlerine yönelik bir takım veri elemanları tutulmaktadır.
+	Bunlardan en tipik olanı, mesaja karşılık gelen String türünden elemandır. Exception sınıflarının neredeyse hepsinin
+	String parametreli ctor'ları bulunur. Bu ctor'lar ile ilgili mesaj yukarıya doğru Throwable sınıfına iletilir. İsterse
+	programcı başka bilgileri de yazdığı exception sınıfına ekleyebilir. Throwable sınıfının getMessage metodu ile mesaj
+	bilgisi elde edilebilir. getMessage metodu sanaldır, istenirse türemiş sınıfta override edilebilir.
+
+	Mordor Morgot
+
+	Enum konusunu tekrar ettikten sonra bir defa daha incelenmeli
+-----------------------------------------------------------------------------------------------------------------------*/
+package org.csystem.app;
+
+import org.csystem.util.console.Console;
+
+class App {
+	public static void main(String[] args)
+	{
+		try {
+			double val = Console.readDouble("Input a value:", "Invalid value!...");
+
+			Console.writeLine("log(%f) = %f", val, MathUtil.log(val));
+		}
+		catch (MathException ex) {
+			Console.writeLine("Message:%s, Status:%s", ex.getMessage(), ex.getMathExceptionStatus());
+		}
+		System.out.println("C and System Programmers Association");
+	}
+}
+
+class MathUtil {
+	public static double log(double val)
+	{
+		if (val < 0)
+			throw new MathException("Indeterminate", MathExceptionStatus.NAN);
+
+		if (val == 0)
+			throw new MathException("Undefined", MathExceptionStatus.NEGATIVE_INFINITY);//enum_referansı.enum_elemanı toString ile enumun elemanın isminin yazı karşılığını veriyor 
+
+		return Math.log(val);
+	}
+}
+
+enum MathExceptionStatus {ZERO, POSITIVE_ZERO, NEGATIVE_ZERO, INFINITY, POSITIVE_INFINITY, NEGATIVE_INFINITY, NAN,}
+
+class MathException extends RuntimeException {
+	private final MathExceptionStatus m_mathExceptionStatus;
+
+	public MathException(String message, MathExceptionStatus mathExceptionStatus)
+	{
+		super(message);	// super ile yukarı doğru mesaj TrowableExceptiona kadar iletiliyor
+		m_mathExceptionStatus = mathExceptionStatus;
+	}
+
+	public MathExceptionStatus getMathExceptionStatus()
+	{
+		return m_mathExceptionStatus;	//enumm class türünden bir referans geri dönüldüğünde o enum elemanının yazı karşılığını verir (toString)
+	}
+}
+
+/*-----------------------------------------------------------------------------------------------------------------------
+	Aşağıdaki örnekte getMessage metodunun override edildiğine dikkat ediniz
+-----------------------------------------------------------------------------------------------------------------------*/
+package org.csystem.app;
+
+import org.csystem.util.console.Console;
+
+class App {
+	public static void main(String[] args)
+	{
+		try {
+			double val = Console.readDouble("Input a value:", "Invalid value!...");
+
+			Console.writeLine("log(%f) = %f", val, MathUtil.log(val));
+		}
+		catch (Throwable ex) {	//
+			Console.writeLine(ex.getMessage());	//*** 
+		}
+		System.out.println("C and System Programmers Association");
+	}
+}
+	/* 
+		Throwable ile yakaladık fakat dinamik türe baktığımızda MathException türünden bir exception fırlatılıyor. 
+		Throwable hepsini yakalayabilir fakat fırlatılan MathException, Oveeride işşleminde dinamik türe ilişkin
+		sınıfta o metod oveeride edilmişse onu çağır edilmemişse yukarııya doğru çık ilk bulduğunu çağır. Throwable
+		a kadar çıkabilir. Biz override ettik o yüzden MathException da Override ettiğimiz getMessage() metodu çağrılacak.
+	*/
+
+class MathUtil {
+	public static double log(double val)
+	{
+		if (val < 0)
+			throw new MathException("Indeterminate", MathExceptionStatus.NAN);
+
+		if (val == 0)
+			throw new MathException("Undefined", MathExceptionStatus.NEGATIVE_INFINITY);
+
+		return Math.log(val);
+	}
+}
+
+enum MathExceptionStatus {ZERO, POSITIVE_ZERO, NEGATIVE_ZERO, INFINITY, POSITIVE_INFINITY, NEGATIVE_INFINITY, NAN,}
+
+class MathException extends RuntimeException {
+	private final MathExceptionStatus m_mathExceptionStatus;
+
+	public MathException(String message, MathExceptionStatus mathExceptionStatus)
+	{
+		super(message);
+		m_mathExceptionStatus = mathExceptionStatus;
+	}
+
+	public String getMessage() //getMessage sanal bir metod o yüzden override edebiliriz.
+	{
+		return String.format("Message:%s, Status:%s", super.getMessage(), m_mathExceptionStatus);
+	}
+
+	public MathExceptionStatus getMathExceptionStatus()
+	{
+		return m_mathExceptionStatus;
+	}
+}
+
+/*-----------------------------------------------------------------------------------------------------------------------
+	Aşağıdaki örneği inceleyiniz
+-----------------------------------------------------------------------------------------------------------------------*/
+package org.csystem.app;
+
+import org.csystem.util.console.Console;
+
+class App {
+	public static void main(String[] args)
+	{
+		try {
+			double val = Console.readDouble("Input a value:", "Invalid value!...");
+
+			Console.writeLine("log(%f) = %f", val, MathUtil.log(val));
+		}
+		catch (MathException ex) {
+			Console.writeLine(ex.getMessage());
+		}
+		System.out.println("C and System Programmers Association");
+	}
+}
+
+class MathUtil {
+	public static double log(double val)
+	{
+		if (val < 0)
+			throw new NaNException("Indeterminate");
+
+		if (val == 0)
+			throw new NegativeInfinityException("Undefined");
+
+		return Math.log(val);
+	}
+}
+
+class NegativeInfinityException extends MathException { //***
+	public NegativeInfinityException(String message)
+	{
+		super(message, MathExceptionStatus.NEGATIVE_INFINITY);
+	}
+
+	public String getMessage()
+	{
+		return String.format("Message:%s, Status:Negative Infinity", super.getMessage());
+	}
+}
+
+class NaNException extends MathException {	//***
+	public NaNException(String message)
+	{
+		super(message, MathExceptionStatus.NAN);
+	}
+
+	public String getMessage()
+	{
+		return String.format("Message:%s, Status:NaN", super.getMessage());
+	}
+}
+
+enum MathExceptionStatus {ZERO, POSITIVE_ZERO, NEGATIVE_ZERO, INFINITY, POSITIVE_INFINITY, NEGATIVE_INFINITY, NAN,}
+
+class MathException extends RuntimeException {
+	private final MathExceptionStatus m_mathExceptionStatus;
+
+	public MathException(String message, MathExceptionStatus mathExceptionStatus)
+	{
+		super(message);
+		m_mathExceptionStatus = mathExceptionStatus;
+	}
+
+
+	public MathExceptionStatus getMathExceptionStatus()
+	{
+		return m_mathExceptionStatus;
+	}
+}
+
 /*----------------------------------------------------------------------------------------------------------------------
 
 -----------------------------------------------------------------------------------------------------------------------*/
