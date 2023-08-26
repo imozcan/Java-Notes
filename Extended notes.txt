@@ -41504,6 +41504,548 @@ class OurException extends Exception {
 -----------------------------------------------------------------------------------------------------------------------*/
 
 
+/*----------------------------------------------------------------------------------------------------------------------
+    21.07.2023 Arwen
+-----------------------------------------------------------------------------------------------------------------------*/
+/*-----------------------------------------------------------------------------------------------------------------------
+	Java 7 ile birlikte birden fazla exception sınıfı için ortak bir iş yapılacaksa catch bloğunda parametre türleri |
+	atomu kullanılabilir. Bu ctach bloğu içerisindeki exception sınıflarının da ancak ortak elemanlarına erişim mümkündür.
+	Bu şekilde kullanılan exception sınıflarının aralarında türetme ilişkisi olmaması gerekir. Aksi durumda error oluşur
+
+	Mordor 
+
+	Ortak iş yapılmalıdır
+	Türetme ilişkisi olmamalıdır
+	ctach bloğu içerisindeki exception sınıflarının ortak elemanlarına erişim vardır
+
+-----------------------------------------------------------------------------------------------------------------------*/
+package org.csystem.app;
+
+import org.csystem.util.console.Console;
+
+import java.util.InputMismatchException;
+import java.util.Scanner;
+
+class App {
+	public static void main(String[] args)
+	{
+		try {
+			Scanner kb = new Scanner(System.in);
+
+			System.out.print("Input a value:");
+			double val = kb.nextDouble();
+
+			Console.writeLine("log(%f) = %f", val, MathUtil.log(val));
+		}
+		catch (NaNException | NegativeInfinityException ex) {	// NaNException ve NegativeInfinityException fırlatıldığında bu catch te yakalanıyor 
+			Console.writeLine("Invalid argument:%s!...", ex.getMessage());
+		}
+		catch (InputMismatchException ignore) {
+			Console.writeLine("Invalid double value!...");
+		}
+
+		System.out.println("C and System Programmers Association");
+	}
+}
+
+class MathUtil {
+	public static double log(double val)
+	{
+		if (val < 0)
+			throw new NaNException("Indeterminate");
+
+		if (val == 0)
+			throw new NegativeInfinityException("Undefined");
+
+		return Math.log(val);
+	}
+}
+
+class NegativeInfinityException extends MathException {
+	public NegativeInfinityException(String message)
+	{
+		super(message, MathExceptionStatus.NEGATIVE_INFINITY);
+	}
+
+	public String getMessage()
+	{
+		return String.format("Message:%s, Status:Negative Infinity", super.getMessage());
+	}
+}
+
+class NaNException extends MathException {
+	public NaNException(String message)
+	{
+		super(message, MathExceptionStatus.NAN);
+	}
+
+	public String getMessage()
+	{
+		return String.format("Message:%s, Status:NaN", super.getMessage());
+	}
+}
+
+enum MathExceptionStatus {ZERO, POSITIVE_ZERO, NEGATIVE_ZERO, INFINITY, POSITIVE_INFINITY, NEGATIVE_INFINITY, NAN,}
+
+class MathException extends RuntimeException {
+	private final MathExceptionStatus m_mathExceptionStatus;
+
+	public MathException(String message, MathExceptionStatus mathExceptionStatus)
+	{
+		super(message);
+		m_mathExceptionStatus = mathExceptionStatus;
+	}
+
+
+	public MathExceptionStatus getMathExceptionStatus()
+	{
+		return m_mathExceptionStatus;
+	}
+}
+
+/*-----------------------------------------------------------------------------------------------------------------------
+	Aşağıdaki örneği inceleyiniz
+
+	Mordor
+-----------------------------------------------------------------------------------------------------------------------*/
+package org.csystem.app;
+
+import org.csystem.util.console.Console;
+
+import java.util.InputMismatchException;
+import java.util.Scanner;
+
+class App {
+	public static void main(String[] args)
+	{
+		try {
+			Scanner kb = new Scanner(System.in);
+
+			System.out.print("Input a value:");
+			double val = kb.nextDouble();
+
+			Console.writeLine("log(%f) = %f", val, MathUtil.log(val));
+		}
+		catch (NaNException | NegativeInfinityException | InputMismatchException ex) {
+			String message = ex.getMessage();
+
+			Console.writeLine("Invalid argument%s!...", message != null ? "->" + message : "");
+		}
+		catch (Throwable ignore) {
+			Console.writeLine("Problem occurs!...");
+		}
+
+		System.out.println("C and System Programmers Association");
+	}
+}
+
+class MathUtil {
+	public static double log(double val)
+	{
+		if (val < 0)
+			throw new NaNException("Indeterminate");
+
+		if (val == 0)
+			throw new NegativeInfinityException("Undefined");
+
+		return Math.log(val);
+	}
+}
+
+class NegativeInfinityException extends MathException {
+	public NegativeInfinityException(String message)
+	{
+		super(message, MathExceptionStatus.NEGATIVE_INFINITY);
+	}
+
+	public String getMessage()
+	{
+		return String.format("Message:%s, Status:Negative Infinity", super.getMessage());
+	}
+}
+
+class NaNException extends MathException {
+	public NaNException(String message)
+	{
+		super(message, MathExceptionStatus.NAN);
+	}
+
+	public String getMessage()
+	{
+		return String.format("Message:%s, Status:NaN", super.getMessage());	//super.getMessage()); fırlatılan excetion daki stringi alıyor burada Indeterminate
+
+	}
+}
+
+enum MathExceptionStatus {ZERO, POSITIVE_ZERO, NEGATIVE_ZERO, INFINITY, POSITIVE_INFINITY, NEGATIVE_INFINITY, NAN,}
+
+class MathException extends RuntimeException {
+	private final MathExceptionStatus m_mathExceptionStatus;
+
+	public MathException(String message, MathExceptionStatus mathExceptionStatus)
+	{
+		super(message);
+		m_mathExceptionStatus = mathExceptionStatus;
+	}
+
+
+	public MathExceptionStatus getMathExceptionStatus()
+	{
+		return m_mathExceptionStatus;
+	}
+}
+
+/*----------------------------------------------------------------------------------------------------------------------
+    Circle sınıfı
+-----------------------------------------------------------------------------------------------------------------------*/
+
+package org.csystem.math.geometry.test;
+
+import org.csystem.math.geometry.Circle;
+import org.csystem.util.console.Console;
+
+import java.util.Random;
+
+public class CircleGetterSetterTest { //CircleGetterSetterTest
+    private static void printCircle(Circle c)
+    {
+        Console.writeLine("Circle Information::");
+        Console.writeLine("Radius:%f", c.getRadius());
+        Console.writeLine("Area:%f", c.getArea());
+        Console.writeLine("Circumference:%f", c.getCircumference());
+    }
+
+    private static void run()
+    {
+        Random random = new Random();
+        Circle c = new Circle();
+
+        int count = Console.readInt("Input count:");
+
+        printCircle(c);
+
+        while (count-- > 0) {
+            Console.writeLine("--------------------------------------------------------------");
+            try {
+                double radius = random.nextDouble(-10, 10);
+
+                Console.writeLine("Generated radius:%f", radius);
+                c.setRadius(radius); //***
+                printCircle(c);
+
+            }
+            catch (IllegalArgumentException ex) {
+                Console.writeLine("Exception message:%s", ex.getMessage());
+            }
+            Console.writeLine("--------------------------------------------------------------");
+        }
+    }
+
+    public static void main(String[] args)
+    {
+        run();
+    }
+}
+
+package org.csystem.math.geometry.test;
+
+import org.csystem.math.geometry.Circle;
+import org.csystem.util.console.Console;
+
+import java.util.Random;
+
+public class CircleToStringTest {		//CircleToStringTest
+    private static void printCircle(Circle c)
+    {
+        Console.writeLine("Circle Information:");
+        Console.writeLine(c);
+    }
+
+    private static void run()
+    {
+        Random random = new Random();
+        Circle c = new Circle();
+
+        int count = Console.readInt("Input count:");
+
+        printCircle(c);
+
+        while (count-- > 0) {
+            Console.writeLine("--------------------------------------------------------------");
+            try {
+                double radius = random.nextDouble(-10, 10);
+
+                Console.writeLine("Generated radius:%f", radius);
+                c.setRadius(radius);	//***
+                printCircle(c);
+            }
+            catch (IllegalArgumentException ex) {
+                Console.writeLine(ex.getMessage());
+            }
+            Console.writeLine("--------------------------------------------------------------");
+        }
+    }
+
+    public static void main(String[] args)
+    {
+        run();
+    }
+}
+
+/*----------------------------------------------------------
+	FILE			: Circle.java
+	AUTHOR			: Java-Nov-2022 Group
+	LAST UPDATE		: 21.07.2023
+
+	Circle class that represents a circle
+
+	Copyleft (c) 1993 C and System Programmers Association
+	All Rights Free
+------------------------------------------------------------*/
+package org.csystem.math.geometry;
+
+import static java.lang.Math.PI;
+
+public class Circle {
+    private double m_radius;
+
+    public Circle()
+    {
+    }
+
+    public Circle(double radius)
+    {
+        setRadius(radius);
+    }
+
+    public double getRadius()
+    {
+        return m_radius;
+    }
+
+    public void setRadius(double radius)
+    {
+        if (radius < 0)
+            throw new IllegalArgumentException(String.format("Radius can not be negative!...->%f", radius));	//***
+
+        m_radius = Math.abs(radius);
+    }
+
+    public double getArea()
+    {
+        return PI * m_radius * m_radius;
+    }
+
+    public double getCircumference()
+    {
+        return 2 * PI * m_radius;
+    }
+
+    public String toString()
+    {
+        return String.format("Radius:%f, Area:%f, Circumference:%f", m_radius, getArea(), getCircumference());
+    }
+}
+
+/*----------------------------------------------------------------------------------------------------------------------
+    BallFall sınıfı
+-----------------------------------------------------------------------------------------------------------------------*/
+
+package org.csystem.app.game.ballfall;
+
+import org.csystem.game.ballfall.BallFall;
+import org.csystem.util.console.Console;
+
+import java.util.InputMismatchException;
+
+class BallFallConsoleApp {
+	public static void run()
+	{
+		BallFall ballFall = new BallFall();
+
+		for (;;) {
+			try {
+				int width = Console.readInt("Input width:");
+				int height = Console.readInt("Input height:");
+
+				if (width == 0)
+					break;
+
+				ballFall.play(width, height);
+				Console.writeLine(ballFall.getShape());
+			}
+			catch (IllegalArgumentException | InputMismatchException ex) { // Burada InputMismatchException a gerek yok çünkü Console sınıfı zaten InputMismatchException'ı
+				String message = ex.getMessage();
+				Console.writeLine("Invalid values!...%s", message != null ? "->" + message : "");
+			}
+		}
+	}
+
+	public static void main(String[] args)
+	{
+		run();
+	}
+}
+
+package org.csystem.game.ballfall;
+
+public class BallFall {
+	private final StringBuilder m_shape;
+
+	private static boolean calculateRightFlag(boolean isRight, int ballIndex, int width)
+	{
+		if (ballIndex == 0)
+			isRight = true;
+		else if (ballIndex == width - 1)
+			isRight = false;
+
+		return isRight;
+	}
+
+	private static int calculateBallIndex(int ballIndex, boolean isRight)
+	{
+		if (isRight)
+			return ballIndex + 1;
+
+		return ballIndex - 1;
+	}
+
+	private void fillSpace(int begin, int end)
+	{
+		m_shape.append(" ".repeat(end - begin));
+	}
+
+	private void fillBall(int ballIndex, int end)
+	{
+		fillSpace(0, ballIndex);
+		m_shape.append('*');
+		fillSpace(ballIndex + 1, end);
+	}
+
+	public BallFall()
+	{
+		m_shape = new StringBuilder();
+	}
+
+	public String getShape()
+	{
+		return m_shape.toString();
+	}
+
+	public void play(int width, int height)
+	{
+		if (width <= 0 || height <= 0)
+			throw new IllegalArgumentException(String.format("Illegal width or height value!... -> Width:%d, Height:%d", width, height));
+
+		int ballIndex = 0;
+		boolean isRight = false;
+
+		m_shape.delete(0, m_shape.length());
+
+		for (int i = 1; i <= height; ++i) {
+			m_shape.append('|');
+			fillBall(ballIndex, width);
+			if (width != 1) {
+				isRight = calculateRightFlag(isRight, ballIndex, width);
+				ballIndex = calculateBallIndex(ballIndex, isRight);
+			}
+			m_shape.append('|').append('\r').append('\n');
+		}
+	}
+}
+
+
+
+
+/*-----------------------------------------------------------------------------------------------------------------------
+	Bazı durumlarda nesne içerisinde bir takım kaynaklar (resources/sources) kullanılıyor olabilir. Bu kaynakların
+	kullanıma hazır hale getirilmesine mantıksal olarak "kaynağı açmak (open)" dersek, kaynak kullanımı bittğinde,
+	mantıksal olarak "kaynağın kapatılması (close)" yani serbest bırakılması gerekebilir. Kaynağın kapatılması nesne
+	yok edildiğinde gerçekleşir ancak anımsanacağı gibi GC'nin ne zaman devreye gireceği yazanlara bırakılmıştır. Örneğin
+	bu kaynağı iş bittikten sonra başka bir nesne kullanmak isteyebilir. Bu durumda henüz daha GC devreye girmemişse önceki
+	kullanan nesne "garbage collected" durumda olsa bile henüz yok edilmediğinden kullandığı kaynak da açık olur ve yeni nesne
+	bu kaynağı açamayabilir. Şüphesiz bu durum kaynağın birden fazla nesne tarafından da kullanılabilir olması durumunda
+	problem oluşturmaz ancak yine de bu tarz kaynakların işlem bittikten sonra kapatılması yani geri bırakılması gerekir.
+	Burada kaynak, bir dosya, bir cihaz, bir resim (image) vb. olabilir.  Böylesi durumlar için Java'da Closeable arayüzü
+	kullanılır. Closeable arayüzünün aşağıdaki prototipte close isimli bir abstract metodu bulunur:
+		public void close() throws IOException
+	IOException checked bir exception sınıfıdır. Anlatılana benzer bir kaynağı kullanan bir sınıf Closeable arayüzünü
+	destekler ve bu sınıfı kullanan programcı (client codes) close metodunu çağırması gerektiğini bilir. Yani Java'da
+	programcı Closeable arayüzünü destekleyen bir sınıf gördüğünde close metodunu çağırması gerektiğini bilir. Benzer
+	şekilde bir kaynağı kullanan sınıfı yazan programcı da bu sınıf için Closeable arayüzünü destekler ve tipik olarak
+	close metodunda kaynağı kapatır. Closeable bu anlamda Java'da bir anlaşmadır (contract/convention)
+
+	Mordor 
+
+	kaynakların (resources/sources) açılıp kapatılması close metodu
+	public void close() throws IOException
+	IOException checked bir exception sınıfıdır
+
+-----------------------------------------------------------------------------------------------------------------------*/
+
+/*----------------------------------------------------------------------------------------------------------------------
+    Aşağıdaki örnekte finally bloğunda close metodu try-catch içerisinde alınarak checked exception fırlatılmasından
+    dolayı oluşan error engellenmiştir. Ancak bazı durumlarda (ki bu durumlar hiç de az ve önemsiz değildir) close metodunun
+    exception fırlatması durumu programın ilgileneceği bir şey olmaz. Yani bu tip durumlarda açık olan bir kaynağın
+    kapatılamaması durumunda programcının yapabileceği bir şey yoktur. Dolayısıyla aşağıdaki demo örnekte sınıfın kullandığı
+    kaynak böylesi bir kaynaksa finally bloğunda yapılan try catch işlemi gereksizdir ancak checked exception dolayısıyla
+    bir çözümm olarak yapılabilir. Bu da kodun okunabilirliğini/algılanabilirliğini azaltır
+
+	Mordor
+
+	engellenen error dan kasıt dev.close(); metodunun try-catch a alımadığındaki errordur.
+	dev.close(); IOException fırlatacak ya run metoduna throws dememiz ya da bunu try-catch  almamız lazım  
+
+	Satır no: 41237 İncele
+-----------------------------------------------------------------------------------------------------------------------*/
+
+package com.boraserce.app.device;
+
+import com.bartucankaya.device.Device;
+import org.csystem.util.console.Console;
+import org.csystem.util.thread.ThreadUtil;
+
+import java.io.IOException;
+
+public class DemoApp {
+    public static void run()
+    {
+        while (true) {
+            ThreadUtil.sleep(1000);
+            Console.writeLine("-------------------------------------------------------------------");
+            Device dev = null;
+
+            try {
+                dev = new Device("www.csystem.org:50500/app/dev");
+                dev.doWork();
+            }
+            catch (IllegalArgumentException ignore) {
+                Console.writeLine("Invalid URL!...");
+            }
+            catch (IllegalStateException ignore) {
+                Console.writeLine("Connection problem occurs!...");
+            }
+            catch (IOException ignore) {
+                Console.writeLine("Problem in IO!...");
+            }
+            finally {
+                try {		//***
+                    if (dev != null)
+                        dev.close();
+                }
+                catch (IOException ignore) {
+
+                }
+            }
+            Console.writeLine("-------------------------------------------------------------------");
+        }
+    }
+
+    public static void main(String[] args)
+    {
+        run();
+    }
+}
 
 /*----------------------------------------------------------------------------------------------------------------------
 
