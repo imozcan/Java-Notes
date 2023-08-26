@@ -40786,6 +40786,725 @@ class MathException extends RuntimeException {
 	}
 }
 
+/*-----------------------------------------------------------------------------------------------------------------------
+	Throwable sınıfının printStackTrace metodu exception fırlatılması noktalarını stack biçiminde gösteren mesajı yazdırır.
+	Bu mesaj, akışın exception'ın yakalanamamasından dolayı sonlandığında basılan mesaj ile hemen hemen aynıdır. Bu
+	metot da sanaldır, gerekirsen override edilebilir
+
+	Mordor Morgot
+
+	Standart errora yazdırır
+-----------------------------------------------------------------------------------------------------------------------*/
+package org.csystem.app;
+
+import org.csystem.util.console.Console;
+
+class App {
+	public static void main(String[] args)
+	{
+		try {
+			double val = Console.readDouble("Input a value:", "Invalid value!...");
+
+			Console.writeLine("log(%f) = %f", val, MathUtil.log(val));
+		}
+		catch (MathException ex) {
+			ex.printStackTrace();
+		}
+		System.out.println("C and System Programmers Association");
+	}
+}
+
+class MathUtil {
+	public static double log(double val)
+	{
+		if (val < 0)
+			throw new NaNException("Indeterminate");
+
+		if (val == 0)
+			throw new NegativeInfinityException("Undefined");
+
+		return Math.log(val);
+	}
+}
+
+class NegativeInfinityException extends MathException {
+	public NegativeInfinityException(String message)
+	{
+		super(message, MathExceptionStatus.NEGATIVE_INFINITY);
+	}
+
+	public String getMessage()
+	{
+		return String.format("Message:%s, Status:Negative Infinity", super.getMessage());
+	}
+}
+
+class NaNException extends MathException {
+	public NaNException(String message)
+	{
+		super(message, MathExceptionStatus.NAN);
+	}
+
+	public String getMessage()
+	{
+		return String.format("Message:%s, Status:NaN", super.getMessage());
+	}
+}
+
+enum MathExceptionStatus {ZERO, POSITIVE_ZERO, NEGATIVE_ZERO, INFINITY, POSITIVE_INFINITY, NEGATIVE_INFINITY, NAN,}
+
+class MathException extends RuntimeException {
+	private final MathExceptionStatus m_mathExceptionStatus;
+
+	public MathException(String message, MathExceptionStatus mathExceptionStatus)
+	{
+		super(message);
+		m_mathExceptionStatus = mathExceptionStatus;
+	}
+
+
+	public MathExceptionStatus getMathExceptionStatus()
+	{
+		return m_mathExceptionStatus;
+	}
+}
+
+/*-----------------------------------------------------------------------------------------------------------------------
+	Java'da exception sınıfları kategori olarak iki gruba ayrılır: checked, unchecked
+
+	unchecked exception sınıfı: Bir exception sınıfının türetme hiyerarşisi içerisinde RuntimeException veya Error
+	sınıfı varsa bu sınıf unchecked exception sınıfıdır
+
+	checked exception sınıfı: unchecked olmayan exception sınıfıdır
+
+	Anahtar Notlar: Türetme kavramı dolayısıyla bir exception sınıfından türetilen bir başka exception sınıf kategori olarak
+	taban sınıfı ile aynıdır
+
+	Anahtar Notlar: Bir exception sınıfının checked veya unchecked bir exception sınıfı olmasının çalışma zamanında
+	bir farkı yoktur. Yani tüm exception sınıfları için çalışma zamanı durumu aynıdır. Bir sınıfın checked bir exception
+	sınıfı olması derleme zamanında bir takım kural seinin beraberinde getirir.
+
+	Anahtar Notlar: Exception sınıflarının yazımında genel olarak Throwable sınıfından doğrudan türetme yapılmaz. Eğer
+	yapılırsa bu sınıf da checked exception kategorisinde olur. JavaSE'de Throwable sınıfından yalnızca Error Exception
+	sınıfları türetilmiştir
+
+
+	Mordor 
+
+	RuntimeException veya Error sınıfı varsa bu sınıf unchecked exception sınıfındadır.
+-----------------------------------------------------------------------------------------------------------------------*/
+
+/*-----------------------------------------------------------------------------------------------------------------------
+	checked bir exception throw edilebilecek bir akışta eğer fırlatılan exception try deyimi ve uygun catch bloğu ile
+	handle edilmeyecekse ilgili metoda throws anahtar sözcüğü ile fırlatılan exception ya da exception'lar bildirilmeldir.
+	Aksi durumda error oluşur. throws bildirimi parametre parantezinden sonra, metot gövdesinden önce yazılır. Birden fazla
+	exception bildirilecekse virgül ile ayrılır. Aslında unchecked exception sınıfları da throws listesine yazılabilir.
+	Ancak yazılması ile yazılmaması arasında bir fark yoktur. Programcılar genelde yazmazlar ancak bazen dökumantasyonda
+	throws bildirimi olarak gösterilebilir. Fırlatılan checked exception'lar arasında doğrudan ya da dolaylı olarak
+	türetme ilişkisi yoksa hepsi birden throws listesine yazılmalıdır.
+
+	checked exception fırlatma ihtimali olan bir akışa ilişkin metotta throws bildirimi yapılmayacaksa (veya yapılamıyorsa)
+	akışıın try bloğu içerisinde olması ve fırlatılabilecek exception'ları yakalayabilecek uygun catch blok ya da bloklarının
+	var olması zorunludur. Aksi durumda error oluşur
+
+	Mordor Morgot
+
+	fırlatılabilecek tüm exceptionlar yakalaanmak zorunda 
+-----------------------------------------------------------------------------------------------------------------------*/
+package org.csystem.app;
+
+import org.csystem.util.console.Console;
+
+class App {
+	public static void main(String[] args)
+	{
+		// MathUtil.log(1);  error çünkü checked exception fırlatma ihtimali var
+		try {
+			double val = Console.readDouble("Input a value:", "Invalid value!...");
+
+			Console.writeLine("log(%f) = %f", val, MathUtil.log(val));
+		}
+		catch (NaNException ignore) {
+			Console.writeLine("Indeterminate");
+		}
+
+		catch (NegativeInfinityException ignore) {
+			Console.writeLine("Undefined");
+		}
+
+		System.out.println("C and System Programmers Association");
+	}
+}
+
+class MathUtil {
+	public static double log(double val) throws NaNException, NegativeInfinityException // chcked exception olduğu için throws ile bunları fırlatacağız diyoruz
+	{
+		if (val < 0)
+			throw new NaNException("Indeterminate");
+
+		if (val == 0)
+			throw new NegativeInfinityException("Undefined");
+
+		return Math.log(val);
+	}
+}
+
+class NegativeInfinityException extends MathException {
+	public NegativeInfinityException(String message)
+	{
+		super(message, MathExceptionStatus.NEGATIVE_INFINITY);
+	}
+
+	public String getMessage()
+	{
+		return String.format("Message:%s, Status:Negative Infinity", super.getMessage());
+	}
+}
+
+class NaNException extends MathException {
+	public NaNException(String message)
+	{
+		super(message, MathExceptionStatus.NAN);
+	}
+
+	public String getMessage()
+	{
+		return String.format("Message:%s, Status:NaN", super.getMessage());
+	}
+}
+
+enum MathExceptionStatus {ZERO, POSITIVE_ZERO, NEGATIVE_ZERO, INFINITY, POSITIVE_INFINITY, NEGATIVE_INFINITY, NAN,}
+
+class MathException extends Exception {
+	private final MathExceptionStatus m_mathExceptionStatus;
+
+	public MathException(String message, MathExceptionStatus mathExceptionStatus)
+	{
+		super(message);
+		m_mathExceptionStatus = mathExceptionStatus;
+	}
+
+
+	public MathExceptionStatus getMathExceptionStatus()
+	{
+		return m_mathExceptionStatus;
+	}
+}
+
+/*-----------------------------------------------------------------------------------------------------------------------
+	Aşağıdaki örneği inceleyiniz
+-----------------------------------------------------------------------------------------------------------------------*/
+package org.csystem.app;
+
+import org.csystem.util.console.Console;
+
+class App {
+	public static void main(String[] args)
+	{
+		try {
+			double val = Console.readDouble("Input a value:", "Invalid value!...");
+
+			Console.writeLine("log(%f) = %f", val, MathUtil.log(val));
+		}
+		catch (MathException ex) {
+			Console.writeLine(ex.getMessage());
+		}
+
+		System.out.println("C and System Programmers Association");
+	}
+}
+
+class MathUtil {
+	public static double log(double val) throws NaNException, NegativeInfinityException
+	{
+		if (val < 0)
+			throw new NaNException("Indeterminate");
+
+		if (val == 0)
+			throw new NegativeInfinityException("Undefined");
+
+		return Math.log(val);
+	}
+}
+
+class NegativeInfinityException extends MathException {
+	public NegativeInfinityException(String message)
+	{
+		super(message, MathExceptionStatus.NEGATIVE_INFINITY);
+	}
+
+	public String getMessage()
+	{
+		return String.format("Message:%s, Status:Negative Infinity", super.getMessage());
+	}
+}
+
+class NaNException extends MathException {
+	public NaNException(String message)
+	{
+		super(message, MathExceptionStatus.NAN);
+	}
+
+	public String getMessage()
+	{
+		return String.format("Message:%s, Status:NaN", super.getMessage());
+	}
+}
+
+enum MathExceptionStatus {ZERO, POSITIVE_ZERO, NEGATIVE_ZERO, INFINITY, POSITIVE_INFINITY, NEGATIVE_INFINITY, NAN,}
+
+class MathException extends Exception {
+	private final MathExceptionStatus m_mathExceptionStatus;
+
+	public MathException(String message, MathExceptionStatus mathExceptionStatus)
+	{
+		super(message);
+		m_mathExceptionStatus = mathExceptionStatus;
+	}
+
+
+	public MathExceptionStatus getMathExceptionStatus()
+	{
+		return m_mathExceptionStatus;
+	}
+}
+
+/*-----------------------------------------------------------------------------------------------------------------------
+	checked bir exception sınıfı türünden parametreli bir ctach bloğu olan bir try deyiminde, try bloğu içerisinde
+	o catch bloğu ile yakalanabilecek bir exception fırlatabilecek bir akış bulunmalıdır
+
+	Mordor 
+-----------------------------------------------------------------------------------------------------------------------*/
+package org.csystem.app;
+
+import org.csystem.util.console.Console;
+
+class App {
+	public static void main(String[] args)
+	{
+		try {
+			//...
+		}
+		catch (MathException ex) { //error
+			Console.writeLine(ex.getMessage());
+		}
+
+		System.out.println("C and System Programmers Association");
+	}
+}
+
+class MathUtil {
+	public static double log(double val) throws NaNException, NegativeInfinityException
+	{
+		if (val < 0)
+			throw new NaNException("Indeterminate");
+
+		if (val == 0)
+			throw new NegativeInfinityException("Undefined");
+
+		return Math.log(val);
+	}
+}
+
+class NegativeInfinityException extends MathException {
+	public NegativeInfinityException(String message)
+	{
+		super(message, MathExceptionStatus.NEGATIVE_INFINITY);
+	}
+
+	public String getMessage()
+	{
+		return String.format("Message:%s, Status:Negative Infinity", super.getMessage());
+	}
+}
+
+class NaNException extends MathException {
+	public NaNException(String message)
+	{
+		super(message, MathExceptionStatus.NAN);
+	}
+
+	public String getMessage()
+	{
+		return String.format("Message:%s, Status:NaN", super.getMessage());
+	}
+}
+
+enum MathExceptionStatus {ZERO, POSITIVE_ZERO, NEGATIVE_ZERO, INFINITY, POSITIVE_INFINITY, NEGATIVE_INFINITY, NAN,}
+
+class MathException extends Exception {
+	private final MathExceptionStatus m_mathExceptionStatus;
+
+	public MathException(String message, MathExceptionStatus mathExceptionStatus)
+	{
+		super(message);
+		m_mathExceptionStatus = mathExceptionStatus;
+	}
+
+
+	public MathExceptionStatus getMathExceptionStatus()
+	{
+		return m_mathExceptionStatus;
+	}
+}
+
+/*-----------------------------------------------------------------------------------------------------------------------
+	-checked bir exception sınıfı türünden parametreli bir ctach bloğu olan bir try deyiminde, try bloğu içerisinde
+	o catch bloğu ile yakalanabilecek bir exception fırlatabilecek bir akış bulunmalıdır
+
+	Yukarıdaki kural Throwable ve Exception sınıfları için geçerli değildir. Halbuki bu sınıflar da checked exception
+	kategorisindedir
+
+	Mordor Morgot
+-----------------------------------------------------------------------------------------------------------------------*/
+package org.csystem.app;
+
+import org.csystem.util.console.Console;
+
+class App {
+	public static void main(String[] args)
+	{
+		try {
+			//...
+		}
+		catch (Exception ex) {
+			Console.writeLine("Exception%s", ex.getMessage());
+		}
+		catch (Throwable ex) {
+			Console.writeLine("Throwable:%s", ex.getMessage());
+		}
+
+		System.out.println("C and System Programmers Association");
+	}
+}
+
+class MathUtil {
+	public static double log(double val) throws NaNException, NegativeInfinityException
+	{
+		if (val < 0)
+			throw new NaNException("Indeterminate");
+
+		if (val == 0)
+			throw new NegativeInfinityException("Undefined");
+
+		return Math.log(val);
+	}
+}
+
+class NegativeInfinityException extends MathException {
+	public NegativeInfinityException(String message)
+	{
+		super(message, MathExceptionStatus.NEGATIVE_INFINITY);
+	}
+
+	public String getMessage()
+	{
+		return String.format("Message:%s, Status:Negative Infinity", super.getMessage());
+	}
+}
+
+class NaNException extends MathException {
+	public NaNException(String message)
+	{
+		super(message, MathExceptionStatus.NAN);
+	}
+
+	public String getMessage()
+	{
+		return String.format("Message:%s, Status:NaN", super.getMessage());
+	}
+}
+
+enum MathExceptionStatus {ZERO, POSITIVE_ZERO, NEGATIVE_ZERO, INFINITY, POSITIVE_INFINITY, NEGATIVE_INFINITY, NAN,}
+
+class MathException extends Exception {
+	private final MathExceptionStatus m_mathExceptionStatus;
+
+	public MathException(String message, MathExceptionStatus mathExceptionStatus)
+	{
+		super(message);
+		m_mathExceptionStatus = mathExceptionStatus;
+	}
+
+
+	public MathExceptionStatus getMathExceptionStatus()
+	{
+		return m_mathExceptionStatus;
+	}
+}
+
+/*-----------------------------------------------------------------------------------------------------------------------
+	throws bildirimi olan sanal bir metodun override edilmesi durumunda, taban sınıftaki ilgili sanal metodun throws
+	listesinde olan exception sınıfları kaldırılabilir. Yani örneğin override edilen metotta hiç throws listesi olmayabilir.
+	override edilen metodun throws listesinde, taban sınıftaki ilgili sanal metodun throws listesinde bulunan sınıflar
+	veya onlardan doğrudan ya da dolaylı olarak türetilmiş sınıflar bulunabilir. Aksi durumda error oluşur. Aşağıdaki örneği
+	Sample sınıfının  ve IX arayüzünün değiştirilemeyeceği ve D sınıfının override edilen foo metodu içerisinde Sample
+	sınıfının bar metodunun çağrılması gerektiği bir senaryo için inceleyiniz
+
+	Mordor Morgot
+
+
+-----------------------------------------------------------------------------------------------------------------------*/
+package org.csystem.app;
+
+class Sample {
+	public static void bar() throws OurException
+	{
+		//...
+	}
+}
+
+class D implements IX {
+	public void foo() throws OurException //error
+	{
+		//...
+		Sample.bar();
+		//...
+	}
+}
+class C implements IX {
+	public void foo() throws TheirException
+	{
+		//...
+	}
+}
+
+class B implements IX {
+	public void foo() throws MyException
+	{
+		//...
+	}
+}
+class A implements IX {
+	public void foo()
+	{
+		//...
+	}
+}
+
+interface IX {
+	void foo() throws MyException, YourException;
+}
+
+class MyException extends Exception {
+	//...
+}
+
+class YourException extends Exception {
+	//...
+}
+
+class TheirException extends MyException {
+	//...
+}
+
+class OurException extends Exception {
+	//...
+}
+
+/*-----------------------------------------------------------------------------------------------------------------------
+	Throwable sınıfında Throwable türünden bir referan da tutulur. Bu referansa ilişkin exception'a "cause exception"
+	da denir. Cause excption sınıfına ilişkin referans getCause metodu ile elde edilebilir. Bu exception referansı,
+	exception mesajında olduğu gibi ctor ile verilebilir. Eğer verilmeze null değerinde olur
+-----------------------------------------------------------------------------------------------------------------------*/
+/*-----------------------------------------------------------------------------------------------------------------------
+	Yukarıdaki problem aşağıdaki gib çözülebilir. Aşağıdaki örnekte unchecked exception sınıfına ilişkin nesne içerisinde
+	bir exception referansı "cause exception" olarak tutulmaktadır. Böylesi bir yaklaşım çok fazla karşımıza çıkar. Yine
+	aşağıdaki örneği Sample sınıfının  ve IX arayüzünün değiştirilemeyeceği ve D esınıfının override edilen foo metodu 
+	içerisinde Sample sınıfının bar metodunun çağrılması gerektiği bir senaryo için inceleyiniz
+-----------------------------------------------------------------------------------------------------------------------*/
+package org.csystem.app;
+
+class Sample {
+	public static void bar() throws OurException
+	{
+		//...
+	}
+}
+
+class D implements IX {
+	public void foo()
+	{
+		//...
+		try {
+			Sample.bar();
+		}
+		catch (OurException ex) {
+			throw new WrapperException("Our Exception", ex);
+		}
+
+		//...
+	}
+}
+class C implements IX {
+	public void foo() throws TheirException
+	{
+		//...
+	}
+}
+
+class B implements IX {
+	public void foo() throws MyException
+	{
+		//...
+	}
+}
+class A implements IX {
+	public void foo()
+	{
+		//...
+	}
+}
+
+interface IX {
+	void foo() throws MyException, YourException;
+}
+
+class WrapperException extends RuntimeException {
+	public WrapperException(String message, Throwable cause)
+	{
+		super(message, cause);
+	}
+	public String getMessage()
+	{
+		Throwable cause = getCause();
+
+		return String.format("Message:%s%s", super.getMessage(), cause != null ? ", Cause Exception Message:" + cause.getMessage() : "");
+	}
+}
+class MyException extends Exception {
+	//...
+}
+
+class YourException extends Exception {
+	//...
+}
+
+class TheirException extends MyException {
+	//...
+}
+
+class OurException extends Exception {
+	//...
+}
+
+/*-----------------------------------------------------------------------------------------------------------------------
+	Yukarıdaki, problem abstract metodun çok genel bir kullanımı olabilecekse aşağıdaki gibi, bildiriminde
+	throws Exception yazılarak çözülebilir
+-----------------------------------------------------------------------------------------------------------------------*/
+package org.csystem.app;
+
+class Sample {
+	public static void bar() throws OurException
+	{
+		//...
+	}
+}
+
+class D implements IX {
+	public void foo() throws OurException
+	{
+		//...
+		Sample.bar();
+		//...
+	}
+}
+class C implements IX {
+	public void foo() throws TheirException
+	{
+		//...
+	}
+}
+
+class B implements IX {
+	public void foo() throws MyException
+	{
+		//...
+	}
+}
+class A implements IX {
+	public void foo()
+	{
+		//...
+	}
+}
+
+interface IX {
+	void foo() throws Exception; //tüm checked exception sınıfları Exception dan türetildiği için, sorun throws Exception fırlatılarak ta çözülür
+}
+
+class MyException extends Exception {
+	//...
+}
+
+class YourException extends Exception {
+	//...
+}
+
+class TheirException extends MyException {
+	//...
+}
+
+class OurException extends Exception {
+	//...
+}
+
+/*-----------------------------------------------------------------------------------------------------------------------
+	Programcı ne zaman bir exception sınıfı yazmalıdır? Programcı fırlatmak istediği exception'a ilişkin bir sınıf
+	JavaSE'de veya kullandığı bir kütüphanede (library) varsa onu kullanmalıdır. Burada öncelik JavaSE'de olmalıdır. Eğer
+	fırlatılmaka istenen exception sınıfı buralarda yoksa duruma göre var olanlardan türetme de yapılarak yeni, bir
+	exception sınıfı yazılmalıdır
+
+	Programcı checked veya unchecked bir exception sınıfı yazıp yazmayacağına nasıl karar verecektir? Bu sorunun
+	cevabı programcılara göre değişebilir. Örneğin bazı programcılar kritik öneme sahip yani neredeyse her durumda
+	handle edilmesi gereken exception'ları checked yapabilirler. JavaSE'de exception sınıflarına bu şekilde yaklaşılarak
+	checked veya unchecked yapılmıştır. Bazı programcılar ise "exception'ın handle edilip edilmeyeceğine zaten
+	uygulamada karar verilmelidir" fikriyle zorunlu olmadıkça checked exception yazmazlar. Biz bu strateji ile exception
+	sınıflarını yazacağız. Yani zorunlu olmadıkça checked exception sınıfı yazmayacağız
+
+	Mordor
+-----------------------------------------------------------------------------------------------------------------------*/
+/*-----------------------------------------------------------------------------------------------------------------------
+	JavaSE'de bulunan önemli bazı exception sınıfları:
+	IllegalArgumentException: Genel olarak bir metodun parametresine geçilen argümanın geçersiz olması durumunda fırlatılan
+	exception sınıfıdır. Konuya özgü olarak bu sınıftan türetilmiş exception sınıfları da bulunmaktadır
+
+	ClassCastException: Downcasting işleminde haksız dönüşüm olduğunda JVM tarafondan fırlatılır. Haksız dönüşümün kontrolü için
+	handle edilebilir. Ancak bunun yerine instanceof operatörü ile kullanım tavsiye edilir. Bu exception programcı
+	tarafından bir metot içerisinde fırlatılmaz  instanceof -> satırNo: 32402 
+
+	NumberFormatException: IllegalArgumentException sınıfından türetilmiştir. Sarmalayan sınıfların parseXXX metotları
+	(Boolean sınıfının parseBoolean metodu hariç) yazıyı ilgili temel türe çeviremezlerse bu exception'ı fırlatırlar
+
+	NoSuchElementException: Tipik olarak bir elemanın yokluğu durumunda kullanılır
+
+	InputMismatchException: Bu sınıf tipik olarak bir girdinin geçersizliği durumunda kullanılır. Örneğin Scanner sınıfının
+	çeşitli metotları (nextInt, nextDouble, nextLong gibi) bu exception'ı fırlatırlar. Bu sınıf NoSuchElementException
+	sınıfından türetilmiştir.
+
+	ArrayIndexOutOfBoundsException: Bu exception özel olarak dizinin indeks numarasının geçersiz olduğu durumlarda JVM
+	tarafından fırlatılır
+
+	IndexOutOfBoundsException: Bu exception sınıfı indeksn taşmalarında kullanılır. Örneğin ArrayList sınıfının bazı
+	metotları bu exception'ı fırlatırlar
+
+	NullPointerException: Bir referansın null değeri tutması durumunda o referans ile non-static bir elemana erişilmeye
+	çalışıldığında fırlatılır. Bu exception sınıfının programlamada handle edilmesi tavsiye edilmez. Genel olarak bu duruma
+	yol açabilecek kod parçaları yazılmamalıdır ya da yazılmışsa da düzeltilmelidir.
+
+	UmSupportedOperationException: Tipik olarak bir metodun o tür için desteklenmediği ancak bulunması gerektiği durumda
+	kullanılır.
+
+	IOException: Input ve/veya output durumlarında kullanılan checked bir exception sınıfıdır. Bu exception sınıfından da
+	önemli bazı exception sınıfları türetilmiştir
+
+	Yukarıdaki exception sınıfları dışında da pek çok exception sınıfı bulunmaktadır
+
+	Mordor
+-----------------------------------------------------------------------------------------------------------------------*/
+
+
+
 /*----------------------------------------------------------------------------------------------------------------------
 
 -----------------------------------------------------------------------------------------------------------------------*/
