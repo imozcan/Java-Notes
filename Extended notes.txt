@@ -41492,7 +41492,7 @@ class OurException extends Exception {
 	çalışıldığında fırlatılır. Bu exception sınıfının programlamada handle edilmesi tavsiye edilmez. Genel olarak bu duruma
 	yol açabilecek kod parçaları yazılmamalıdır ya da yazılmışsa da düzeltilmelidir.
 
-	UmSupportedOperationException: Tipik olarak bir metodun o tür için desteklenmediği ancak bulunması gerektiği durumda
+	UnSupportedOperationException: Tipik olarak bir metodun o tür için desteklenmediği ancak bulunması gerektiği durumda
 	kullanılır.
 
 	IOException: Input ve/veya output durumlarında kullanılan checked bir exception sınıfıdır. Bu exception sınıfından da
