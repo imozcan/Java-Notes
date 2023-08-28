@@ -41994,7 +41994,7 @@ public class BallFall {
 	Mordor
 
 	engellenen error dan kasıt dev.close(); metodunun try-catch a alımadığındaki errordur.
-	dev.close(); IOException fırlatacak ya run metoduna throws dememiz ya da bunu try-catch  almamız lazım  
+	dev.close(); IOException fırlatacak bu yüzden ya run metoduna throws dememiz ya da bunu try-catch  almamız lazım  
 
 	Satır no: 41237 İncele
 -----------------------------------------------------------------------------------------------------------------------*/
@@ -42037,6 +42037,226 @@ public class DemoApp {
 
                 }
             }
+            Console.writeLine("-------------------------------------------------------------------");
+        }
+    }
+
+    public static void main(String[] args)
+    {
+        run();
+    }
+}
+
+
+/*----------------------------------------------------------------------------------------------------------------------
+    Yukarıdaki problem aşağıdaki gibi daha az karmaşık ve daha okuabilir olarak çözülebilir. Ayrıca bu yaklaşımda close
+    metodu için de exception handling yapılmış olur
+
+    Mordor Morgot
+    strateji değiştirerek iç içe try blogu ile çözdük içteki try bloğunu gidip farklı bir sınıfın metodunda yazarak
+    karmaşıklığı engelledik, doConnection sınıfını yazdık onu throws ederek finnaly bloğundaki dev.close() u try-catch
+    bloğuna koyma zorunluluğundan kurtulduk bu sayede daha az karmaşık hale geldi.
+
+
+-----------------------------------------------------------------------------------------------------------------------*/
+package com.boraserce.app.device;
+
+import org.csystem.util.console.Console;
+import org.csystem.util.thread.ThreadUtil;
+
+import java.io.IOException;
+
+public class DemoApp {
+    public static void run()
+    {
+        while (true) {
+            ThreadUtil.sleep(1000);
+            Console.writeLine("-------------------------------------------------------------------");
+
+            try {
+                DeviceConnectionUtil.doConnection("www.csystem.org:50500/app/dev");
+            }
+            catch (IOException ignore) {
+                Console.writeLine("Problem in IO!...");
+            }
+
+            Console.writeLine("-------------------------------------------------------------------");
+        }
+    }
+
+    public static void main(String[] args)
+    {
+        run();
+    }
+}
+
+package com.boraserce.app.device;
+
+import com.bartucankaya.device.Device;
+import org.csystem.util.console.Console;
+
+import java.io.IOException;
+
+public final class DeviceConnectionUtil {
+    private DeviceConnectionUtil()
+    {}
+
+    public static void doConnection(String url) throws IOException
+    {
+        Device dev = null;
+
+        try {
+            dev = new Device(url);
+            dev.doWork();
+        }
+        catch (IllegalArgumentException ignore) {
+            Console.writeLine("Invalid URL!...");
+        }
+        catch (IllegalStateException ignore) {
+            Console.writeLine("Connection problem occurs!...");
+        }
+        finally {
+            if (dev != null)
+                dev.close();
+        }
+    }
+}
+
+/*----------------------------------------------------------------------------------------------------------------------
+    Java 7 ile birlikte eklenen "try with resources (TWR)" deyimi ile birlikte yukarıdaki problem çok daha etkin bir
+    biçimde çözülebilir. TWR ile close metodu otomatik olarak çağrılır (automatic resource management). TWR deyimi Java 7
+    ile eklenen AutoCloseable arayüzünü destekleyen sınıflar ile kullanılabilir. Java 7 ile birlikte Closeable arayüzü
+    AutoCloseable arayüzünden türetilmiştir. Böylelikle Closeable arayüzünü destekleyen tüm sınıflar (Java 7 öncesinde
+    yazılmış olanlar da dahil) AutoCloseable'ı da destekler duruma geldiklerinden TWR ile kullanılabilmektedir. AutoCloseable
+    arayüzünün de Closeable arayüzü ile birebir aynı olan close metodu bulunmaktadır. Java programcısı AutoCloseable
+    destekleyen bir sınıf için özel bir durum yoksa her zaman TWR kullanmalıdır
+
+    Mordor
+
+    Kullanımı Nesneyi try bloğunda küme parantezinden önce parantez içerisinde yaratıyoruz. //*** AutoCloseable'ı kendi
+    yapıyor artık finnaly bloguna ve orada close yapmaya gerek kalmadı daha basit daha anlaşılır
+
+-----------------------------------------------------------------------------------------------------------------------*/
+package com.boraserce.app.device;
+
+import com.bartucankaya.device.Device;
+import org.csystem.util.console.Console;
+import org.csystem.util.thread.ThreadUtil;
+
+import java.io.IOException;
+
+public class DemoApp {
+    public static void run()
+    {
+        while (true) {
+            ThreadUtil.sleep(1000);
+            Console.writeLine("-------------------------------------------------------------------");
+
+            try (Device dev = new Device("www.csystem.org:50500/app/dev")) {        //***
+                dev.doWork();
+            }
+            catch (IllegalArgumentException ignore) {
+                Console.writeLine("Invalid URL!...");
+            }
+            catch (IllegalStateException ignore) {
+                Console.writeLine("Connection problem occurs!...");
+            }
+            catch (IOException ignore) {
+                Console.writeLine("Problem in IO!...");
+            }
+
+            Console.writeLine("-------------------------------------------------------------------");
+        }
+    }
+
+    public static void main(String[] args)
+    {
+        run();
+    }
+}
+
+/*----------------------------------------------------------------------------------------------------------------------
+    TWR parantezi içerisinde kullanılan referanslar final kabul edilir. Yani TWR deyimi içerisinde herhangi bir atama
+    yapılamaz. İstenirse referans final olarak da bildirilebilir. Bu anlamda final bildirilmemesi de final bildirilmesiyle
+    aynı anşamdadır (effectively final).
+
+    Mordor
+-----------------------------------------------------------------------------------------------------------------------*/
+package com.boraserce.app.device;
+
+import com.bartucankaya.device.Device;
+import org.csystem.util.console.Console;
+import org.csystem.util.thread.ThreadUtil;
+
+import java.io.IOException;
+
+public class DemoApp {
+    public static void run()
+    {
+        while (true) {
+            ThreadUtil.sleep(1000);
+            Console.writeLine("-------------------------------------------------------------------");
+
+            try (Device dev = new Device("www.csystem.org:50500/app/dev")) {
+                dev.doWork();
+                dev = null; //error çünkü TWR parantezi içerisinde referanslar final
+            }
+            catch (IllegalArgumentException ignore) {
+                Console.writeLine("Invalid URL!...");
+            }
+            catch (IllegalStateException ignore) {
+                Console.writeLine("Connection problem occurs!...");
+            }
+            catch (IOException ignore) {
+                Console.writeLine("Problem in IO!...");
+            }
+
+            Console.writeLine("-------------------------------------------------------------------");
+        }
+    }
+
+    public static void main(String[] args)
+    {
+        run();
+    }
+}
+
+/*----------------------------------------------------------------------------------------------------------------------
+    TWR ile birden fazla sınıf aşağıdaki gibi kullanılabilmektedir. Bu durumda close metodu yaratılma ile ters sırada
+    çağrılır
+
+    Mordor
+-----------------------------------------------------------------------------------------------------------------------*/
+package com.boraserce.app.device;
+
+import com.bartucankaya.device.Device;
+import com.kerimtugal.operation.device.DeviceOperation;
+import org.csystem.util.console.Console;
+import org.csystem.util.thread.ThreadUtil;
+
+import java.io.IOException;
+
+public class DemoApp {
+    public static void run()
+    {
+        while (true) {
+            ThreadUtil.sleep(1000);
+            Console.writeLine("-------------------------------------------------------------------");
+
+            try (Device dev = new Device("www.csystem.org:50500/app/dev");
+                 DeviceOperation deviceOperation = new DeviceOperation(dev)) {
+                deviceOperation.doForDevice();
+            }
+            catch (IllegalArgumentException ignore) {
+                Console.writeLine("Invalid URL!...");
+            }
+            catch (IllegalStateException ignore) {
+                Console.writeLine("Connection problem occurs!...");
+            }
+            catch (IOException ignore) {
+                Console.writeLine("Problem in IO!...");
+            }
+
             Console.writeLine("-------------------------------------------------------------------");
         }
     }
