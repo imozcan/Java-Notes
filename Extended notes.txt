@@ -42267,6 +42267,669 @@ public class DemoApp {
     }
 }
 
+
+/*----------------------------------------------------------------------------------------------------------------------
+    22.07.2023 Arwen
+-----------------------------------------------------------------------------------------------------------------------*/
+
+/*-----------------------------------------------------------------------------------------------------------------------
+	Java 9 ile birlikte TWR'den önce yaratılmış olan nesnelere ilişkin referanslar da TWR parantezi içerisinde effectively
+	final olarak kullanılabilmektedir
+-----------------------------------------------------------------------------------------------------------------------*/
+
+package com.boraserce.app.device;
+
+import com.bartucankaya.device.Device;
+import com.kerimtugal.operation.device.DeviceOperation;
+import org.csystem.util.console.Console;
+import org.csystem.util.thread.ThreadUtil;
+
+import java.io.IOException;
+
+public class DemoApp {
+    private static void doForDevice(Device device, DeviceOperation deviceOperation)
+    {
+        try (device; deviceOperation) { //Since Java 9   //kapatılması buraya verilmiş
+            //...
+            deviceOperation.doForDevice();
+        }
+        catch (IllegalStateException ignore) {
+            Console.writeLine("Connection problem occurs!...");
+        }
+        catch (IOException ignore) {
+            Console.writeLine("Problem in IO!...");
+        }
+    }
+
+    public static void run()
+    {
+        while (true) {
+            ThreadUtil.sleep(1000);
+            Console.writeLine("-------------------------------------------------------------------");
+
+            try  {  //açma işlemi bu try da
+                Device dev = new Device("www.csystem.org:50500/app/dev");
+                DeviceOperation deviceOperation = new DeviceOperation(dev);
+
+                doForDevice(dev, deviceOperation);
+            }
+            catch (IllegalArgumentException ignore) {
+                Console.writeLine("Invalid URL!...");
+            }
+
+
+            Console.writeLine("-------------------------------------------------------------------");
+        }
+    }
+
+    public static void main(String[] args)
+    {
+        run();
+    }
+}
+
+/*-----------------------------------------------------------------------------------------------------------------------
+	Yukarıdaki uygulama Java 9 öncesinde olsaydı doForDevice metodu içerisinde TWR ile refernslar kullanılamayacaktı.
+	Bu durumda ya metot nesnelerin yaratılmasından da sorumlu olacaktı ya da kod aşağıdaki gibi yazılacaktı. Örnek
+	eğer nesneler doForDevice metodundan sonra da kullanılacaksa aşağıdaki gibi yapılabilir
+
+	Mordor Morgot
+-----------------------------------------------------------------------------------------------------------------------*/
+
+package com.boraserce.app.device;
+
+import com.bartucankaya.device.Device;
+import com.kerimtugal.operation.device.DeviceOperation;
+import org.csystem.util.console.Console;
+import org.csystem.util.thread.ThreadUtil;
+
+import java.io.IOException;
+
+public class DemoApp {
+    private static void doForDevice(Device device, DeviceOperation deviceOperation) throws IOException
+    {
+        try {
+            //...
+            deviceOperation.doForDevice();
+        }
+        catch (IllegalStateException ignore) {
+            Console.writeLine("Connection problem occurs!...");
+        }
+
+    }
+
+    public static void run()
+    {
+        while (true) {
+            ThreadUtil.sleep(1000);
+            Console.writeLine("-------------------------------------------------------------------");
+
+            try  (Device dev = new Device("www.csystem.org:50500/app/dev");
+                  DeviceOperation deviceOperation = new DeviceOperation(dev)) {
+                doForDevice(dev, deviceOperation);
+            }
+            catch (IllegalArgumentException ignore) {
+                Console.writeLine("Invalid URL!...");
+            }
+            catch (IOException ignore) {
+                Console.writeLine("Problem in IO!...");
+            }
+
+
+            Console.writeLine("-------------------------------------------------------------------");
+        }
+    }
+
+    public static void main(String[] args)
+    {
+        run();
+    }
+}
+
+/*-----------------------------------------------------------------------------------------------------------------------
+	TWR deyimi tek başına olabilir. Yani try deyimi gibi catch bloğu ya da blokları ile finally bloğu veya yalnızca
+	finally bloğu ile birlikte olmak zorunda değildir
+
+	Mordor
+-----------------------------------------------------------------------------------------------------------------------*/
+
+package com.boraserce.app.device;
+
+import com.bartucankaya.device.Device;
+import com.kerimtugal.operation.device.DeviceOperation;
+import org.csystem.util.console.Console;
+import org.csystem.util.thread.ThreadUtil;
+
+import java.io.IOException;
+
+public class DemoApp {
+    private static void doForDevice(Device device, DeviceOperation deviceOperation) throws IOException
+    {
+        try (device; deviceOperation) {
+            deviceOperation.doForDevice();
+        }
+    }
+
+    public static void run()
+    {
+        while (true) {
+            ThreadUtil.sleep(1000);
+            Console.writeLine("-------------------------------------------------------------------");
+
+            try {
+                Device dev = new Device("www.csystem.org:50500/app/dev");
+                DeviceOperation deviceOperation = new DeviceOperation(dev);
+
+                doForDevice(dev, deviceOperation);
+            }
+            catch (IllegalArgumentException ignore) {
+                Console.writeLine("Invalid URL!...");
+            }
+            catch (IllegalStateException ignore) {
+                Console.writeLine("Connection problem occurs!...");
+            }
+            catch (IOException ignore) {
+                Console.writeLine("Problem in IO!...");
+            }
+
+
+            Console.writeLine("-------------------------------------------------------------------");
+        }
+    }
+
+    public static void main(String[] args)
+    {
+        run();
+    }
+}
+
+/*----------------------------------------------------------------------------------------------------------------------
+    Örneklerde kullanılan Device ve DeviceOperation sınıfları. Sınıflar tamamen Closeable arayüzü ve TWR için örnek amaçlı
+    yazılmıştır
+-----------------------------------------------------------------------------------------------------------------------*/
+package com.bartucankaya.device;
+
+import org.csystem.util.console.Console;
+
+import java.io.Closeable;
+import java.io.IOException;
+import java.util.Random;
+import java.util.random.RandomGenerator;
+
+public class Device implements Closeable {
+	private final String m_url;
+	private boolean m_open;
+
+	public Device(String url)
+	{
+		//...
+		RandomGenerator randomGenerator = new Random();
+
+		if (randomGenerator.nextBoolean())
+			throw new IllegalArgumentException("Url not found");
+
+		m_url = url;
+		m_open = true;
+		Console.writeLine("Connected to '%s'", m_url);
+	}
+
+	public boolean isOpen()
+	{
+		return m_open;
+	}
+
+	public String getUrl()
+	{
+		return m_url;
+	}
+
+	public void doWork() throws IOException
+	{
+		//...
+		RandomGenerator randomGenerator = new Random();
+
+		if (randomGenerator.nextBoolean())
+			throw new IllegalStateException(String.format("Illegal state for device at '%s'", m_url));
+
+		if (randomGenerator.nextBoolean())
+			throw new IOException("IO problem occurs!...");
+
+		Console.writeLine("Working on device at '%s'", m_url);
+	}
+
+	public void close() throws IOException
+	{
+		Console.writeLine("Device at '%s'%sclosed", m_url, m_open ? " " : " already ");
+		m_open = false;
+	}
+}
+
+package com.kerimtugal.operation.device;
+
+import com.bartucankaya.device.Device;
+import org.csystem.util.console.Console;
+
+import java.io.Closeable;
+import java.io.IOException;
+import java.util.Random;
+import java.util.random.RandomGenerator;
+
+public class DeviceOperation implements Closeable {
+    private final Device m_device;
+
+    public DeviceOperation(Device device)
+    {
+        Console.writeLine("Device Operation!...");
+        m_device = device;
+    }
+
+    public void doForDevice() throws IOException
+    {
+        //...
+        RandomGenerator randomGenerator = new Random();
+
+        if (randomGenerator.nextBoolean())
+            throw new IOException("IO problem");
+
+        m_device.doWork();
+
+        Console.writeLine("Operation on %s device at '%s'", m_device.isOpen() ? "open" : "closed", m_device.getUrl());
+    }
+
+    public void close() throws IOException
+    {
+        Console.writeLine("Device operation closed!...");
+        m_device.close();
+    }
+}
+
+/*-----------------------------------------------------------------------------------------------------------------------
+	Scanner sınıfı Closeable arayüzünü destekleyen bir sınıftır. Ayrıntıları dosya işlemleri konusunda ele alınacaktır
+
+	Mordor
+-----------------------------------------------------------------------------------------------------------------------*/
+package org.csystem.app;
+
+import java.util.Scanner;
+
+class App {
+	public static void main(String[] args)
+	{
+		try (Scanner kb = new Scanner(System.in)) {
+			System.out.print("Bir sayı giriniz:");
+			int val = kb.nextInt();
+
+			System.out.printf("%d * %d = %d%n", val, val, val * val);
+		}
+	}
+}
+
+/*-----------------------------------------------------------------------------------------------------------------------
+	Anahtar Notlar: Object sınıfının equals metodu nesne için mantıksal bir eşitlik karşılaştırması söz konusu ise ilgili
+	sınıf tarafından override edilir. equals metodunun parametresi Object türündendir. Bu metodu override eden
+	programcı parametre ile verilen Object referansının dinamik türünün ilgili türü kapsayıp kapsamadığına da bakar.
+	Bu işlem için tipik instanceof operatörü kullanılır. equals metodunun da toString gibi çağrıldığı durumlar vardır.
+	Java programcısı equals metodunu yazdığı sınıf için uygunsa kesinlikle override eder. Bu durumun istisnası bir tek
+	instanceof ile kontrol etmenin maliyetli olabileceği sınıflar için düşünülebilir. Bu istisna durum nadiren karşımıza
+	çıkar. Object sınıfının equals metodu adres karşılaştırması yapar   //***
+
+	Mordor 
+	
+	instanceof operatörü satır no: 32392
+-----------------------------------------------------------------------------------------------------------------------*/
+
+/*----------------------------------------------------------
+	FILE			: Circle.java
+	AUTHOR			: Java-Nov-2022 Group
+	LAST UPDATE		: 22.07.2023
+
+	Circle class that represents a circle
+
+	Copyleft (c) 1993 C and System Programmers Association
+	All Rights Free
+------------------------------------------------------------*/
+package org.csystem.math.geometry;
+
+import static java.lang.Math.PI;
+import static java.lang.Math.abs;
+
+public class Circle {
+    private static final double DELTA = 0.00001;
+    private double m_radius;
+
+    public Circle()
+    {
+    }
+
+    public Circle(double radius)
+    {
+        setRadius(radius);
+    }
+
+    public double getRadius()
+    {
+        return m_radius;
+    }
+
+    public void setRadius(double radius)
+    {
+        if (radius < 0)
+            throw new IllegalArgumentException(String.format("Radius can not be negative!...->%f", radius));
+
+        m_radius = Math.abs(radius);
+    }
+
+    public double getArea()
+    {
+        return PI * m_radius * m_radius;
+    }
+
+    public double getCircumference()
+    {
+        return 2 * PI * m_radius;
+    }
+
+    public boolean equals(Object other)    //***
+    {
+        return other instanceof Circle c && abs(m_radius - c.m_radius) < DELTA;
+    }
+
+    public String toString()
+    {
+        return String.format("Radius:%f, Area:%f, Circumference:%f", m_radius, getArea(), getCircumference());
+    }
+}
+
+/*----------------------------------------------------------
+	FILE			: AnalyticalCircle.java
+	AUTHOR			: Java-Nov-2022 Group
+	LAST UPDATE		: 22.07.2023
+
+	AnalyticalCircle class that represents a circle
+	int cartesian plane
+
+	Copyleft (c) 1993 C and System Programmers Association
+	All Rights Free
+------------------------------------------------------------*/
+package com.bartucankaya;
+
+import org.csystem.math.geometry.Circle;
+import org.csystem.math.geometry.MutablePoint;
+
+public class AnalyticalCircle extends Circle {
+    private static final double DELTA = 0.00001;    //***
+
+    private final MutablePoint m_center;
+
+    public AnalyticalCircle()
+    {
+        this(0);
+    }
+
+    public AnalyticalCircle(double radius)
+    {
+       this(radius, 0, 0);
+    }
+
+    public AnalyticalCircle(double x, double y)
+    {
+        this(0, x, y);
+    }
+
+    public AnalyticalCircle(double radius, double x, double y)
+    {
+        super(radius);
+        m_center = MutablePoint.ofCartesian(x, y);
+    }
+
+    public double getX()
+    {
+        return m_center.getX();
+    }
+
+    public void setX(double x)
+    {
+        m_center.setX(x);
+    }
+
+    public double getY()
+    {
+        return m_center.getY();
+    }
+
+    public void setY(double y)
+    {
+        m_center.setY(y);
+    }
+
+    public void set(double x, double y)
+    {
+        setX(x);
+        setY(y);
+    }
+
+    public double centerDistance(AnalyticalCircle other)
+    {
+        return m_center.distance(other.m_center);
+    }
+
+    public boolean isTangent(AnalyticalCircle other)
+    {
+        return Math.abs(centerDistance(other) - getRadius() - other.getRadius()) < DELTA;
+    }
+
+    public void offset(double dx, double dy)
+    {
+        m_center.offset(dx, dy);
+    }
+
+    public void offset(double dxy)
+    {
+        offset(dxy, dxy);
+    }
+
+    public boolean equals(Object other)    //***
+    {
+        return other instanceof AnalyticalCircle ac && super.equals(other) && m_center.equals(ac.m_center);
+    }
+
+    public String toString()
+    {
+        return String.format("%s, Center:%s", super.toString(), m_center);
+    }
+}
+
+/*----------------------------------------------------------
+	FILE			: MutablePoint.java
+	AUTHOR			: Java-Nov-2022 Group
+	LAST UPDATE		: 22.07.2023
+
+	MutablePoint class that represents a point in cartesian plane
+
+	Copyleft (c) 1993 C and System Programmers Association
+	All Rights Free
+------------------------------------------------------------*/
+package org.csystem.math.geometry;
+
+import static java.lang.Math.*;
+
+public class MutablePoint {
+	private static final double DELTA = 0.000001;
+	private double m_x, m_y;
+
+	private MutablePoint(double a, double b, boolean polar)
+	{
+		if (polar) {
+			m_x = a * cos(a);
+			m_y = a * sin(a);
+		}
+		else {
+			m_x = a;
+			m_y = b;
+		}
+	}
+
+	public static MutablePoint ofCartesian()
+	{
+		return ofCartesian(0);
+	}
+
+	public static MutablePoint ofCartesian(double x)
+	{
+		return ofCartesian(x, 0);
+	}
+
+	public static MutablePoint ofCartesian(double x, double y)
+	{
+		return new MutablePoint(x, y, false);
+	}
+
+	public static MutablePoint ofPolar(double radius, double theta)
+	{
+		return new MutablePoint(radius, theta, true);
+	}
+
+	public double getX()
+	{
+		return m_x;
+	}
+
+	public void setX(double x)
+	{
+		m_x = x;
+	}
+
+	public double getY()
+	{
+		return m_y;
+	}
+
+	public void setY(double y)
+	{
+		m_y = y;
+	}
+
+	public double distance()
+	{
+		return distance(0, 0);
+	}
+
+	public double distance(double x, double y)
+	{
+		return PointCommon.distance(m_x, m_y, x, y);
+	}
+
+	public double distance(MutablePoint other)
+	{
+		return distance(other.m_x, other.m_y);
+	}
+
+	public void offset(double dxy)
+	{
+		offset(dxy, dxy);
+	}
+
+	public void offset(double dx, double dy)
+	{
+		m_x += dx;
+		m_y += dy;
+	}
+
+	public boolean equals(Object other)    //***
+	{
+		return other instanceof MutablePoint p && abs(m_x - p.m_x) < DELTA && abs(m_y - p.m_y) < DELTA;
+	}
+	public String toString()
+	{
+		return PointCommon.toString(m_x, m_y);
+	}
+}
+
+/*----------------------------------------------------------
+	FILE			: Point.java
+	AUTHOR			: Java-Nov-2022 Group
+	LAST UPDATE		: 22.07.2023
+
+	Immutable Point class that represents a point in cartesian plane
+
+	Copyleft (c) 1993 C and System Programmers Association
+	All Rights Free
+------------------------------------------------------------*/
+package org.csystem.math.geometry;
+
+import static java.lang.Math.*;
+
+public class Point {
+	private static final double DELTA = 0.00001;
+	private final double m_x, m_y;
+
+	private Point(double a, double b, boolean polar)
+	{
+		if (polar) {
+			m_x = a * cos(a);
+			m_y = a * sin(a);
+		}
+		else {
+			m_x = a;
+			m_y = b;
+		}
+	}
+
+	public static Point ofCartesian()
+	{
+		return ofCartesian(0);
+	}
+
+	public static Point ofCartesian(double x)
+	{
+		return ofCartesian(x, 0);
+	}
+
+	public static Point ofCartesian(double x, double y)
+	{
+		return new Point(x, y, false);
+	}
+
+	public static Point ofPolar(double radius, double theta)
+	{
+		return new Point(radius, theta, true);
+	}
+
+	public double getX()
+	{
+		return m_x;
+	}
+
+	public double getY()
+	{
+		return m_y;
+	}
+
+	public double distance()
+	{
+		return distance(0, 0);
+	}
+
+	public double distance(double x, double y)
+	{
+		return PointCommon.distance(m_x, m_y, x, y);
+	}
+
+	public double distance(Point other)
+	{
+		return distance(other.m_x, other.m_y);
+	}
+
+	public boolean equals(Object other)    //***
+	{
+		return other instanceof Point p && abs(m_x - p.m_x) < DELTA && abs(m_y - p.m_y) < DELTA;
+	}
+	public String toString()
+	{
+		return PointCommon.toString(m_x, m_y);
+	}
+}
+
 /*----------------------------------------------------------------------------------------------------------------------
 
 -----------------------------------------------------------------------------------------------------------------------*/
