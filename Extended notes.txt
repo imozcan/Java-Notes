@@ -43672,6 +43672,913 @@ public class DemoApp {
     }
 }
 
+
+
+/*----------------------------------------------------------------------------------------------------------------------
+    23.07.2023 Arwen
+-----------------------------------------------------------------------------------------------------------------------*/
+
+/*-----------------------------------------------------------------------------------------------------------------------
+	Sınıf Çalışması: Bir kaynaktan (source) karakterler geliyor olsun. Karakterlerin sıra numarası int türden verilsin.
+	Artık kaynakta karakter kalmamışsa -1 değeri elde edilsin. Ayrıca karakterler için çeşitli işlemler yapılabilsin.
+	Bunlar örneğin, kaç tane whitespace olduğu, bir java dosyası ise karakterlerden bir tokenizing işlemi yapılması vb.
+	işlemler olabilsin. Buna bu işlemi gerçekleştiren yani karakterlerin kaynağından bağımsız hale getiren, bu karakterler
+	ile ne yapılacağını da bağımsız hale getiren yani bunları soyutlayan (abstracttion) tasarımı yapıp ilgili türleri
+	yazınız.
+
+	Not: Bu tasarım şu ana kadar gördüğümüz konular kullanılarak yapılmıştır. İleride daha iyileri yapılabilecektir
+-----------------------------------------------------------------------------------------------------------------------*/
+package com.bartucankaya.app.parser.firstint;
+
+import com.fatihkarabulut.parser.FirstIntValueParser;
+import com.karandev.parser.source.factory.SourceFactory;
+import org.csystem.util.console.Console;
+import org.csystem.util.thread.ThreadUtil;
+
+public class DemoApp {
+    public static void run()
+    {
+        SourceFactory factory = new SourceFactory();
+        FirstIntValueParser parser = new FirstIntValueParser();
+
+        while (true) {
+            try {
+                parser.parse(factory.create());
+
+                Console.writeLine("First Int Value is %d", parser.getValue());
+            }
+            catch (NumberFormatException ignore) {
+                Console.writeLine("Can not get any int value from source!...");
+            }
+            ThreadUtil.sleep(1000);
+        }
+    }
+
+    public static void main(String[] args)
+    {
+        run();
+    }
+}
+
+package com.haticekubraulusoy.app.parser;
+
+import com.baturhansahin.parser.PalindromeParser;
+import com.boraserce.parser.source.StandardInputSource;
+import org.csystem.util.console.Console;
+import org.csystem.util.thread.ThreadUtil;
+
+public class DemoApp {
+    public static void run()
+    {
+
+        while (true) {
+            try {
+                PalindromeParser parser = new PalindromeParser(new StandardInputSource());
+
+                parser.parse();
+
+                Console.writeLine("Text:%s", parser.getText());
+                Console.writeLine(parser.isPalindrome() ? "Palindrome" : "Not a palindrome");
+            }
+            catch (Exception ignore) {
+                Console.writeLine("Problem occurs!...");
+            }
+            ThreadUtil.sleep(1000);
+        }
+    }
+
+    public static void main(String[] args)
+    {
+        run();
+    }
+}
+
+package org.csystem.parser;
+
+public interface IParser {
+    void parse() throws Exception;
+}
+
+package org.csystem.parser.character;
+
+import org.csystem.parser.character.source.ICharacterSource;
+
+public interface ICharacterSourceParser {
+    void parse(ICharacterSource source);
+}
+
+package org.csystem.parser.character.source;
+
+import org.csystem.parser.IParser;
+
+public abstract class CharacterParser implements IParser {
+    protected ICharacterSource source;
+
+    protected CharacterParser(ICharacterSource source)
+    {
+        this.source = source;
+    }
+}
+
+package org.csystem.parser.character.source;
+
+public interface ICharacterSource {
+    int nextChar() throws Exception;
+}
+
+package com.alicankececi.parser.source;
+
+import org.csystem.parser.character.source.ICharacterSource;
+
+import java.util.Arrays;
+
+public class CharArraySource implements ICharacterSource {
+    private final char [] m_chars;
+    private int m_index;
+
+
+    public CharArraySource(String s)
+    {
+        this(s.toCharArray());
+    }
+    public CharArraySource(char[] chars)
+    {
+        m_chars = Arrays.copyOf(chars, chars.length);
+    }
+
+    public int nextChar()
+    {
+        return m_index == m_chars.length ? -1 : m_chars[m_index++];
+    }
+}
+
+package com.baturhansahin.parser;
+
+import org.csystem.parser.character.source.CharacterParser;
+import org.csystem.parser.character.source.ICharacterSource;
+import org.csystem.util.string.StringUtil;
+
+public class PalindromeParser extends CharacterParser {
+    private String m_text;
+    private boolean m_palindrome;
+    private boolean m_parsed;
+
+    public PalindromeParser(ICharacterSource source)
+    {
+        super(source);
+    }
+
+    public String getText()
+    {
+        return m_text;
+    }
+
+    public boolean isPalindrome()
+    {
+        return m_palindrome;
+    }
+
+    public boolean isParsed()
+    {
+        return m_parsed;
+    }
+
+    public void parse() throws Exception
+    {
+        StringBuilder sb = new StringBuilder();
+        int ch;
+
+        while ((ch = source.nextChar()) != -1)
+            sb.append((char)ch);
+
+        m_parsed = true;
+        m_text = sb.toString();
+        m_palindrome = StringUtil.isPalindrome(m_text);
+    }
+}
+
+package com.boraserce.parser.source;
+
+import com.emrekantarci.parser.source.StringSource;
+
+import java.util.Scanner;
+
+public class StandardInputSource extends StringSource {
+    public StandardInputSource()
+    {
+        super(new Scanner(System.in).nextLine());
+    }
+
+    public int nextChar()
+    {
+        return super.nextChar();
+    }
+}
+
+package com.emrekantarci.parser.source;
+
+import org.csystem.parser.character.source.ICharacterSource;
+
+public class StringSource implements ICharacterSource {
+    private final String m_str;
+    private int m_index;
+
+    public StringSource(String str)
+    {
+        m_str = str;
+    }
+
+    public int nextChar()
+    {
+        return m_index == m_str.length() ? -1 : m_str.charAt(m_index++);
+    }
+}
+
+package com.fatihkarabulut.parser;
+
+import org.csystem.parser.character.ICharacterSourceParser;
+import org.csystem.parser.character.source.ICharacterSource;
+import org.csystem.util.console.Console;
+
+public class FirstIntValueParser implements ICharacterSourceParser {
+    private int m_value;
+
+    public int getValue()
+    {
+        return m_value;
+    }
+
+    public void parse(ICharacterSource source)
+    {
+        StringBuilder sb = new StringBuilder();
+        int ch;
+
+        try {
+            while ((ch = source.nextChar()) != -1) {
+                if (!Character.isDigit(ch))
+                    break;
+
+                sb.append((char)ch);
+            }
+
+            m_value = Integer.parseInt(sb.toString());
+        }
+        catch (Exception ignore) {
+            throw new NumberFormatException();
+        }
+    }
+}
+
+package com.karandev.parser.source.factory;
+
+import com.alicankececi.parser.source.CharArraySource;
+import com.boraserce.parser.source.StandardInputSource;
+import com.emrekantarci.parser.source.StringSource;
+import org.csystem.parser.character.source.ICharacterSource;
+import org.csystem.util.string.StringUtil;
+
+import java.util.Random;
+import java.util.random.RandomGenerator;
+
+public class SourceFactory {
+    private final RandomGenerator m_randomGenerator = new Random();
+
+    public ICharacterSource create()
+    {
+        return switch (m_randomGenerator.nextInt(4)) {
+            case 0 -> new StringSource(StringUtil.getRandomTextEN(m_randomGenerator, m_randomGenerator.nextInt(5, 15)));
+            case 1 -> new StringSource(StringUtil.getRandomText(m_randomGenerator, m_randomGenerator.nextInt(5, 15), "1234567890abcdexyqQ:?/"));
+            case 2 -> new CharArraySource(StringUtil.getRandomText(m_randomGenerator, m_randomGenerator.nextInt(5, 15), "1234567890abcdexyqQ:?/"));
+            default -> new CharArraySource(StringUtil.getRandomTextEN(m_randomGenerator, m_randomGenerator.nextInt(5, 15)));
+        };
+    }
+}
+
+package com.onurozcan.parser.letter;
+
+import org.csystem.parser.character.source.CharacterParser;
+import org.csystem.parser.character.source.ICharacterSource;
+
+public class LetterParser extends CharacterParser {
+    private String m_letters;
+    private String m_text;
+
+    public LetterParser(ICharacterSource source)
+    {
+        super(source);
+    }
+
+    public String getLetters()
+    {
+        return m_letters;
+    }
+
+    public String getText()
+    {
+        return m_text;
+    }
+
+    public void parse() throws Exception
+    {
+        StringBuilder letters = new StringBuilder();
+        StringBuilder text = new StringBuilder();
+        int ch;
+
+        while ((ch = source.nextChar()) != -1) {
+            text.append((char)ch);
+            if (Character.isLetter(ch))
+                letters.append((char)ch);
+        }
+
+        m_text = text.toString();
+        m_letters = letters.toString();
+    }
+}
+
+/*-----------------------------------------------------------------------------------------------------------------------
+	Generics: Generic'ler dereleme zamanında türden bağımsız kodlar yazmak için kullanılır. Bu anlamda generic'ler ile
+	"compile time polymorphism" gerçekleştirilebilir. Generic'ler Java 5 ile dile eklenmiştir. Programcı generic bir
+	UDT'yi veya metodu türden bağımsız olarak yazar. Generic tür ya da metotları programcı da hangi tür belirterek
+	veya derleyici tarafından tür tespiti (type inference/deduction) yapılarak aşağıda anlatılan özelliklere göre kullanır
+
+	Mordor
+-----------------------------------------------------------------------------------------------------------------------*/
+
+/*-----------------------------------------------------------------------------------------------------------------------
+	Generic sınıf bildiriminde generic tür parametreler (type parameters) denilen isimler kullanılır. Bu isimler bildirim
+	sırasında sınıf isminden sonra açısal parantezler arasında değişken isimlendirme kurallarına uygun olarak bildirilir.
+	Bu isimler bildirildikleri sınıf içerisinde görülebilirdir (class scope). Generic bir sınıf aslında bir şablon (template)
+	biçimindedir
+
+	Mordor 
+-----------------------------------------------------------------------------------------------------------------------*/
+package org.csystem.app;
+
+class A<T> {				//<T> generic parameters
+	private T m_t;	
+	//...
+}
+
+abstract class B<T, K, R> {
+	public abstract R foo(K k, T t);
+	//...
+}
+
+/*-----------------------------------------------------------------------------------------------------------------------
+	Generic bir sınıf açılım "instantiation" ile kullanılabilir. Açılım, açısal parantez ile türün belirtilmesidir
+
+	Mordor Morgot
+
+	Burada açılım generic sınıfların tür parametreleri kadardır.
+	class A nın tür parametresi 1 tane ve T --> bu yüzden A nın 1 açılımı var 
+	class B nın tür parametresi 3 tane ve T, K, R --> bu yüzden B nin 3 açılımı var 
+
+-----------------------------------------------------------------------------------------------------------------------*/
+package org.csystem.app;
+
+import org.csystem.math.Fraction;
+import org.csystem.math.geometry.Point;
+
+class App {
+	public static void main(String[] args)
+	{
+		A<String> as; //A'nın String açılımı
+		A<Point> ap; //A'nın Point açılımı
+		B<String, Fraction, String> bsf; //B'nin String, Fraction, String açılımı
+
+		//...
+	}
+}
+
+
+class A<T> {
+	private T m_t;
+	//...
+}
+
+abstract class B<T, K, R> {
+	public abstract R foo(K k, T t);
+	//...
+}
+
+
+/*-----------------------------------------------------------------------------------------------------------------------
+	Generic bir sınıf açılımsız kullanıldığında, generic tür parametreleri Object türünde kabul edilir. Ancak bu Object
+	açılımı ile doğrudan aynı anlamda değildir. Pratikte generic sınıfların açılımsız kullanılması iyi bir teknik değildir.
+	Generic tür parametresi ya da parametreleri Object bile olsa açılım Object olarak yapılmalıdır
+
+	Morgot Mordor
+-----------------------------------------------------------------------------------------------------------------------*/
+package org.csystem.app;
+
+class App {
+	public static void main(String[] args)
+	{
+		A as;
+		A ap;
+		B bsf;
+		A<Object> ao;
+
+		//...
+	}
+}
+
+
+class A<T> {
+	private T m_t;
+	//...
+}
+
+abstract class B<T, K, R> {
+	public abstract R foo(K k, T t);
+	//...
+}
+
+
+/*-----------------------------------------------------------------------------------------------------------------------
+	Generic tür parametreleri temel türler olarak belirtilemezler. Yani temel türler ile açılım yapılamaz
+-----------------------------------------------------------------------------------------------------------------------*/
+package org.csystem.app;
+
+class App {
+	public static void main(String[] args)
+	{
+		A<int> ai; //error
+		A<boolean> ab; //error
+		A<double> ad; //error
+
+	}
+}
+
+
+class A<T> {
+	private T m_t;
+	//...
+}
+
+
+/*-----------------------------------------------------------------------------------------------------------------------
+	Generic tür parametreleri temel türler için wrapper sınıf karşılıkları belirtilir
+-----------------------------------------------------------------------------------------------------------------------*/
+package org.csystem.app;
+
+class App {
+	public static void main(String[] args)
+	{
+		A<Integer> ai;
+		A<Boolean> ab; 
+		A<Double> ad;
+
+	}
+}
+
+
+class A<T> {
+	private T m_t;
+	//...
+}
+
+
+/*-----------------------------------------------------------------------------------------------------------------------
+	Anahtar Notlar: Aslında bir generic tür parametresi aşağı seviyede Object olarak ele alınır
+
+	Mordor
+-----------------------------------------------------------------------------------------------------------------------*/
+
+/*-----------------------------------------------------------------------------------------------------------------------
+	Generic sınıf türünden nesneler için açısal parantez içerisinde generic parametrelere ilişkin türler yazılabilir
+
+	Mordor
+-----------------------------------------------------------------------------------------------------------------------*/
+package org.csystem.app;
+
+class App {
+	public static void main(String[] args)
+	{
+		A<Integer> ai = new A<Integer>();
+		A<Boolean> ab = new A<Boolean>();
+		A<Double> ad = new A<Double>();
+		B<Integer, String> bis = new B<Integer, String>();
+		B<String, String> bss = new B<String, String>();
+
+		//...
+
+
+	}
+}
+
+
+class A<T> {
+	public void foo(T t)
+	{
+		//...
+	}
+	//...
+}
+
+class B<T, K> {
+	//...
+	public void bar(T t, K k)
+	{
+		//...
+	}
+}
+
+/*-----------------------------------------------------------------------------------------------------------------------
+	Java 7 ile birlikte new operatörü ile açılım yapılırken türler yazılmayabilir. Ancak açısal parantezler yime
+	yazılmalıdır (diamond syntax)
+
+	Mordor
+-----------------------------------------------------------------------------------------------------------------------*/
+package org.csystem.app;
+
+class App {
+	public static void main(String[] args)
+	{
+		A<Integer> ai = new A<>();
+		A<Boolean> ab = new A<>();
+		A<Double> ad = new A<>();
+		B<Integer, String> bis = new B<>();
+		B<String, String> bss = new B<>();
+		B<Object, String> bos = new B<>();
+
+		//...
+	}
+}
+
+
+class A<T> {
+	public void foo(T t)
+	{
+		//...
+	}
+	//...
+}
+
+class B<T, K> {
+	//...
+	public void bar(T t, K k)
+	{
+		//...
+	}
+}
+
+/*-----------------------------------------------------------------------------------------------------------------------
+	ArrayList sınıfı aslında generic bir sınıftır. Generic parametresi dinamik büyüyen diziye ilişkin türü temsil eder.
+	Şüphesiz aşağı seviyede bu dizinin türü Object'tir. Ancak derleme zamanı açısından açılımda belirtilen türdendir.
+	Aşağıdaki örnekte Integer açılımı için "auto boxing" ve "auto unboxing" yapılmaktadır. String için yapılan aşağı
+	seviyede generic tür parametresi Object olduğundan "upcasting" ve "downcasting" işlemleriidir
+
+	MORGOT
+-----------------------------------------------------------------------------------------------------------------------*/
+package org.csystem.app;
+
+import org.csystem.util.console.Console;
+import org.csystem.util.string.StringUtil;
+
+import java.util.ArrayList;
+import java.util.Random;
+
+class App {
+	public static void main(String[] args)
+	{
+		ArrayList<String> texts = new ArrayList<>();
+		ArrayList<Integer> numbers = new ArrayList<>();
+		Random random = new Random();
+
+		while (true) {
+			int val = Console.readInt("Input a number:", "Invalid value!...");
+
+			if (val == 0)
+				break;
+
+			numbers.add(val);
+			texts.add(StringUtil.getRandomTextTR(random, random.nextInt(5, 11)));
+		}
+
+		Console.writeLine("--------------------------------------------");
+
+		for (int val : numbers)
+			Console.write("%d ", val);
+
+		Console.writeLine();
+
+		for (String text : texts)
+			Console.writeLine(text);
+	}
+}
+
+/*----------------------------------------------------------
+	FILE			: StringList.java
+	AUTHOR			: Java-Nov-2022 Group
+	LAST UPDATE		: 23.07.2023
+
+	StringList class
+
+	Copyleft (c) 1993 C and System Programmers Association
+	All Rights Free
+------------------------------------------------------------*/
+package org.csystem.collection.string;
+
+import java.util.ArrayList;
+
+public class StringList {
+    private final ArrayList<String> m_list = new ArrayList<>();
+
+    public boolean add(String str)
+    {
+        return str != null && m_list.add(str);
+    }
+
+    public String concat()
+    {
+        if (m_list.isEmpty())
+            return "";
+
+        StringBuilder sb = new StringBuilder();
+
+        for (Object o : m_list) {
+            String s = (String)o;
+
+            sb.append(s);
+        }
+
+        return sb.toString();
+    }
+
+    public String concat(char separator)
+    {
+        return concat(String.valueOf(separator));
+    }
+
+    public String concat(String separator)
+    {
+        if (m_list.isEmpty())
+            return "";
+
+        StringBuilder sb = new StringBuilder();
+
+        for (Object o : m_list) {
+            String s = (String)o;
+
+            sb.append(s).append(separator);
+        }
+
+        return sb.substring(0, sb.length() - separator.length());
+    }
+
+    //...
+}
+
+/*-----------------------------------------------------------------------------------------------------------------------
+	Generic'ler aslında derleme zamanında tür güvenliği (type safety) açısından da önemlidir. Aşağıdaki örnekte
+	ArrayList<String>'den ArrayList<Integer>'a implicit dönüşümün geçersiz olduğuna dikkat edilir. Bu anlamda explicit
+	dönüşüm de geçersizdir
+
+	Mordor
+-----------------------------------------------------------------------------------------------------------------------*/
+package org.csystem.app;
+
+import java.util.ArrayList;
+
+class App {
+	public static void main(String[] args)
+	{
+		ArrayList<String> texts = new ArrayList<>();
+		ArrayList<Integer> numbers = texts; //error
+
+		numbers = (ArrayList<Integer>)texts;
+
+		//...
+	}
+}
+
+/*-----------------------------------------------------------------------------------------------------------------------
+	Generic bir türün her açılımı ayrı bir tür belirtmez. Yani bir generic sınıf için tek bir tür vardır
+
+	Mordor Mordor
+-----------------------------------------------------------------------------------------------------------------------*/
+package org.csystem.app;
+
+import org.csystem.util.console.Console;
+
+import java.util.ArrayList;
+
+class App {
+	public static void main(String[] args)
+	{
+		ArrayList<String> texts = new ArrayList<>();
+		ArrayList<Integer> numbers = new ArrayList<>();
+
+		Console.writeLine(texts.getClass().getName());		//java.util.ArrayList
+		Console.writeLine(numbers.getClass().getName());	//java.util.ArrayList
+	}
+}
+
+/*-----------------------------------------------------------------------------------------------------------------------
+	Generic bir sınıf generic olmayan bir sınıftan türetilebilir. Bu durumda generic sınıfın her açılımı o taban sınıftan
+	türetilmiş olur
+
+	Mordor Morgot
+
+	Her açılım o taban sınıftan türetildiğine göre her açılımın içerisinde taban sınıfın nesnesel özelliklerini
+	(non-static members) de barındırır
+-----------------------------------------------------------------------------------------------------------------------*/
+package org.csystem.app;
+
+class App {
+	public static void main(String[] args)
+	{
+		B<Integer> bi = new B<>();
+		B<String> bs = new B<>();
+		B<Character> bc = new B<>();
+		A a;
+
+		a = bi;
+		a = bs;
+		a = bc;
+	}
+}
+
+class B<T> extends A {
+	//...
+}
+
+class A {
+	//...
+}
+
+/*-----------------------------------------------------------------------------------------------------------------------
+	Generic bir sınıf başka bir generic sınıfın bir açılımından türetilebilir. Bu durumda generic sınıfır her açılımı
+	o taban sınıftan türetilmiş olur
+
+	Mordor Morgot
+-----------------------------------------------------------------------------------------------------------------------*/
+package org.csystem.app;
+
+class App {
+	public static void main(String[] args)
+	{
+		B<Integer> bi = new B<>();
+		B<String> bs = new B<>();
+		B<Character> bc = new B<>();
+		A<String> a;
+
+		a = bi;
+		a = bs;
+		a = bc;
+
+		bc.foo("ankara");
+		bs.foo("ankara");
+		bi.foo("ankara");
+	}
+}
+
+class B<T> extends A<String> {
+	//...
+}
+
+class A<T> {
+	//...
+	public void foo(T t)
+	{
+		//...
+	}
+}
+
+/*-----------------------------------------------------------------------------------------------------------------------
+	Generic bir sınıf başka bir generic sınıftan türetilebilir. Bu durumda türemiş sınıfın her açılımı taban sınıfın
+	aynı türden açılımından türetilmiş olur
+
+	Mordor Morgot
+
+		B A dan türetildi;
+	non-static foo metodu t açılımını alıyor, bs: B nin String açılımı olduğu için "ankara" geçilebiliyor 
+											  bc: B nin Character açılımı olduğu için 'D' geçilebiliyor 
+											  bi: B nin Integer açılımı olduğu için 6 geçilebiliyor 
+-----------------------------------------------------------------------------------------------------------------------*/
+package org.csystem.app;
+
+class App {
+	public static void main(String[] args)
+	{
+		B<Integer> bi = new B<>();
+		B<String> bs = new B<>();
+		B<Character> bc = new B<>();
+		A<Integer> ai;
+		A<String> as;
+		A<Character> ac;
+
+		ai = bi;
+		as = bs;
+		ac = bc;
+
+		bc.foo('D');
+		bs.foo("ankara");
+		bi.foo(6);
+	}
+}
+
+class B<T> extends A<T> {
+	//...
+}
+
+class A<T> {
+	//...
+	public void foo(T t)
+	{
+		//...
+	}
+}
+
+/*-----------------------------------------------------------------------------------------------------------------------
+	Aşağıdaki örneği inceleyiniz
+-----------------------------------------------------------------------------------------------------------------------*/
+package org.csystem.app;
+
+class App {
+	public static void main(String[] args)
+	{
+		B<Integer, String> bi = new B<>();
+		B<String, Integer> bs = new B<>();
+		B<Character, Integer> bc = new B<>();
+		A<String, Integer> as;
+		A<Integer, String> ai;
+		A<Character, Integer> ac;
+
+		ai = bi;
+		as = bs;
+		ac = bc;
+
+		bc.foo('D', 10);
+		bs.foo("ankara", 20);
+		bi.foo(6, "istanbul");
+	}
+}
+
+class B<T, K> extends A<T, K> {
+	//...
+}
+
+class A<T, K> {
+	//...
+	public void foo(T t, K k)
+	{
+		//...
+	}
+}
+
+/*----------------------------------------------------------------------------------------------------------------------
+    Aşağıdaki örnekte K ismi bulunamadığından dolayı error oluşur
+
+    Mordor Morgot 
+	
+	extends den sonra olanlar bağımlılığı olduğu için bildirilmiş olmalı class B<T> de sadece T bildirilmiş K yı bulamıyor.
+	Sol taraf Bildirim noktası Sağ tarafta kullanım noktası  class A dan türettik ve onu class B de kullanacağız ama class B
+	de K yı bildirmedik bu yüzden kullanamıyoruz 
+
+-----------------------------------------------------------------------------------------------------------------------*/
+class B<T> extends A<T, K> { //error
+	//...
+}
+
+class A<T, K> {
+	//...
+	public void foo(T t, K k)
+	{
+		//...
+	}
+}
+
+/*-----------------------------------------------------------------------------------------------------------------------
+	enum sınıflar ve exception sınıfları generic olarak bildirilemezler
+
+	Mordor
+-----------------------------------------------------------------------------------------------------------------------*/
+package org.csystem.app;
+
+enum Color<T> {RED, GREEN, BLUE}
+
+class MyException<T> extends Exception { //error
+	//...
+}
+
+/*-----------------------------------------------------------------------------------------------------------------------
+	Arayüzler de generic olarak bildirilebilirler
+
+	Mordor
+-----------------------------------------------------------------------------------------------------------------------*/
+package org.csystem.app;
+
+interface IX<T> {
+	void foo(T t);
+}
+
+interface IY<T, K, R> {
+	R bar(T t, K k);
+}
+
+
 /*----------------------------------------------------------------------------------------------------------------------
 
 -----------------------------------------------------------------------------------------------------------------------*/
