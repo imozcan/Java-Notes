@@ -11562,6 +11562,8 @@ class Alien {
 	
 	- Bir nesne ilgili sınıf türünden bir örnektir. Buna "instance" da denir
 	 
+		***sınıf türünden üretilen nesneye instance denir. Yani  d = new Device(); //*  device sınıf türünden nesneye instance denir.
+
 	- Aşağıdaki örnekte, nesne yönelimli programlama anlamında d, s ve a birer nesne DEĞİLDİR. Bunlar ilgili sınıflar 
 	türünden referanslardır. * ile belirtilen new operatörüne ilişkin ifade ile birlikte artık "d referansı
 	yaratılan nesneyi gösteriyor duruma gelir. Benzer şekilde s ve a referansları da ** ve *** ile birlikte yaratılmış olan
