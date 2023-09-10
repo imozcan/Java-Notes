@@ -43995,6 +43995,11 @@ public class LetterParser extends CharacterParser {
     }
 }
 
+
+/*-----------------------------------------------------------------------------------------------------------------------
+											*** Generics Morgot	***
+-----------------------------------------------------------------------------------------------------------------------*/
+
 /*-----------------------------------------------------------------------------------------------------------------------
 	Generics: Generic'ler dereleme zamanında türden bağımsız kodlar yazmak için kullanılır. Bu anlamda generic'ler ile
 	"compile time polymorphism" gerçekleştirilebilir. Generic'ler Java 5 ile dile eklenmiştir. Programcı generic bir
@@ -44578,6 +44583,1634 @@ interface IY<T, K, R> {
 	R bar(T t, K k);
 }
 
+
+
+/*-----------------------------------------------------------------------------------------------------------------------
+	29.07.2023 Arwen	
+-----------------------------------------------------------------------------------------------------------------------*/
+
+/*-----------------------------------------------------------------------------------------------------------------------
+	Generic bir arayüzün herhangi bir açılımını imlemente eden bir sınıf içerisinde arayüzün metotları açılıma uygun
+	şekilde override edilmelidir
+
+	Mordor
+-----------------------------------------------------------------------------------------------------------------------*/
+package org.csystem.app;
+
+import org.csystem.math.geometry.Point;
+
+class App {
+	public static void main(String[] args)
+	{
+		A a = new A();
+		B b = new B();
+
+		a.foo("ankara");
+		a.bar(10, "istanbul");
+		b.foo(Point.ofCartesian(100, 200));
+	}
+}
+
+class A implements IX<String>, IY<Integer, String, String> {
+	public void foo(String s)
+	{
+		//...
+	}
+
+	public String bar(Integer i, String s)
+	{
+		return s + ":" + i;
+	}
+}
+
+class B implements IX<Point> {
+	public void foo(Point p)
+	{
+		//...
+	}
+}
+
+interface IX<T> {
+	void foo(T t);
+}
+
+interface IY<T, K, R> {
+	R bar(T t, K k);
+}
+
+/*-----------------------------------------------------------------------------------------------------------------------
+	Bir sınıf bir arayüzün farklı açılımlarını destekleyemez. Çünkü generic açılımda kullanılan türler aşağı seviyede
+	Object olarak ele alınırlar
+
+	Mordor
+-----------------------------------------------------------------------------------------------------------------------*/
+package org.csystem.app;
+
+import org.csystem.math.geometry.Point;
+
+class A implements IX<Point>, IX<String> { //error
+	public void foo(Point p)
+	{
+		//...
+	}
+
+	public void foo(String s)
+	{
+		//...
+	}
+}
+
+interface IX<T> {
+	void foo(T t);
+}
+
+/*-----------------------------------------------------------------------------------------------------------------------
+	Aşağıdaki örnek erasure dolayısıyla aynı imzaya sahip metotların var olması nedeniyle geçersizdir
+
+	Morgot
+-----------------------------------------------------------------------------------------------------------------------*/
+package org.csystem.app;
+
+import org.csystem.math.geometry.Point;
+
+class A implements IX<Point>, IY<String> {	//**
+	public void foo(Point p)
+	{
+		//...
+	}
+
+	public void foo(String s)
+	{
+		//...
+	}
+}
+
+interface IX<T> {
+	void foo(T t);
+}
+
+
+interface IY<T> {
+	void foo(T t);
+}
+
+/*-----------------------------------------------------------------------------------------------------------------------
+	Aşağıdaki sınıflar geçerlidir
+-----------------------------------------------------------------------------------------------------------------------*/
+package org.csystem.app;
+
+import org.csystem.math.geometry.Point;
+
+class A implements IX<String>, IY<String> {
+	public void foo(String s)
+	{
+		//...
+	}
+}
+class B implements IX<Point>, IY<Point> {
+	public void foo(Point p)
+	{
+		//...
+	}
+}
+
+interface IX<T> {
+	void foo(T t);
+}
+
+
+interface IY<T> {
+	void foo(T t);
+}
+
+/*-----------------------------------------------------------------------------------------------------------------------
+	Java'da genric tür parametreleri temel türler ile açılamadığından aşağıdaki ** ile belirtilen çağrıda otomatik kutulama
+	yapılmaktadır. Bu durum senaryoya göre maliyetli olabilir
+
+	Morgot
+-----------------------------------------------------------------------------------------------------------------------*/
+package org.csystem.app;
+
+import org.csystem.util.console.Console;
+import org.csystem.util.string.StringUtil;
+
+import java.util.ArrayList;
+import java.util.Random;
+
+class App {
+	public static void main(String[] args)
+	{
+		DemoApp.run();
+	}
+}
+
+class DemoApp {
+	public static void run()
+	{
+		Random r = new Random();
+		String prefix = Console.readString("Input prefix:");
+		String suffix = Console.readString("Input suffix:");
+		StringToString sts = new StringToString(prefix, suffix);
+		IntToString its = new IntToString(prefix, suffix);
+		ArrayList<String> list = new ArrayList<>();
+
+		while (true) {
+			int val = r.nextInt(-99, 100);
+			String s = StringUtil.getRandomTextEN(r, r.nextInt(5, 11));
+
+			Console.writeLine("------------------------------------------------");
+			Console.writeLine("val = %d, s = %s", val, s);
+			list.add(its.apply(val)); //**
+			list.add(sts.apply(s));
+			Console.writeLine("------------------------------------------------");
+
+			if (val == 0)
+				break;
+		}
+
+		for (String s : list)
+			Console.writeLine(s);
+
+		Console.writeLine("Size:%d", list.size());
+	}
+}
+
+class StringToString implements IFunction<String, String> {
+	private final String m_prefix;
+	private final String m_suffix;
+
+	public StringToString()
+	{
+		this("");
+	}
+	public StringToString(String prefix)
+	{
+		this(prefix, "");
+	}
+
+	public StringToString(String prefix, String suffix)
+	{
+		m_prefix = prefix;
+		m_suffix = suffix;
+	}
+
+	public String apply(String s)
+	{
+		return String.format("%s%s%s", m_prefix, s, m_suffix);
+	}
+}
+
+class IntToString implements IFunction<Integer, String> {
+	private final String m_prefix;
+	private final String m_suffix;
+
+	public IntToString()
+	{
+		this("");
+	}
+
+	public IntToString(String prefix)
+	{
+		this(prefix, "");
+	}
+
+	public IntToString(String prefix, String suffix)
+	{
+		m_prefix = prefix;
+		m_suffix = suffix;
+	}
+
+	public String apply(Integer val)
+	{
+		return String.format("%s%d%s", m_prefix, val, m_suffix);
+	}
+}
+
+interface IFunction<T, R> {
+	R apply(T t);
+}
+
+/*-----------------------------------------------------------------------------------------------------------------------
+	Yukarıdaki bir durum için aşağıdaki gibi kullanılabilen genel türleri yazan programcılar bu arayüzlerin uygun temel
+	türler için olan ayrı versiyonlarını yazarlar. Bu durum pek çok genel yazılmış kütüphanede çoğu zaman göz önünde
+	bulundurulur. Aşağıdaki örneği inceleyiniz
+
+	Morgot 
+-----------------------------------------------------------------------------------------------------------------------*/
+package org.csystem.app;
+
+import org.csystem.util.console.Console;
+import org.csystem.util.string.StringUtil;
+
+import java.util.ArrayList;
+import java.util.Random;
+
+class App {
+	public static void main(String[] args)
+	{
+		DemoApp.run();
+	}
+}
+
+class DemoApp {
+	public static void run()
+	{
+		Random r = new Random();
+		String prefix = Console.readString("Input prefix:");
+		String suffix = Console.readString("Input suffix:");
+		StringToString sts = new StringToString(prefix, suffix);
+		IntToString its = new IntToString(prefix, suffix);
+		ArrayList<String> list = new ArrayList<>();
+
+		while (true) {
+			int val = r.nextInt(-99, 100);
+			String s = StringUtil.getRandomTextEN(r, r.nextInt(5, 11));
+
+			Console.writeLine("------------------------------------------------");
+			Console.writeLine("val = %d, s = %s", val, s);
+			list.add(its.apply(val)); //**
+			list.add(sts.apply(s));
+			Console.writeLine("------------------------------------------------");
+
+			if (val == 0)
+				break;
+		}
+
+		for (String s : list)
+			Console.writeLine(s);
+
+		Console.writeLine("Size:%d", list.size());
+	}
+}
+
+class StringToString implements IFunction<String, String> {
+	private final String m_prefix;
+	private final String m_suffix;
+
+	public StringToString()
+	{
+		this("");
+	}
+	public StringToString(String prefix)
+	{
+		this(prefix, "");
+	}
+
+	public StringToString(String prefix, String suffix)
+	{
+		m_prefix = prefix;
+		m_suffix = suffix;
+	}
+
+	public String apply(String s)
+	{
+		return String.format("%s%s%s", m_prefix, s, m_suffix);
+	}
+}
+
+class IntToString implements IIntFunction<String> {
+	private final String m_prefix;
+	private final String m_suffix;
+
+	public IntToString()
+	{
+		this("");
+	}
+
+	public IntToString(String prefix)
+	{
+		this(prefix, "");
+	}
+
+	public IntToString(String prefix, String suffix)
+	{
+		m_prefix = prefix;
+		m_suffix = suffix;
+	}
+
+	public String apply(int val)
+	{
+		return String.format("%s%d%s", m_prefix, val, m_suffix);
+	}
+}
+
+interface IFunction<T, R> {
+	R apply(T t);
+}
+
+interface IIntFunction<R> {
+	R apply(int a);
+}
+
+/*-----------------------------------------------------------------------------------------------------------------------
+	Generic bir sınıfın türemiş sınıf açılımı, aynı generic sınıfın taban sınıf açılımına doğrudan (implicit) olarak
+	dönüştürülemez. Buna invariant denir
+
+	Mordor Morgot
+-----------------------------------------------------------------------------------------------------------------------*/
+package org.csystem.app;
+
+
+import org.csystem.util.console.Console;
+
+import java.util.ArrayList;
+import java.util.Random;
+
+class App {
+	public static void main(String[] args)
+	{
+		DemoApp.run();
+	}
+}
+
+class DemoApp {
+	public static void run()
+	{
+		ArrayList<Integer> ints = new ArrayList<>();
+		ArrayList<Double> doubles = new ArrayList<>();
+		Random r = new Random();
+
+		while (true) {
+			int a = r.nextInt(-99, 100);
+			double b = r.nextDouble(-99, 100);
+
+			ints.add(a);
+			doubles.add(b);
+
+			if (a == 0)
+				break;
+		}
+
+		Util.print(ints); //error
+		Util.print(doubles); //error
+	}
+}
+
+class Util {
+	public static void print(ArrayList<Number> list)
+	{
+		for (Number n : list)
+			Console.writeLine(n);
+	}
+}
+
+/*-----------------------------------------------------------------------------------------------------------------------
+	Yukarıdaki dönüşüm expplicit olarak da yapılamaz
+
+	Morgot
+-----------------------------------------------------------------------------------------------------------------------*/
+package org.csystem.app;
+
+import org.csystem.util.console.Console;
+
+import java.util.ArrayList;
+import java.util.Random;
+
+class App {
+	public static void main(String[] args)
+	{
+		DemoApp.run();
+	}
+}
+
+class DemoApp {
+	public static void run()
+	{
+		ArrayList<Integer> ints = new ArrayList<>();
+		ArrayList<Double> doubles = new ArrayList<>();
+		Random r = new Random();
+
+		while (true) {
+			int a = r.nextInt(-99, 100);
+			double b = r.nextDouble(-99, 100);
+
+			ints.add(a);
+			doubles.add(b);
+
+			if (a == 0)
+				break;
+		}
+
+		Util.print((ArrayList<Number>)ints); //error
+		Util.print((ArrayList<Number>)doubles); //error
+	}
+}
+
+class Util {
+	public static void print(ArrayList<Number> list)
+	{
+		for (Number n : list)
+			Console.writeLine(n);
+	}
+}
+
+/*-----------------------------------------------------------------------------------------------------------------------
+	Yukarıdaki dönüşümün doğrudan yapılabilmesi için generic açılımda ? extends ile ilgili taban tür yazılmalıdır. Burada
+	interface de olsa extends yazılır. Buna covariant denir
+
+	Mordor
+-----------------------------------------------------------------------------------------------------------------------*/
+package org.csystem.app;
+
+
+import org.csystem.util.console.Console;
+
+import java.util.ArrayList;
+import java.util.Random;
+
+class App {
+	public static void main(String[] args)
+	{
+		DemoApp.run();
+	}
+}
+
+class DemoApp {
+	public static void run()
+	{
+		ArrayList<Integer> ints = new ArrayList<>();
+		ArrayList<Double> doubles = new ArrayList<>();
+		Random r = new Random();
+
+		while (true) {
+			int a = r.nextInt(-99, 100);
+			double b = r.nextDouble(-99, 100);
+
+			ints.add(a);
+			doubles.add(b);
+
+			if (a == 0)
+				break;
+		}
+
+		Util.print(ints);
+		Util.print(doubles);
+	}
+}
+
+class Util {
+	public static void print(ArrayList<? extends Number> list)
+	{
+		for (Number n : list)
+			Console.writeLine(n);
+	}
+}
+
+/*-----------------------------------------------------------------------------------------------------------------------
+	Aşağıdaki örnekte yapılan dönüşüm de error oluşturur
+-----------------------------------------------------------------------------------------------------------------------*/
+package org.csystem.app;
+
+import org.csystem.util.console.Console;
+
+import java.util.ArrayList;
+import java.util.Random;
+
+class App {
+	public static void main(String[] args)
+	{
+		DemoApp.run();
+	}
+}
+
+class DemoApp {
+	public static void run()
+	{
+		ArrayList<Number> numbers = new ArrayList<>();
+		Random r = new Random();
+
+		while (true) {
+			int a = r.nextInt(-99, 100);
+			double b = r.nextDouble(-99, 100);
+
+			if (a == 0)
+				break;
+
+			numbers.add(a);
+			numbers.add(b);
+		}
+
+		Util.doWork((ArrayList<Number>)numbers); //error
+	}
+}
+
+class Util {
+	public static void doWork(ArrayList<Integer> list)
+	{
+		for (Number n : list)
+			Console.writeLine(n);
+	}
+}
+
+/*-----------------------------------------------------------------------------------------------------------------------
+	Yukarıdaki dönüşümün doğrudan yapılabilmesi için de açılım ? super ile yapılmalıdır. Buna contravariant denir
+-----------------------------------------------------------------------------------------------------------------------*/
+package org.csystem.app;
+
+import org.csystem.util.console.Console;
+
+import java.util.ArrayList;
+import java.util.Random;
+
+class App {
+	public static void main(String[] args)
+	{
+		DemoApp.run();
+	}
+}
+
+class DemoApp {
+	public static void run()
+	{
+		ArrayList<Number> numbers = new ArrayList<>();
+		Random r = new Random();
+
+		while (true) {
+			int a = r.nextInt(-99, 100);
+			double b = r.nextDouble(-99, 100);
+
+			if (a == 0)
+				break;
+
+			numbers.add(a);
+			numbers.add(b);
+		}
+
+		Util.doWork(numbers);
+	}
+}
+
+class Util {
+	public static void doWork(ArrayList<? super Integer> list)
+	{
+		for (var n : list)
+			Console.writeLine(n);
+	}
+}
+
+/*----------------------------------------------------------------------------------------------------------------------
+    Anahtar Notlar: Yukarıda anlatılan invariant, covariant ve contravariant kavramları aralarında türetme ilişkisi olan
+    sınıflar ile generic bir sınıfın açılımları yapılırsa geçerlidir. Aralarında türetme ilişkisi yoksa kesinlikle
+    dönüşüm yapılamaz
+
+    Anahtar Notlar: Yukarıda anlatılan invariant, covariant ve contravariant kavramları Java'da oldukça yoğun olarak
+    karşımıza çıkmaktadır. Bu kavramların JavaSE'de ve popüler kullanılan ortamlarda karşımıza çıkan durumlar için
+    başka bir takım konuların da bilinmesi gerektiğinden bu konuların detayları ve kullanımları burada ele alınmayacaktır.
+    "Java ile Uygulama Geliştirme 1" ve "Android Programlama" kurslarında ele alınacaktır.
+
+    Anahtar Notlar: Aslında ? extends ile türetme anlamında bir üst sınıf (upper bound), ? super ile de yine türetme
+    anlamında bir alt sınır (lower bound) verilmesi yani bir anlamda kısıt (constraint) oluşturulması söz konusudur
+-----------------------------------------------------------------------------------------------------------------------*/
+
+/*-----------------------------------------------------------------------------------------------------------------------
+	Generic tür parametrelerine bildirim sırasında kısıt verilebilmektedir. Burada da aslında generic tür parametresi
+	için bir üst sınır verilmiş olur. Aşağıdaki NumberListPrinter sınıfının printAsInt ve printAsDouble metotları
+	içerisinde çağrılan intValue ve doubleValue metotları bu kısıt verilmeseydi error oluştururdu
+-----------------------------------------------------------------------------------------------------------------------*/
+package org.csystem.app;
+
+import org.csystem.util.console.Console;
+
+import java.util.ArrayList;
+import java.util.Random;
+
+class App {
+	public static void main(String[] args)
+	{
+		DemoApp.run();
+	}
+}
+
+class DemoApp {
+	public static void run()
+	{
+		NumberListPrinter<Integer> printer = new NumberListPrinter<>();
+
+		Random r = new Random();
+
+		while (true) {
+			int a = r.nextInt(-99, 100);
+
+			printer.add(a);
+
+			if (a == 0)
+				break;
+		}
+
+		printer.printAsInt();
+	}
+}
+
+class NumberListPrinter<T extends Number> {
+	private final ArrayList<T> m_list = new ArrayList<>();
+
+	public boolean add(T t)
+	{
+		return t != null && m_list.add(t);
+	}
+
+	public void printAsInt()
+	{
+		for (T t : m_list)
+			Console.write("%d ", t.intValue());
+
+		Console.writeLine();
+	}
+
+	public void printAsDouble()
+	{
+		for (T t : m_list)
+			Console.write("%f", t.doubleValue());
+	}
+}
+
+/*-----------------------------------------------------------------------------------------------------------------------
+	Generic Metotlar: Java'da bir metot da generic olarak bildirilebilir. Bu durumda generic tür parametreleri metot
+	içerisinde kullanılabilir. Bu tür parametreleri metodun parametre değişkenlerinin türleri ve metodun geri dönüş
+	değeri türü için de kullanılabilir. Generic tür parametreleri, metodun geri dönüş değeri bilgisinden hemen önce
+	açısal parantezler arasında bildirilir. Generic metoda ilişkin tür parametreleri yalnızca o metot içerisinde
+	görülebilirdir.
+
+	Generic metot çağrısında generic parametrelerin türleri çağrı sırısında tespit edilebiliyorsa (type inference)
+	tür belirtilmesi (instantation) gerekmez. Generic bir metot çağrısı için tür belirtilmesi metot isminden önce
+	açısal parantezler arasında yapılır
+-----------------------------------------------------------------------------------------------------------------------*/
+package org.csystem.app;
+
+import org.csystem.util.console.Console;
+import org.csystem.util.string.StringUtil;
+
+import java.util.ArrayList;
+import java.util.Random;
+
+class App {
+	public static void main(String[] args)
+	{
+		DemoApp.run();
+	}
+}
+
+class DemoApp {
+	public static void run()
+	{
+		ArrayList<String> texts = new ArrayList<>();
+		ArrayList<Integer> numbers = new ArrayList<>();
+
+		Random r = new Random();
+
+		while (true) {
+			int a = r.nextInt(-99, 100);
+
+			texts.add(StringUtil.getRandomTextTR(r, r.nextInt(5, 11)));
+			numbers.add(a);
+
+			if (a == 0)
+				break;
+		}
+		Console.writeLine("--------------------------------------------------------------------");
+		Util.print(texts);
+		Util.print(numbers);
+		Console.writeLine("--------------------------------------------------------------------");
+		Util.<String>print(texts);
+		Util.<Integer>print(numbers);
+		Console.writeLine("--------------------------------------------------------------------");
+
+	}
+}
+
+class Util {
+	public static <T> void print(ArrayList<T> list)
+	{
+		for (T t : list)
+			Console.writeLine(t);
+	}
+}
+
+
+/*-----------------------------------------------------------------------------------------------------------------------
+	Aşağıdaki örnekte "method overload resolution" kuralları gereği, printInts metodunda çağrılan print metodu Integer
+	parametreli olandor, ArrayList<T> parametreli print metodunda ise T parametreli print metodu çağrılır. Çıktı karnaşık
+	gözükecek olsa da programı çalıştırıp sonucu gözlemleyiniz
+-----------------------------------------------------------------------------------------------------------------------*/
+package org.csystem.app;
+
+import org.csystem.util.console.Console;
+import org.csystem.util.string.StringUtil;
+
+import java.util.ArrayList;
+import java.util.Random;
+
+class App {
+	public static void main(String[] args)
+	{
+		DemoApp.run();
+	}
+}
+
+class DemoApp {
+	public static void run()
+	{
+		ArrayList<String> texts = new ArrayList<>();
+		ArrayList<Integer> numbers = new ArrayList<>();
+
+		Random r = new Random();
+
+		while (true) {
+			int a = r.nextInt(-99, 100);
+
+			texts.add(StringUtil.getRandomTextTR(r, r.nextInt(5, 11)));
+			numbers.add(a);
+
+			if (a == 0)
+				break;
+		}
+		Console.writeLine("--------------------------------------------------------------------");
+		Util.print(texts);
+		Util.printInts(numbers);
+		Console.writeLine("--------------------------------------------------------------------");
+	}
+}
+
+class Util {
+	private static <T> void print(T t)
+	{
+		Console.writeLine("print, T");
+		Console.writeLine(t);
+	}
+
+	private static void print(Integer i)
+	{
+		Console.writeLine("print, Integer");
+		Console.write("%d ", i);
+	}
+
+	public static <T> void print(ArrayList<T> list)
+	{
+		for (T t : list)
+			print(t);
+	}
+
+	public static void printInts(ArrayList<Integer> list)
+	{
+		for (Integer i : list)
+			print(i);
+
+		Console.writeLine();
+	}
+}
+
+
+/*-----------------------------------------------------------------------------------------------------------------------
+	Aşağıdaki örnekte ** belirtilen çağrıda tür belirtilse bile tam uyumlu olan Integer parametreli print metodu çağrılır.
+	Örneği inceleyiniz
+-----------------------------------------------------------------------------------------------------------------------*/
+package org.csystem.app;
+
+import org.csystem.util.console.Console;
+import org.csystem.util.string.StringUtil;
+
+import java.util.ArrayList;
+import java.util.Random;
+
+class App {
+	public static void main(String[] args)
+	{
+		DemoApp.run();
+	}
+}
+
+class DemoApp {
+	public static void run()
+	{
+		ArrayList<String> texts = new ArrayList<>();
+		ArrayList<Integer> numbers = new ArrayList<>();
+
+		Random r = new Random();
+
+		while (true) {
+			int a = r.nextInt(-99, 100);
+
+			texts.add(StringUtil.getRandomTextTR(r, r.nextInt(5, 11)));
+			numbers.add(a);
+
+			if (a == 0)
+				break;
+		}
+		Console.writeLine("--------------------------------------------------------------------");
+		Util.print(texts);
+		Util.printInts(numbers);
+		Console.writeLine("--------------------------------------------------------------------");
+	}
+}
+
+class Util {
+	private static <T> void print(T t)
+	{
+		Console.writeLine("print, T");
+		Console.writeLine(t);
+	}
+
+	private static void print(Integer i)
+	{
+		Console.writeLine("print, Integer");
+		Console.write("%d ", i);
+	}
+
+	public static <T> void print(ArrayList<T> list)
+	{
+		for (T t : list)
+			print(t);
+	}
+
+	public static void printInts(ArrayList<Integer> list)
+	{
+		for (Integer i : list)
+			Util.<Integer>print(i); //**
+
+		Console.writeLine();
+	}
+}
+
+/*-----------------------------------------------------------------------------------------------------------------------
+	Generic sınıfların generic parametresi türünden static veri elemanı olamaz. Çünkü generic açılımlar tür farklılığı
+	yaratmaz. Dolayısıyla anlamsızdır. Generic sınıflar ile static metotlara erişimde açılım kullanışmadığına dikkat ediniz
+-----------------------------------------------------------------------------------------------------------------------*/
+package org.csystem.app;
+
+class A<T> {
+	public static int a;
+	public static T b; //error
+}
+
+/*-----------------------------------------------------------------------------------------------------------------------
+	Generic sınıfların (aynı zamanda arayüzlerin de) generic tür parametreleri static metotlarda kullanılamaz
+-----------------------------------------------------------------------------------------------------------------------*/
+package org.csystem.app;
+
+class A<T> {
+	//...
+	public void foo(T t)
+	{
+		T x;
+		//...
+	}
+
+	public static void bar(T t) //error
+	{
+		T x; //error
+		//...
+	}
+}
+
+/*-----------------------------------------------------------------------------------------------------------------------
+	Aşağıdaki örnekte static metot generic yapılmıştır
+-----------------------------------------------------------------------------------------------------------------------*/
+package org.csystem.app;
+
+class App {
+	public static void main(String[] args)
+	{
+		A.bar("ankara");
+		A.bar(2.6);
+	}
+}
+
+class A<T> {
+	//...
+	public void foo(T t)
+	{
+		T x;
+		//...
+	}
+
+	public static <K> void bar(K k) //error
+	{
+		K x; //error
+		//...
+	}
+}
+
+/*-----------------------------------------------------------------------------------------------------------------------
+	Aşağıdaki örnekte static metodun generic parametres ile sınıfın generic parametresi aynı isimde bildirilmiştir. Bu durum
+	herhangi bir sorun oluşturmaz. Zaten sınıfın generic parametre ismi static metotta kullanılamayacağı için static metotta
+	bildirilen generic tür parametre ismi herhangi bir çakışmaya yol açmaz
+-----------------------------------------------------------------------------------------------------------------------*/
+package org.csystem.app;
+
+class App {
+	public static void main(String[] args)
+	{
+		A.bar("ankara");
+		A.bar(2.6);
+	}
+}
+
+class A<T> {
+	//...
+	public void foo(T t)
+	{
+		T x;
+		//...
+	}
+
+	public static <T> void bar(T t) //error
+	{
+		T x; //error
+		//...
+	}
+}
+
+
+/*-----------------------------------------------------------------------------------------------------------------------
+	Generic bir sınıfın non-static bir metodu da generic olabilir. Aşağıdaki örneği inceleyiniz
+-----------------------------------------------------------------------------------------------------------------------*/
+package org.csystem.app;
+
+class App {
+	public static void main(String[] args)
+	{
+		A<String> as = new A<>();
+		A<Integer> ai = new A<>();
+
+		as.foo("ankara", 10);
+		as.foo("ankara", "istanbul");
+		as.foo("istanbul", false);
+		ai.foo(10, true);
+		ai.foo(34, 3.4);
+	}
+}
+
+class A<T> {
+	//...
+	public <K> void foo(T t, K k)
+	{
+		T x;
+		K y;
+		//...
+	}
+}
+
+/*-----------------------------------------------------------------------------------------------------------------------
+	Programlamada ismine tuple denilen bir veri yapısı kullanılmaktadır. Tuple aslında bir n-liyi (n-ary) temsil eder.
+	Örnein, ikili, üçlü vb. Burada örneğin 2 boyutlu bir düzlemde bir nokta bir ikili olarak düşünülebilirç Ya da örneğin
+	bir şehir plaka numarası ve ismi ile birlikte bir ikili olabilir. Ya da örneğin yine 3 boyutlu bir düzlemde bir nokta
+	bir üçlü olarak düşünülebilir. Bu anlamda JavaSE'de bu veri yapısını karşılayan sınıflar doğrudan yoktur. Bu sebeple
+	programcılar böylesi veri yapılarını bir içerisinde yazabilirler ya da yazılmış olan iyi bir kütüphaneyi de kullanabilirler.
+	Biz burada ikili, üçlü ve dörtlüyü temsil eden Pair, Triple ve Quadruple sınıflarını temel düzeyde ve kullanışlı olarak
+	yazacağız. Yazacağımız sınıflara aslında bir çok eklenti de yapılabilecektir hatta yapılmalıdır. Bu eklentiler
+	başka konuların da bilinmesini gerektirdiğinden "Java ile Uygulama Geliştirme 1" kursu içerisinde yapılacaktır
+-----------------------------------------------------------------------------------------------------------------------*/
+
+/*----------------------------------------------------------------------------------------------------------------------
+    Pair sınıfı
+-----------------------------------------------------------------------------------------------------------------------*/
+
+package org.csystem.collection.tuple.test;
+
+import org.csystem.collection.tuple.Pair;
+import org.csystem.math.geometry.Point;
+import org.csystem.util.collection.CollectionUtil;
+import org.csystem.util.console.Console;
+
+import java.util.ArrayList;
+import java.util.Random;
+import java.util.random.RandomGenerator;
+
+public class PairConstructorTest {
+    public static void run()
+    {
+        RandomGenerator random = new Random();
+        ArrayList<Pair<Integer, Point>> points = new ArrayList<>();
+
+        Point origin = Point.ofCartesian();
+        int i = 1;
+        while (true) {
+            Point p = random.nextBoolean() ? Point.ofCartesian() : Point.ofCartesian(random.nextDouble(-100, 100), random.nextDouble(-100, 100));
+
+            points.add(new Pair<>(i++, p));
+            if (p.equals(origin))
+                break;
+        }
+
+        Console.writeLine("Points:");
+        CollectionUtil.print(points, "\n", "");
+    }
+
+    public static void main(String[] args)
+    {
+        run();
+    }
+}
+
+package org.csystem.collection.tuple.test;
+
+import org.csystem.collection.tuple.Pair;
+import org.csystem.math.geometry.Point;
+import org.csystem.util.collection.CollectionUtil;
+import org.csystem.util.console.Console;
+
+import java.util.ArrayList;
+import java.util.Random;
+import java.util.random.RandomGenerator;
+
+public class PairFactoryMethodTest {
+    public static void run()
+    {
+        RandomGenerator random = new Random();
+        ArrayList<Pair<Integer, Point>> points = new ArrayList<>();
+
+        Point origin = Point.ofCartesian();
+        int i = 1;
+        while (true) {
+            Point p = random.nextBoolean() ? Point.ofCartesian() : Point.ofCartesian(random.nextDouble(-100, 100), random.nextDouble(-100, 100));
+
+            points.add(Pair.of(i++, p));
+            if (p.equals(origin))
+                break;
+        }
+
+        Console.writeLine("Points:");
+        CollectionUtil.print(points, "\n", "");
+    }
+
+    public static void main(String[] args)
+    {
+        run();
+    }
+}
+
+package com.bartucankaya.test.tuple;
+
+import org.csystem.collection.tuple.Pair;
+import org.csystem.math.geometry.Point;
+import org.csystem.util.console.Console;
+
+public class PairEqualsTest {
+    public static void run() {
+        Point origin = Point.ofCartesian();
+
+        Pair<Integer, Point> pair1 = new Pair<> (1, origin);
+        Pair<Integer, Point> pair2 = new Pair<> (1, Point.ofCartesian(0, 0));
+
+        Console.writeLine("Pair 1: %s%nPair 2: %s", pair1.toString(), pair2.toString());
+        Console.writeLine(pair1.equals(pair2) ? "Same pair" : "Different pair");
+    }
+
+    public static void main(String[] args)
+    {
+        run();
+    }
+}
+
+package com.bartucankaya.test.tuple;
+
+import org.csystem.collection.tuple.Triple;
+import org.csystem.math.geometry.Circle;
+import org.csystem.math.geometry.Point;
+import org.csystem.util.collection.CollectionUtil;
+import org.csystem.util.console.Console;
+
+import java.util.ArrayList;
+import java.util.Random;
+import java.util.random.RandomGenerator;
+
+public class TripleConstructorTest {
+    public static void run()
+    {
+        RandomGenerator random = new Random();
+        ArrayList<Triple<Integer, Point, Circle>> pointsAndCircles = new ArrayList<>();
+
+        Point origin = Point.ofCartesian();
+        int i = 1;
+        while (true) {
+            Point p = random.nextBoolean() ? Point.ofCartesian() : Point.ofCartesian(random.nextDouble(-100, 100), random.nextDouble(-100, 100));
+            Circle c = new Circle(random.nextDouble(0, 11));
+
+            pointsAndCircles.add(new Triple<>(i++, p, c));
+            if (p.equals(origin))
+                break;
+        }
+
+        Console.writeLine("Points & Circles:");
+        CollectionUtil.print(pointsAndCircles, "\n", "");
+    }
+
+    public static void main(String[] args)
+    {
+        run();
+    }
+}
+
+package com.bartucankaya.test.tuple;
+
+import org.csystem.collection.tuple.Triple;
+import org.csystem.math.geometry.Circle;
+import org.csystem.math.geometry.Point;
+import org.csystem.util.console.Console;
+
+public class TripleEqualsTest {
+    public static void run() {
+        Point origin = Point.ofCartesian();
+        Circle unit = new Circle(1);
+
+        Triple<Integer, Point, Circle> triple1 = new Triple<> (1, origin, unit);
+        Triple<Integer, Point, Circle> triple2 = new Triple<> (1, Point.ofCartesian(0, 0), new Circle(1));
+
+        Console.writeLine("Triple 1: %s%nTriple 2: %s", triple1.toString(), triple2.toString());
+        Console.writeLine(triple1.equals(triple2) ? "Same triple" : "Different triple");
+    }
+
+    public static void main(String[] args)
+    {
+        run();
+    }
+}
+
+package com.bartucankaya.test.tuple;
+
+import org.csystem.collection.tuple.Triple;
+import org.csystem.math.geometry.Circle;
+import org.csystem.math.geometry.Point;
+import org.csystem.util.collection.CollectionUtil;
+import org.csystem.util.console.Console;
+
+import java.util.ArrayList;
+import java.util.Random;
+import java.util.random.RandomGenerator;
+
+public class TripleFactoryMethodTest {
+    public static void run()
+    {
+        RandomGenerator random = new Random();
+        ArrayList<Triple<Integer, Point, Circle>> pointsAndCircles = new ArrayList<>();
+
+        Point origin = Point.ofCartesian();
+        int i = 1;
+        while (true) {
+            Point p = random.nextBoolean() ? Point.ofCartesian() : Point.ofCartesian(random.nextDouble(-100, 100), random.nextDouble(-100, 100));
+            Circle c = new Circle(random.nextDouble(0, 11));
+
+            pointsAndCircles.add(Triple.of(i++, p, c));
+            if (p.equals(origin))
+                break;
+        }
+
+        Console.writeLine("Points & Circles:");
+        CollectionUtil.print(pointsAndCircles, "\n", "");
+    }
+
+    public static void main(String[] args)
+    {
+        run();
+    }
+}
+
+
+/*----------------------------------------------------------
+	FILE			: Pair.java
+	AUTHOR			: Java-Nov-2022 Group
+	LAST UPDATE		: 29.07.2023
+
+	Pair class that represents a pair tuple
+
+	Copyleft (c) 1993 C and System Programmers Association
+	All Rights Free
+------------------------------------------------------------*/
+package org.csystem.collection.tuple;
+
+public class Pair<F, S> {
+    public final F first;
+    public final S second;
+
+    public static <F, S> Pair<F, S> of(F first, S second)
+    {
+        return new Pair<>(first, second);
+    }
+
+    public Pair(F first, S second)
+    {
+        this.first = first;
+        this.second = second;
+    }
+
+    public boolean equals(Object other)
+    {
+        return other instanceof Pair<?, ?> pair && first.equals(pair.first) && second.equals(pair.second);
+    }
+
+    public String toString()
+    {
+        return String.format("(%s, %s)", first, second);
+    }
+
+    //...
+}
+
+/*----------------------------------------------------------
+	FILE			: Triple.java
+	AUTHOR			: Java-Nov-2022 Group
+	LAST UPDATE		: 29.07.2023
+
+	Triple class that represents a triple tuple
+
+	Copyleft (c) 1993 C and System Programmers Association
+	All Rights Free
+------------------------------------------------------------*/
+package org.csystem.collection.tuple;
+
+public class Triple<F, S, T> {
+    public final F first;
+    public final S second;
+
+    public final T third;
+
+    public static <F, S, T> Triple<F, S, T> of(F first, S second, T third)
+    {
+        return new Triple<>(first, second, third);
+    }
+
+    public Triple(F first, S second, T third)
+    {
+        this.first = first;
+        this.second = second;
+        this.third = third;
+    }
+
+    public boolean equals(Object other)
+    {
+        return other instanceof Triple<?, ?, ?> triple
+                && first.equals(triple.first) && second.equals(triple.second) && third.equals(triple.third);
+    }
+
+    public String toString()
+    {
+        return String.format("(%s, %s, %s)", first, second, third);
+    }
+    //...
+}
+
+/*-----------------------------------------------------------------------------------------------------------------------
+	Generic parametre türünden bir nesne ve dizi new operatörü ile doğrudan yaratılamaz
+-----------------------------------------------------------------------------------------------------------------------*/
+package org.csystem.app;
+
+class A<T> {
+	private T [] m_t;
+
+	public A(int size)
+	{
+		m_t = new T[size]; //error
+	}
+}
+
+class B<T> {
+	private T m_t;
+
+	public B()
+	{
+		m_t = new T(); //error
+	}
+}
+
+/*-----------------------------------------------------------------------------------------------------------------------
+	Generic parametre türünden bir nesne ve bir dizi new operatörü ile aşağıdaki gibi yaratılabilir. Nesne ve dizi yaratmak
+	için başka yöntemler de vardır. Bu yöntemler burada ele alınmayacaktır. Kodda verilen uyarıları dikkate almayınız
+-----------------------------------------------------------------------------------------------------------------------*/
+package org.csystem.app;
+
+class A<T> {
+	private T [] m_t;
+
+	public A(int size)
+	{
+		m_t = (T []) new Object[size];
+	}
+}
+
+class B<T> {
+	private T m_t;
+
+	public B()
+	{
+		m_t = (T)new Object();
+	}
+}
+
+/*----------------------------------------------------------------------------------------------------------------------
+    06.08.2023 Arwen
+-----------------------------------------------------------------------------------------------------------------------*/
+/*----------------------------------------------------------------------------------------------------------------------
+    Sınıf Çalışması: CSDArrayList<E> sınıfını aşağıdaki açıklamalara göre yazınız:
+    Açıklamalar:
+        - Sınıfın metotları ArrayList<E> sınıfındaki metotların yaptığı işleri yapacaktır.
+        - Metotların karmaşıklıklarının ArrayList<E> ile aynı olması gerekir.
+        - Metotlarda fırlatılacak exception'lar yine ArrayList<E> ile aynı olacaktır.
+        - Sınıfın public bölümünü değiştirmeden istediğiniz eklemeyi yapabilirsiniz.
+-----------------------------------------------------------------------------------------------------------------------*/
+
+package org.csystem.collection.test;
+
+import org.csystem.collection.CSDArrayList;
+import org.csystem.util.console.Console;
+
+public class CSDArrayListAddTest {
+    public static void run()
+    {
+        CSDArrayList<String> list = new CSDArrayList<>(3);
+
+        while (true) {
+            String str = Console.readString("Bir yazı giriniz:");
+
+            if ("elma".equals(str))
+                break;
+
+            list.add(str);
+        }
+
+        Console.writeLine(list);
+        Console.writeLine("Size:%d", list.size());
+        Console.writeLine("Capacity:%d", list.capacity());
+    }
+    public static void main(String[] args)
+    {
+        run();
+    }
+}
+
+package org.csystem.collection.test;
+
+import org.csystem.collection.CSDArrayList;
+import org.csystem.util.console.Console;
+
+public class CSDArrayListAddWithIndexTest {
+    public static void run()
+    {
+        CSDArrayList<String> list = new CSDArrayList<>(3);
+
+        while (true) {
+            String str = Console.readString("Bir yazı giriniz:");
+
+            if ("elma".equals(str))
+                break;
+
+            list.add(0, str);
+        }
+
+        Console.writeLine(list);
+        Console.writeLine("Size:%d", list.size());
+        Console.writeLine("Capacity:%d", list.capacity());
+    }
+    public static void main(String[] args)
+    {
+        run();
+    }
+}
+
+package org.csystem.collection.test;
+
+import org.csystem.collection.CSDArrayList;
+import org.csystem.util.console.Console;
+
+public class CSDArrayListConstructorTest {
+    public static void run()
+    {
+        CSDArrayList<String> list = new CSDArrayList<>(11);
+
+        Console.writeLine("Size:%d", list.size());
+        Console.writeLine("Capacity:%d", list.capacity());
+    }
+    public static void main(String[] args)
+    {
+        run();
+    }
+}
+package org.csystem.collection.test;
+
+import org.csystem.collection.CSDArrayList;
+import org.csystem.util.console.Console;
+
+public class CSDArrayListRemoveTest {
+    public static void run()
+    {
+        CSDArrayList<String> list = new CSDArrayList<>(3);
+
+        while (true) {
+            String str = Console.readString("Bir yazı giriniz:");
+
+            if ("elma".equals(str))
+                break;
+
+            list.add(str);
+        }
+
+        Console.writeLine(list);
+
+        try {
+            String old = list.remove(3);
+
+            Console.writeLine("Silinen eleman:%s", old);
+        }
+        catch (IndexOutOfBoundsException ex) {
+            Console.writeLine(ex.getMessage());
+        }
+
+        Console.writeLine(list);
+    }
+    public static void main(String[] args)
+    {
+        run();
+    }
+}
+
+/*----------------------------------------------------------------
+	FILE		: CSDArrayList.java
+	AUTHOR		: Java-Nov-2022 Group
+	LAST UPDATE	: 06.08.2023
+
+	CSDArrayList collection class that represents a dynamic array
+
+	Copyleft (c) 1993 C and System Programmers Association
+	All Rights Free
+----------------------------------------------------------------*/
+package org.csystem.collection;
+
+import java.util.Arrays;
+
+public class CSDArrayList<E> {
+    private static final int DEFAULT_CAPACITY = 10;
+    private E[] m_elements;
+    private int m_index;
+
+    private static void throwForIllegalArgument(String message)
+    {
+        throw new IllegalArgumentException(message);
+    }
+
+    private static void throwForIndexOutOfBounds(String message)
+    {
+        throw new IndexOutOfBoundsException(message);
+    }
+
+    private static void checkCapacity(int capacity)
+    {
+        if (capacity < 0)
+            throwForIllegalArgument(String.format("Capacity can not be negative:%d", capacity));
+    }
+
+    private void checkIndex(int index)
+    {
+        if (index < 0 || index >= m_index)
+            throwForIndexOutOfBounds(String.format("Index out of bounds:%d", index));
+    }
+
+    private void changeCapacity(int capacity)
+    {
+        m_elements = Arrays.copyOf(m_elements, capacity);
+    }
+
+    private void enlargeCapacityIfNecessary()
+    {
+        if (m_index == m_elements.length)
+            changeCapacity(m_elements.length == 0 ? 1 : m_elements.length * 2);
+    }
+
+    public CSDArrayList()
+    {
+        m_elements = (E[])new Object[DEFAULT_CAPACITY];
+    }
+
+    public CSDArrayList(int initialCapacity)
+    {
+        checkCapacity(initialCapacity);
+        m_elements = (E[])new Object[initialCapacity];
+    }
+
+    public boolean add(E e)
+    {
+        enlargeCapacityIfNecessary();
+        m_elements[m_index++] = e;
+
+        return true;
+    }
+
+    public void add(int index, E e)
+    {
+        enlargeCapacityIfNecessary();
+        for (int i = m_index++; i > index; --i)
+            m_elements[i] = m_elements[i - 1];
+        m_elements[index] = e;
+    }
+
+    public int capacity()
+    {
+        return m_elements.length;
+    }
+
+    public void clear()
+    {
+        for (int i = 0; i < m_index; ++i)
+            m_elements[i] = null;
+
+        m_index = 0;
+    }
+
+    public void ensureCapacity(int minCapacity)
+    {
+        if (minCapacity > m_elements.length)
+            changeCapacity(Math.max(m_elements.length * 2, minCapacity));
+    }
+
+    public E get(int index)
+    {
+        checkIndex(index);
+
+        return m_elements[m_index];
+    }
+
+    public E remove(int index)
+    {
+        checkIndex(index);
+        E old = m_elements[index];
+
+        for (int i = index; i < m_index - 1; ++i)
+            m_elements[i] = m_elements[i + 1];
+
+        m_elements[--m_index] = null;
+
+        return old;
+    }
+
+    public E set(int index, E e)
+    {
+        checkIndex(index);
+        E old = m_elements[index];
+
+        m_elements[index] = e;
+
+        return old;
+    }
+
+    public int size()
+    {
+        return m_index;
+    }
+
+    public void trimToSize()
+    {
+        if (m_elements.length != m_index)
+            changeCapacity(m_index);
+    }
+
+    public String toString()
+    {
+        StringBuilder sb = new StringBuilder("[");
+
+        for (int i = 0; i < m_index; ++i)
+            sb.append(m_elements[i]).append(", ");
+
+        return (m_index != 0 ? sb.substring(0, sb.length() - 2) : sb.toString()) + "]";
+    }
+}
 
 /*----------------------------------------------------------------------------------------------------------------------
 
