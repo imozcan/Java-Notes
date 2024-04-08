@@ -11984,8 +11984,8 @@ class Time {
 
 	Her nesne için farklı  eleman yaratılmaz, A sınıfımızın olduğu ve içerisinde static int x ve non-Static int y olsun
 
-	A referansının gösterdiği 10 farklı nesne yaratırsak x nesneye özel yani her nesnede farklı değer alabilirken
-	y elemanının değeri her nesne için aynıdır.
+	A referansının gösterdiği 10 farklı nesne yaratırsak y nesneye özel yani her nesnede farklı değer alabilirken
+	x elemanının değeri her nesne için aynıdır.
 
 
 -----------------------------------------------------------------------------------------------------------------------*/
